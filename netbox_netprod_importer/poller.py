@@ -21,9 +21,9 @@ class DevicePoller():
         )
 
     def _get_specific_device_parser(self, os):
-        parser_class = getattr(DeviceParsers, os)
+        parser_class = getattr(DeviceParsers, os).value
 
-        return parser_class(napalm_device=self.device)
+        return parser_class(self.device)
 
     def poll(self):
         props = {}
@@ -47,7 +47,7 @@ class DevicePoller():
             try:
                 main_ip[proto] = socket.getaddrinfo(
                     self.host, None, socket_type
-                )
+                )[0][4][0]
             except socket.gaierror:
                 continue
 
