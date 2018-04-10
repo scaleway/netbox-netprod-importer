@@ -7,15 +7,18 @@ from netbox_netprod_importer.vendors import DeviceParsers
 
 
 class DevicePoller():
-    def __init__(self, host, os, creds):
+    def __init__(self, host, napalm_driver_name, creds, napalm_optional_args):
         self.host = host
 
-        driver = napalm.get_network_driver(os)
+        driver = napalm.get_network_driver(napalm_driver_name)
         self.device = driver(
-            hostname=self.host, username=creds[0], password=creds[1]
+            hostname=self.host, username=creds[0], password=creds[1],
+            optional_args=napalm_optional_args
         )
         self.device.open()
-        self.specific_parser = self._get_specific_device_parser(os)
+        self.specific_parser = self._get_specific_device_parser(
+            napalm_driver_name
+        )
 
     def _get_specific_device_parser(self, os):
         parser_class = getattr(DeviceParsers, os)
