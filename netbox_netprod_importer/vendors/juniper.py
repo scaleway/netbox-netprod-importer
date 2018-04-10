@@ -9,9 +9,8 @@ class JuniperParser():
     def group_interfaces_by_aggreg(self, interfaces):
         pass
 
-    @staticmethod
-    def fill_interface_type(interfaces):
-        pass
+    def get_interface_type(self, interface, props):
+        return "Other"
 
 
 class JunOSParser(JuniperParser):

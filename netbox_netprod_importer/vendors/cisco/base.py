@@ -27,11 +27,11 @@ class CiscoParser():
                 interface
             )
 
-    def get_interface_type(self, interface, props):
+    def get_interface_type(self, interface):
         interface = interface.lower()
 
         transceiver_conf_dump = self.device.cli(
-            "show run interface {} transceiver detail".format(interface)
+            "show interface {} transceiver".format(interface)
         )
 
         if_type_match = re.search(

@@ -55,13 +55,13 @@ class DevicePoller():
 
         interfaces = {}
         for ifname, napalm_ifprops in napalm_interfaces:
-            ifprops = {
-                "mac_address": napalm_ifprops["mac-address"],
-                "description": napalm_ifprops["description"],
+            interfaces[ifname] = {
                 "enabled": napalm_ifprops["is_enabled"],
+                "description": napalm_ifprops["description"],
+                "mac_address": napalm_ifprops["mac-address"],
+                "mtu": napalm_ifprops.get(["mtu"]),
+                "type": self.specific_parser.get_interface_type(ifname),
             }
-
-            interfaces[ifname] = ifprops
 
         interfaces = self.get_ip_by_interface(interfaces)
 
