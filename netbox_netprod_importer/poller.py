@@ -54,26 +54,27 @@ class DevicePoller():
         return main_ip
 
     def _handle_interfaces_props(self, props):
-        napalm_interfaces = self.get_interfaces()
-
-        interfaces = {}
-        for ifname, napalm_ifprops in napalm_interfaces:
-            interfaces[ifname] = {
-                "enabled": napalm_ifprops["is_enabled"],
-                "description": napalm_ifprops["description"],
-                "mac_address": napalm_ifprops["mac-address"],
-                "mtu": napalm_ifprops.get(["mtu"]),
-                "type": self.specific_parser.get_interface_type(ifname),
-            }
-
-        interfaces = self.get_ip_by_interface(interfaces)
+        interfaces = self.get_interfaces()
+        interfaces = self.fill_interfaces_ip(interfaces)
 
         return props
 
     def get_interfaces(self):
-        return self.device.get_interfaces()
+        napalm_interfaces = self.device.get_interfaces()
 
-    def get_ip_by_interface(self, interfaces=None):
+        interfaces = {}
+        for ifname, napalm_ifprops in napalm_interfaces.items():
+            interfaces[ifname] = {
+                "enabled": napalm_ifprops["is_enabled"],
+                "description": napalm_ifprops["description"],
+                "mac_address": napalm_ifprops["mac_address"],
+                "mtu": napalm_ifprops.get("mtu", None),
+                "type": self.specific_parser.get_interface_type(ifname),
+            }
+
+        return interfaces
+
+    def fill_interfaces_ip(self, interfaces=None):
         if interfaces is None:
             interfaces = defaultdict(dict)
 

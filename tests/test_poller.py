@@ -4,6 +4,7 @@ import socket
 import napalm
 import pytest
 
+from netbox_netprod_importer.poller import napalm as poller_napalm
 from netbox_netprod_importer.poller import DevicePoller
 
 
@@ -15,23 +16,23 @@ class BaseTestPoller():
     profile = None
 
     @pytest.fixture(autouse=True)
-    def build_poller(self, mocker):
-        self._mock_get_network_driver(mocker)
+    def build_poller(self, monkeypatch):
+        self._mock_get_network_driver(monkeypatch)
         self.poller = DevicePoller(
             "localhost", self.profile, "foo",
             napalm_optional_args={
-                "path": os.path.join(BASE_PATH, "test_mock_driver"),
+                "path": os.path.join(BASE_PATH, "mock_driver"),
                 "profile": [self.profile],
             }
         )
         self.poller._get_specific_device_parser(self.profile)
 
-    def _mock_get_network_driver(self, mocker):
-        mock_config = {
-            'method.return_value': napalm.get_network_driver("mock")
-        }
-        mocker.patch(
-            "napalm.get_network_driver", **mock_config
+    def _mock_get_network_driver(self, monkeypatch):
+        mock_driver = napalm.get_network_driver("mock")
+        monkeypatch.setattr(
+            poller_napalm,
+            "get_network_driver",
+            lambda *args: mock_driver
         )
 
     def test_resolve_primary_ip(self):
@@ -59,6 +60,25 @@ class BaseTestPoller():
         ip = self.poller.resolve_primary_ip()
 
         assert sorted(ip.keys()) == sorted(("primary_ipv4", ))
+
+    def test_get_interfaces(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        interfaces = self.poller.get_interfaces()
+
+        if_names =  (
+            "mgmt0", "Ethernet1/1", "Ethernet1/2", "port-channel10",
+            "port-channel11", "port-channel12", "Vlan1", "Vlan200",
+            "Ethernet101/1/1", "Ethernet101/1/2",
+        )
+
+        assert sorted(interfaces.keys()) == sorted(if_names)
+
+    def stub_get_interface_type(self, monkeypatch):
+        monkeypatch.setattr(
+            self.poller.specific_parser,
+            "get_interface_type",
+            lambda *args: None
+        )
 
 
 class TestNXOSPoller(BaseTestPoller):
