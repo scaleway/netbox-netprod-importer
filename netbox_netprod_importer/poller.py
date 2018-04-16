@@ -68,6 +68,8 @@ class DevicePoller():
                 "enabled": napalm_ifprops["is_enabled"],
                 "description": napalm_ifprops["description"],
                 "mac_address": napalm_ifprops["mac_address"],
+                # wait for this pull request
+                # https://github.com/napalm-automation/napalm/compare/get_interfaces_mtu3
                 "mtu": napalm_ifprops.get("mtu", None),
                 "type": self.specific_parser.get_interface_type(ifname),
             }

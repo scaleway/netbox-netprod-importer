@@ -61,7 +61,7 @@ class BaseTestPoller():
 
         assert sorted(ip.keys()) == sorted(("primary_ipv4", ))
 
-    def test_get_interfaces(self, monkeypatch):
+    def test_get_interfaces_ifnames(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
         interfaces = self.poller.get_interfaces()
 
@@ -79,6 +79,14 @@ class BaseTestPoller():
             "get_interface_type",
             lambda *args: None
         )
+
+    def test_get_interfaces_ifprop(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        interfaces = self.poller.get_interfaces()
+
+        assert interfaces["Ethernet1/2"]["enabled"]
+        assert interfaces["Ethernet1/2"]["description"] == "dfe-dc2-2-pub"
+        assert interfaces["Ethernet1/2"]["mac_address"] == "CC:46:D6:6E:0F:79"
 
 
 class TestNXOSPoller(BaseTestPoller):
