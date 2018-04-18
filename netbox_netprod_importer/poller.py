@@ -80,12 +80,12 @@ class DevicePoller():
         if interfaces is None:
             interfaces = defaultdict(dict)
 
-        for ifname, props in self.device.get_interfaces_ip().items():
-            ip = {
-                proto: props[proto] for proto in ("ipv4", "ipv6")
-                if props.get(proto, None)
-            }
-
-            interfaces[ifname].update(ip)
+        for ifname, ifprops in self.device.get_interfaces_ip().items():
+            interfaces[ifname]["ip"] = tuple(
+                "{}/{}".format(ip, ip_props["prefix_length"])
+                for proto in ("ipv4", "ipv6")
+                if ifprops.get(proto, None)
+                for ip, ip_props in ifprops[proto].items()
+            )
 
         return interfaces

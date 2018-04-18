@@ -88,6 +88,35 @@ class BaseTestPoller():
         assert interfaces["Ethernet1/2"]["description"] == "dfe-dc2-2-pub"
         assert interfaces["Ethernet1/2"]["mac_address"] == "CC:46:D6:6E:0F:79"
 
+    def test_fill_interfaces_ip_no_dict(self):
+        ip_by_interfaces = self.poller.fill_interfaces_ip()
+
+        expected_ip = tuple(
+            ipaddress.ip_interface(ip)
+            for ip in sorted(("203.0.113.1/24", "2001:db8:407::1/48"))
+        )
+
+        output_ip = tuple(
+            ipaddress.ip_interface(ip)
+            for ip in sorted(ip_by_interfaces["Vlan1"]["ip"])
+        )
+
+        assert output_ip == expected_ip
+
+    def test_fill_interfaces_ip_ifnames(self):
+        ip_by_interfaces = self.poller.fill_interfaces_ip()
+
+        expected_if = ("mgmt0", "Vlan1", "Vlan200")
+        assert sorted(expected_if) == sorted(ip_by_interfaces.keys())
+
+    def test_fill_interfaces_with_dict(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        interfaces = self.poller.get_interfaces()
+        self.poller.fill_interfaces_ip(interfaces)
+
+        for ifname in ("mgmt0", "Vlan1", "Vlan200"):
+            assert interfaces[ifname]["ip"]
+
 
 class TestNXOSPoller(BaseTestPoller):
     profile = "nxos"
