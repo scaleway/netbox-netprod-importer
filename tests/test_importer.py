@@ -4,39 +4,39 @@ import socket
 import napalm
 import pytest
 
-from netbox_netprod_importer.poller import napalm as poller_napalm
-from netbox_netprod_importer.poller import DevicePoller
+from netbox_netprod_importer.importer import napalm as importer_napalm
+from netbox_netprod_importer.importer import DeviceImporter
 
 
 BASE_PATH = os.path.dirname(__file__)
 
 
-class BaseTestPoller():
-    poller = None
+class BaseTestImporter():
+    importer = None
     profile = None
 
     @pytest.fixture(autouse=True)
-    def build_poller(self, monkeypatch):
+    def build_importer(self, monkeypatch):
         self._mock_get_network_driver(monkeypatch)
-        self.poller = DevicePoller(
+        self.importer = DeviceImporter(
             "localhost", self.profile, "foo",
             napalm_optional_args={
-                "path": os.path.join(BASE_PATH, "mock_driver"),
+                "path": os.path.join(BASE_PATH, "mock_driver/global"),
                 "profile": [self.profile],
             }
         )
-        self.poller._get_specific_device_parser(self.profile)
+        self.importer._get_specific_device_parser(self.profile)
 
     def _mock_get_network_driver(self, monkeypatch):
         mock_driver = napalm.get_network_driver("mock")
         monkeypatch.setattr(
-            poller_napalm,
+            importer_napalm,
             "get_network_driver",
             lambda *args: mock_driver
         )
 
     def test_resolve_primary_ip(self):
-        ip = self.poller.resolve_primary_ip()
+        ip = self.importer.resolve_primary_ip()
 
         assert (
             ipaddress.ip_address(ip["primary_ipv4"]) ==
@@ -49,7 +49,7 @@ class BaseTestPoller():
 
     def test_resolve_primary_ip_error(self, mocker):
         mocker.patch("socket.getaddrinfo", side_effect=socket.gaierror)
-        ip = self.poller.resolve_primary_ip()
+        ip = self.importer.resolve_primary_ip()
 
         assert not ip
 
@@ -57,13 +57,13 @@ class BaseTestPoller():
         mocker.patch(
             "socket.getaddrinfo", side_effect=(mocker.DEFAULT, socket.gaierror)
         )
-        ip = self.poller.resolve_primary_ip()
+        ip = self.importer.resolve_primary_ip()
 
         assert sorted(ip.keys()) == sorted(("primary_ipv4", ))
 
     def test_get_interfaces_ifnames(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
-        interfaces = self.poller.get_interfaces()
+        interfaces = self.importer.get_interfaces()
 
         if_names =  (
             "mgmt0", "Ethernet1/1", "Ethernet1/2", "port-channel10",
@@ -75,21 +75,21 @@ class BaseTestPoller():
 
     def stub_get_interface_type(self, monkeypatch):
         monkeypatch.setattr(
-            self.poller.specific_parser,
+            self.importer.specific_parser,
             "get_interface_type",
             lambda *args: None
         )
 
     def test_get_interfaces_ifprop(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
-        interfaces = self.poller.get_interfaces()
+        interfaces = self.importer.get_interfaces()
 
         assert interfaces["Ethernet1/2"]["enabled"]
         assert interfaces["Ethernet1/2"]["description"] == "dfe-dc2-2-pub"
         assert interfaces["Ethernet1/2"]["mac_address"] == "CC:46:D6:6E:0F:79"
 
     def test_fill_interfaces_ip_no_dict(self):
-        ip_by_interfaces = self.poller.fill_interfaces_ip()
+        ip_by_interfaces = self.importer.fill_interfaces_ip()
 
         expected_ip = tuple(
             ipaddress.ip_interface(ip)
@@ -104,23 +104,23 @@ class BaseTestPoller():
         assert output_ip == expected_ip
 
     def test_fill_interfaces_ip_ifnames(self):
-        ip_by_interfaces = self.poller.fill_interfaces_ip()
+        ip_by_interfaces = self.importer.fill_interfaces_ip()
 
         expected_if = ("mgmt0", "Vlan1", "Vlan200")
         assert sorted(expected_if) == sorted(ip_by_interfaces.keys())
 
     def test_fill_interfaces_with_dict(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
-        interfaces = self.poller.get_interfaces()
-        self.poller.fill_interfaces_ip(interfaces)
+        interfaces = self.importer.get_interfaces()
+        self.importer.fill_interfaces_ip(interfaces)
 
         for ifname in ("mgmt0", "Vlan1", "Vlan200"):
             assert interfaces[ifname]["ip"]
 
 
-class TestNXOSPoller(BaseTestPoller):
+class TestNXOSImporter(BaseTestImporter):
     profile = "nxos"
 
 
-class TestJunOSPoller(BaseTestPoller):
+class TestJunOSImporter(BaseTestImporter):
     profile = "junos"

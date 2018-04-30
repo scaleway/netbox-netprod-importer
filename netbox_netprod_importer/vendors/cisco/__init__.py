@@ -1,6 +1,6 @@
 from .base import CiscoParser
 
-# __all__ = ("NXOSParser", )
+__all__ = ("NXOSParser", )
 
 
 class NXOSParser(CiscoParser):

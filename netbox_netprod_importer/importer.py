@@ -6,7 +6,7 @@ import napalm
 from netbox_netprod_importer.vendors import DeviceParsers
 
 
-class DevicePoller():
+class DeviceImporter():
     def __init__(self, host, napalm_driver_name, creds, napalm_optional_args):
         self.host = host
 
