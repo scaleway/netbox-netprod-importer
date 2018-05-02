@@ -1,0 +1,4 @@
+interface Ethernet1/3
+  description try to bork the channel-group 14 regex
+  mtu 9216
+  channel-group 10 mode active

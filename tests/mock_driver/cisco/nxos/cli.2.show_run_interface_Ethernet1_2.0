@@ -1,0 +1,3 @@
+interface Ethernet1/2
+  mtu 9216
+  channel-group 12 mode active
