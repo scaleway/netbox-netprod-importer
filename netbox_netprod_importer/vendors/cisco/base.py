@@ -29,8 +29,6 @@ class CiscoParser():
         return port_channels
 
     def get_interface_type(self, interface):
-        interface = interface.lower()
-
         cmd = "show interface {} transceiver".format(interface)
         transceiver_conf_dump = self.device.cli([cmd])[cmd]
 
