@@ -31,6 +31,8 @@ class DeviceImporter():
         props.update(self.resolve_primary_ip())
         self._handle_interfaces_props(props)
 
+        return props
+
     def resolve_primary_ip(self):
         """
         Resolve primary IPs from hostname
