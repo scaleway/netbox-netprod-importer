@@ -3,11 +3,11 @@ import logging
 from netbox_netprod_importer.exceptions import MissingGraphError
 
 
-logger = logging.getLogger("network_poller")
+logger = logging.getLogger("netbox_importer")
 
 
-def build_graph_from_lldp(self, pollers):
-    for host, poller in pollers.items():
+def build_graph_from_lldp(self, importers):
+    for host, importer in importers.items():
         pass
 
 

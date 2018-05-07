@@ -9,12 +9,12 @@ from . import __appname__, __version__
 from netbox_netprod_importer.poller import DevicePoller
 
 
-logger = logging.getLogger("network_poller")
+logger = logging.getLogger("netbox_importer")
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Poller for network devices data"
+        description="Import into netbox network devices in production"
     )
     parser.add_argument("user", metavar="user", type=str, help="user")
     parser.set_defaults(func=poll_datas)
