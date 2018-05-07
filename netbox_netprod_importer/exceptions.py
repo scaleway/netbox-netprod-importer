@@ -1,0 +1,2 @@
+class MissingGraphError(Exception):
+    pass
