@@ -59,6 +59,7 @@ class DeviceImporter():
         interfaces = self.get_interfaces()
         interfaces = self.fill_interfaces_ip(interfaces)
 
+        props["interfaces"] = interfaces
         return props
 
     def get_interfaces(self):
@@ -91,3 +92,6 @@ class DeviceImporter():
             )
 
         return interfaces
+
+    def get_lldp_neighbours(self):
+        return self.device.get_lldp_neighbors()

@@ -6,14 +6,25 @@ from netbox_netprod_importer.exceptions import MissingGraphError
 logger = logging.getLogger("netbox_importer")
 
 
-def build_graph_from_lldp(self, importers):
+def build_graph_from_lldp(importers):
+    graph = NetworkConnections()
     for host, importer in importers.items():
-        pass
+        host_node = graph.get_new_node(host)
+
+        for port, port_neighbours in importer.get_lldp_neighbours().items():
+            for neighbour in port_neighbours:
+                neighbour_node = graph.get_or_create(neighbour["hostname"])
+                host_node.add_neighbour(
+                    port, neighbour_node, neighbour["port"]
+                )
 
 
 class NetworkConnections():
     #: nodes by hostname
-    nodes = {}
+    nodes = None
+
+    def __init__(self):
+        self.nodes = {}
 
     def add(self, node):
         if node.hostname in self.nodes:
@@ -29,7 +40,18 @@ class NetworkConnections():
         return node
 
     def get_new_node(self, hostname):
-        return NetworkNode(graph=self, hostname=hostname)
+        node = NetworkNode(graph=self, hostname=hostname)
+        self.add(node)
+
+        return node
+
+    def get_or_create(self, hostname):
+        if hostname in self.nodes:
+            return self.nodes[hostname]
+
+        node = self.get_new_node(hostname)
+        self.add(node)
+        return node
 
     def __iter__(self):
         yield from self.nodes.values()
@@ -64,8 +86,9 @@ class NetworkNode():
         self._hostname = hostname
         return self._hostname
 
-    def add_neighbour(self, port, node):
+    def add_neighbour(self, port, node, node_port):
         self.neighbours[port].append(node)
+        node.neighbours[node_port].append(self)
 
     def remove_neighbour(self, port, node):
         self.neighbours[port].remove(node)
