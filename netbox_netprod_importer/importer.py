@@ -7,7 +7,8 @@ from netbox_netprod_importer.vendors import DeviceParsers
 
 
 class DeviceImporter():
-    def __init__(self, host, napalm_driver_name, creds, napalm_optional_args):
+    def __init__(self, host, napalm_driver_name, creds,
+                 napalm_optional_args=None):
         self.host = host
 
         driver = napalm.get_network_driver(napalm_driver_name)

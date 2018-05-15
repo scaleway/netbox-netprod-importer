@@ -1,7 +1,10 @@
 from collections import defaultdict
 import re
-
+import logging
 from .constants import InterfacesRegex
+
+
+logger = logging.getLogger("netbox_importer")
 
 
 class CiscoParser():
@@ -29,8 +32,16 @@ class CiscoParser():
         return port_channels
 
     def get_interface_type(self, interface):
+        from pynxos.errors import CLIError
+        default_type = "Other"
+
         cmd = "show interface {} transceiver".format(interface)
-        transceiver_conf_dump = self.device.cli([cmd])[cmd]
+
+        try:
+            transceiver_conf_dump = self.device.cli([cmd])[cmd]
+        except CLIError:
+            logger.debug("{} has no transceiver detail".format(interface))
+            return "Other"
 
         if_type_match = re.search(
             r"type is (\S*)", transceiver_conf_dump, re.MULTILINE
@@ -41,4 +52,4 @@ class CiscoParser():
                 if re.match(pattern.value[0], cisco_if_type):
                     return pattern.value[1]
 
-        return "Other"
+        return default_type

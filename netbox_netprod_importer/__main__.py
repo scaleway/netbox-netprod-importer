@@ -6,7 +6,8 @@ import argparse
 from ocs.conf import get_config
 
 from . import __appname__, __version__
-from netbox_netprod_importer.poller import DevicePoller
+from netbox_netprod_importer.importer import DeviceImporter
+from netbox_netprod_importer.lldp import build_graph_from_lldp
 
 
 logger = logging.getLogger("netbox_importer")
@@ -36,11 +37,18 @@ def parse_args():
 
 def poll_datas(parsed_args):
     passphrase = getpass.getpass()
-    for host, model in get_hosts():
-        device_poller = DevicePoller(
+    hosts = list(get_hosts())
+    importers = {}
+    devices_props = {}
+    for host, model in hosts:
+        device_importer = DeviceImporter(
             host, model, (parsed_args.user, passphrase)
         )
-        device_poller.poll()
+        devices_props[host] = device_importer.poll()
+        importers[host] = device_importer
+
+    graph = build_graph_from_lldp(importers)
+    import pdb; pdb.set_trace()
 
 
 def get_hosts():

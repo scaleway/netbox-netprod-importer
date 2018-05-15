@@ -9,7 +9,7 @@ logger = logging.getLogger("netbox_importer")
 def build_graph_from_lldp(importers):
     graph = NetworkConnections()
     for host, importer in importers.items():
-        host_node = graph.get_new_node(host)
+        host_node = graph.get_or_create(host)
 
         for port, port_neighbours in importer.get_lldp_neighbours().items():
             for neighbour in port_neighbours:
@@ -17,6 +17,8 @@ def build_graph_from_lldp(importers):
                 host_node.add_neighbour(
                     port, neighbour_node, neighbour["port"]
                 )
+
+    return graph
 
 
 class NetworkConnections():
@@ -49,9 +51,7 @@ class NetworkConnections():
         if hostname in self.nodes:
             return self.nodes[hostname]
 
-        node = self.get_new_node(hostname)
-        self.add(node)
-        return node
+        return self.get_new_node(hostname)
 
     def __iter__(self):
         yield from self.nodes.values()
@@ -87,8 +87,8 @@ class NetworkNode():
         return self._hostname
 
     def add_neighbour(self, port, node, node_port):
-        self.neighbours[port].append(node)
-        node.neighbours[node_port].append(self)
+        self.neighbours[port].add(node)
+        node.neighbours[node_port].add(self)
 
     def remove_neighbour(self, port, node):
         self.neighbours[port].remove(node)
