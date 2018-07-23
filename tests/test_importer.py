@@ -4,8 +4,10 @@ import socket
 import napalm
 import pytest
 
-from netbox_netprod_importer.importer import napalm as importer_napalm
-from netbox_netprod_importer.importer import DeviceImporter
+from netbox_netprod_importer.importer import (
+    napalm as importer_napalm, DeviceImporter
+)
+from netbox_netprod_importer.exceptions import NoReverseFoundError
 
 
 BASE_PATH = os.path.dirname(__file__)
@@ -49,9 +51,9 @@ class BaseTestImporter():
 
     def test_resolve_primary_ip_error(self, mocker):
         mocker.patch("socket.getaddrinfo", side_effect=socket.gaierror)
-        ip = self.importer.resolve_primary_ip()
 
-        assert not ip
+        with pytest.raises(NoReverseFoundError):
+            self.importer.resolve_primary_ip()
 
     def test_resolve_primary_ip_missing_AAAA(self, mocker):
         mocker.patch(

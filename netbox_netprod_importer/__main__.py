@@ -1,4 +1,5 @@
 import getpass
+import json
 import logging
 import socket
 import sys
@@ -6,8 +7,8 @@ import argparse
 from ocs.conf import get_config
 
 from . import __appname__, __version__
-from netbox_netprod_importer.importer import DeviceImporter
 from netbox_netprod_importer.lldp import build_graph_from_lldp
+from netbox_netprod_importer.devices_list import parse_devices_yaml_def
 
 
 logger = logging.getLogger("netbox_importer")
@@ -17,7 +18,20 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Import into netbox network devices in production"
     )
-    parser.add_argument("user", metavar="user", type=str, help="user")
+    parser.add_argument(
+        "devices", metavar="devices", type=str,
+        help="Yaml file containing a definition of devices to poll"
+    )
+    parser.add_argument(
+        "-u", "--user", metavar="user",
+        help="user to use for connections to the devices",
+        dest="user", type=str
+    )
+    parser.add_argument(
+        "-p", "--password",
+        help="ask for credentials for connections to the devices",
+        dest="ask_password", action="store_true"
+    )
     parser.set_defaults(func=poll_datas)
 
     parser.add_argument(
@@ -36,23 +50,25 @@ def parse_args():
 
 
 def poll_datas(parsed_args):
-    passphrase = getpass.getpass()
-    hosts = list(get_hosts())
-    importers = {}
+    creds = ()
+    if parsed_args.ask_password:
+        creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
+
+    importers = parse_devices_yaml_def(parsed_args.devices, creds)
     devices_props = {}
-    for host, model in hosts:
-        device_importer = DeviceImporter(
-            host, model, (parsed_args.user, passphrase)
-        )
-        devices_props[host] = device_importer.poll()
-        importers[host] = device_importer
+    for host, importer in importers.items():
+        devices_props[host] = importer.poll()
 
     graph = build_graph_from_lldp(importers)
-    import pdb; pdb.set_trace()
 
-
-def get_hosts():
-    yield "n9k-s101-3.dc2", "nxos"
+    print(json.dumps({
+        "devices": devices_props,
+        "neighbours": {
+            h: {port: [str(neighbour) for neighbour in neighbours]}
+            for h, n in graph.nodes.items()
+            for port, neighbours in n.neighbours.items()
+        }
+    }))
 
 
 if __name__ == "__main__":

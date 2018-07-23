@@ -1,5 +1,6 @@
 import collections
 import logging
+
 from netbox_netprod_importer.exceptions import MissingGraphError
 
 
@@ -48,6 +49,9 @@ class NetworkConnections():
         return node
 
     def get_or_create(self, hostname):
+        """
+        Get existing node in the graph or create a new one
+        """
         if hostname in self.nodes:
             return self.nodes[hostname]
 
@@ -67,6 +71,12 @@ class NetworkNode():
         if neighbours is None:
             neighbours = collections.defaultdict(set)
         self.neighbours = neighbours
+
+    def __str__(self):
+        return self.hostname
+
+    def __repr__(self):
+        return "<NetworkNode: {}>".format(self)
 
     @property
     def hostname(self):

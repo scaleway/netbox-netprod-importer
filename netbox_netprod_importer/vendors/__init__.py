@@ -10,3 +10,4 @@ __all__ = (
 class DeviceParsers(Enum):
     junos = JunOSParser
     nxos = NXOSParser
+    nxos_ssh = NXOSParser
