@@ -12,8 +12,11 @@ class _AbstractVendorParser(ABC):
 
     @abstractmethod
     def group_interfaces_by_aggreg(self, interfaces):
-        pass
+        logger.debug("Get interfaces types on host %s", self.device.hostname)
 
     @abstractmethod
     def get_interface_type(self, interface):
-        pass
+        logger.debug(
+            "Get type of interface %s on host %s",
+            interface, self.device.hostname
+        )
