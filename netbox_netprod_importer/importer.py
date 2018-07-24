@@ -37,6 +37,7 @@ class DeviceImporter():
     def poll(self):
         props = {}
 
+        logging.debug("Trying to resolve the primaries IP")
         try:
             props.update(self.resolve_primary_ip())
         except NoReverseFoundError:
@@ -78,7 +79,9 @@ class DeviceImporter():
         return main_ip
 
     def _handle_interfaces_props(self, props):
+        logger.debug("Get properties of each interface")
         interfaces = self.get_interfaces()
+        logger.debug("Get IP setup on each interface")
         interfaces = self.fill_interfaces_ip(interfaces)
 
         props["interfaces"] = interfaces

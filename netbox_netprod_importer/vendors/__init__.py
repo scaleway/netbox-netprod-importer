@@ -1,4 +1,5 @@
 from enum import Enum
+from .base import _AbstractVendorParser
 from .cisco import NXOSParser
 from .juniper import JunOSParser
 

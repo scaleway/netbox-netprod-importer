@@ -1,17 +1,19 @@
 from collections import defaultdict
 import re
 import logging
+
+from netbox_netprod_importer.vendors import _AbstractVendorParser
 from .constants import InterfacesRegex
 
 
 logger = logging.getLogger("netbox_importer")
 
 
-class CiscoParser():
-    def __init__(self, napalm_device):
-        self.device = napalm_device
+class CiscoParser(_AbstractVendorParser):
 
     def group_interfaces_by_aggreg(self, interfaces):
+        super().group_interfaces_by_aggreg(interfaces)
+
         port_channels = defaultdict(list)
         for interface in interfaces:
             cmd = "show run interface {}".format(interface)
@@ -32,6 +34,8 @@ class CiscoParser():
         return port_channels
 
     def get_interface_type(self, interface):
+        super().get_interface_type(interface)
+
         from pynxos.errors import CLIError
         default_type = "Other"
 
