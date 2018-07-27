@@ -11,8 +11,9 @@ class _AbstractVendorParser(ABC):
         self.device = napalm_device
 
     @abstractmethod
-    def group_interfaces_by_aggreg(self, interfaces):
-        logger.debug("Get interfaces types on host %s", self.device.hostname)
+    def get_interfaces_lag(self, interfaces):
+        logger.debug("Get interfaces LAG on host %s", self.device.hostname)
+        return {}
 
     @abstractmethod
     def get_interface_type(self, interface):

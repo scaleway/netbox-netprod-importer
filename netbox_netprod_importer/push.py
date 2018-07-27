@@ -22,7 +22,7 @@ class NetboxPusher():
             ), "interfaces": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="interfaces"
             ), "ip": NetboxMapper(
-                self.netbox_api, app_name="ipam", model="ipaddresses"
+                self.netbox_api, app_name="ipam", model="ip-addresses"
             )
         }
         self._choices_cache = {}
@@ -35,6 +35,8 @@ class NetboxPusher():
 
     def _push_interfaces(self):
         interfaces_props = self.props["interfaces"]
+        interfaces_lag = {}
+        interfaces = {}
 
         for if_name, if_prop in interfaces_props.items():
             if_prop = if_prop.copy()
@@ -47,12 +49,15 @@ class NetboxPusher():
                 interface = self._mappers["interfaces"].post(
                     device=self._device, name=if_name
                 )
+            interfaces[if_name] = interface
 
             if_type = if_prop.pop("type")
             if_prop["form_factor"] = self.search_value_in_choices(
                 self._mappers["dcim_choices"], "interface:form_factor",
                 if_type
             )
+            if if_prop.get("lag"):
+                interfaces_lag[if_name] = if_prop.pop("lag")
 
             for k, v in if_prop.items():
                 setattr(interface, k, v)
@@ -62,6 +67,8 @@ class NetboxPusher():
                 self._attach_interface_to_ip_addresses(
                     interface, *if_prop["ip"]
                 )
+
+        self._update_interfaces_lag(interfaces, interfaces_lag)
 
     def _attach_interface_to_ip_addresses(self, interface, *ip_addresses):
         mapper = self._mappers["ip"]
@@ -76,29 +83,39 @@ class NetboxPusher():
             ip_netbox_obj.interface = interface
             ip_netbox_obj.put()
 
-            yield ip_netbox_obj
+    def _update_interfaces_lag(self, interfaces, interfaces_lag):
+        """
+        :param interfaces: {interface_name: netbox_interface_obj, …}
+        """
+        for if_name, lag in interfaces_lag.items():
+            interface = interfaces[if_name]
+            interface.lag = interfaces[lag]
+            interface.put()
 
     def _push_main_data(self):
         mapper = self._mappers["ip"]
-        for ip_key in ("primary_ipv4", "primary_ipv6"):
+        for ip_key in ("primary_ip4", "primary_ip6"):
             ip = self.props.get(ip_key)
             if ip:
                 try:
                     ip_netbox_obj = next(mapper.get(q=ip))
+                    setattr(self._device, ip_key, ip_netbox_obj)
                 except StopIteration:
                     logger.error(
                         "Cannot set primary IP %s as it does not exist in "
                         "netbox", ip
                     )
-                setattr(self._device, ip_key, ip_netbox_obj)
 
         self._device.put()
 
     def search_value_in_choices(self, mapper, id, label):
         if mapper not in self._choices_cache:
-            self._choices_cache[mapper] = mapper.get()
+            try:
+                self._choices_cache[mapper] = next(mapper.get())
+            except StopIteration:
+                pass
 
-        for choice in self._choices_cache[id]:
+        for choice in self._choices_cache[mapper][id]:
             if choice["label"] == label:
                 return choice["value"]
 

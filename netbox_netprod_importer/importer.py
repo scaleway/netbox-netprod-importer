@@ -95,12 +95,17 @@ class DeviceImporter():
             interfaces[ifname] = {
                 "enabled": napalm_ifprops["is_enabled"],
                 "description": napalm_ifprops["description"],
-                "mac_address": napalm_ifprops["mac_address"],
+                "mac_address": napalm_ifprops["mac_address"] or None,
                 # wait for this pull request
                 # https://github.com/napalm-automation/napalm/pull/531
                 "mtu": napalm_ifprops.get("mtu", None),
                 "type": self.specific_parser.get_interface_type(ifname),
             }
+
+        interfaces_lag = self.specific_parser.get_interfaces_lag(interfaces)
+        for ifname, lag in interfaces_lag.items():
+            interfaces[ifname]["lag"] = lag
+            interfaces[lag]["type"] = "Link Aggregation Group (LAG)"
 
         return interfaces
 
@@ -111,7 +116,7 @@ class DeviceImporter():
         for ifname, ifprops in self.device.get_interfaces_ip().items():
             interfaces[ifname]["ip"] = tuple(
                 "{}/{}".format(ip, ip_props["prefix_length"])
-                for proto in ("ipv4", "ipv6")
+                for proto in ("ip4", "ip6")
                 if ifprops.get(proto, None)
                 for ip, ip_props in ifprops[proto].items()
             )

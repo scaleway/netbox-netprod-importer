@@ -9,6 +9,7 @@ from ocs.conf import get_config
 from . import __appname__, __version__
 from netbox_netprod_importer.lldp import build_graph_from_lldp
 from netbox_netprod_importer.devices_list import parse_devices_yaml_def
+from netbox_netprod_importer.push import NetboxPusher
 
 
 logger = logging.getLogger("netbox_importer")
@@ -58,6 +59,8 @@ def poll_datas(parsed_args):
     devices_props = {}
     for host, importer in importers.items():
         devices_props[host] = importer.poll()
+        pusher = NetboxPusher(host, devices_props[host])
+        pusher.push()
 
     graph = build_graph_from_lldp(importers)
 

@@ -11,10 +11,10 @@ logger = logging.getLogger("netbox_importer")
 
 class CiscoParser(_AbstractVendorParser):
 
-    def group_interfaces_by_aggreg(self, interfaces):
-        super().group_interfaces_by_aggreg(interfaces)
+    def get_interfaces_lag(self, interfaces):
+        super().get_interfaces_lag(interfaces)
 
-        port_channels = defaultdict(list)
+        interfaces_lag = defaultdict(list)
         for interface in interfaces:
             cmd = "show run interface {}".format(interface)
             interface_conf_dump = self.device.cli([cmd])[cmd]
@@ -27,11 +27,11 @@ class CiscoParser(_AbstractVendorParser):
             else:
                 continue
 
-            port_channels["port-channel{}".format(port_channel_id)].append(
-                interface
+            interfaces_lag[interface] = "port-channel{}".format(
+                port_channel_id
             )
 
-        return port_channels
+        return interfaces_lag
 
     def get_interface_type(self, interface):
         super().get_interface_type(interface)
