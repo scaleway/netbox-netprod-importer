@@ -60,7 +60,7 @@ class DeviceImporter():
         main_ip = {}
 
         assoc_proto_socket = (
-            ("primary_ipv4", socket.AF_INET), ("primary_ipv6", socket.AF_INET6)
+            ("primary_ip4", socket.AF_INET), ("primary_ip6", socket.AF_INET6)
         )
         for proto, socket_type in assoc_proto_socket:
             try:
@@ -116,7 +116,7 @@ class DeviceImporter():
         for ifname, ifprops in self.device.get_interfaces_ip().items():
             interfaces[ifname]["ip"] = tuple(
                 "{}/{}".format(ip, ip_props["prefix_length"])
-                for proto in ("ip4", "ip6")
+                for proto in ("ipv4", "ipv6")
                 if ifprops.get(proto, None)
                 for ip, ip_props in ifprops[proto].items()
             )
