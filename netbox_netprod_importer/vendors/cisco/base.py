@@ -48,7 +48,7 @@ class CiscoParser(_AbstractVendorParser):
             return "Other"
 
         if_type_match = re.search(
-            r"type is (\S*)", transceiver_conf_dump, re.MULTILINE
+            r"part number is (\S*)", transceiver_conf_dump, re.MULTILINE
         )
         if if_type_match:
             cisco_if_type = if_type_match.groups()[0]
