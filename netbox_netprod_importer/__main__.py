@@ -56,11 +56,9 @@ def poll_datas(parsed_args):
         creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
 
     importers = parse_devices_yaml_def(parsed_args.devices, creds)
-    devices_props = {}
-    for host, importer in importers.items():
-        devices_props[host] = importer.poll()
-        pusher = NetboxPusher(host, devices_props[host])
-        pusher.push()
+    devices_props = {
+        host: importer.poll() for host, importer in importers.items()
+    }
 
     graph = build_graph_from_lldp(importers)
 
@@ -72,6 +70,14 @@ def poll_datas(parsed_args):
             for port, neighbours in n.neighbours.items()
         }
     }))
+
+    push(parsed_args, devices_props, graph)
+
+
+def push(parsed_args, devices_props, graph):
+    for host, props in devices_props.items():
+        pusher = NetboxPusher(host, devices_props[host])
+        pusher.push()
 
 
 if __name__ == "__main__":
