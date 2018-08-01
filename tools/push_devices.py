@@ -80,7 +80,7 @@ def create_devices(netbox_api, devices):
         device_type = props.pop("model")
 
         try:
-            device = next(device_mapper.get(slug=name.lower()))
+            device = next(device_mapper.get(name=name.lower()))
         except StopIteration:
             # XXX: find a way to classify devices by roles
             device = device_mapper.post(

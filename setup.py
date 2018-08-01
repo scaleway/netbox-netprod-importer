@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
-requirements = ["appdirs", "cachetools", "napalm"]
+requirements = ["appdirs", "cachetools", "napalm", "tqdm"]
 setup_requirements = [
     "pytest-runner",
 ]
