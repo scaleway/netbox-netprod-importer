@@ -35,6 +35,6 @@ def parse_devices_yaml_def(devices_yaml, creds=None, threads=10):
                     devices[futures[future]] = future.result()
                 except Exception as e:
                     logger.error(
-                        "Cannot connect to device %s: %s", hostname, e
+                        "Cannot connect to device %s: %s", futures[future], e
                     )
     return devices
