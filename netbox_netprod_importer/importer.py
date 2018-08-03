@@ -109,10 +109,30 @@ class DeviceImporter():
 
         interfaces_lag = self.specific_parser.get_interfaces_lag(interfaces)
         for ifname, lag in interfaces_lag.items():
-            interfaces[ifname]["lag"] = lag
-            interfaces[lag]["type"] = "Link Aggregation Group (LAG)"
+            try:
+                real_lag_name = (
+                    self._search_key_case_insensitive(interfaces, lag)
+                )
+            except KeyError:
+                logger.error("%s not exist in polled interfaces", ifname)
+                continue
+
+            interfaces[ifname]["lag"] = real_lag_name
+            interfaces[real_lag_name]["type"] = (
+                "Link Aggregation Group (LAG)"
+            )
 
         return interfaces
+
+    def _search_key_case_insensitive(self, dictionary, key):
+        if key in dictionary:
+            return key
+
+        for k in dictionary.keys():
+            if k == key or isinstance(key, str) and k.lower() == key.lower():
+                return k
+
+        raise KeyError()
 
     def fill_interfaces_ip(self, interfaces=None):
         if interfaces is None:
