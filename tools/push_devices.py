@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 import getpass
 import json
 import logging
@@ -24,6 +26,11 @@ def parse_args():
         "--types", metavar="device_types",
         type=str, help="Yaml file containing a definition of device types"
     )
+    parser.add_argument(
+        "--threads",
+        help="number of threads to run",
+        dest="threads", default=10, type=int
+    )
     parser.set_defaults(func=push_devices)
 
     arg_parser = parser
@@ -46,7 +53,10 @@ def push_devices(parsed_args):
             manufacturers
         )
 
-    create_devices(netbox_api, parse_yaml_file(parsed_args.devices))
+    create_devices(
+        netbox_api, parse_yaml_file(parsed_args.devices),
+        threads=parsed_args.threads
+    )
 
 
 def parse_yaml_file(yaml_file):
@@ -59,6 +69,7 @@ def create_manufacturers(netbox_api):
     manufacturers = {}
 
     for name in ("Cisco", "Juniper"):
+        name = str(name)
         try:
             manufacturer = next(mapper.get(slug=name.lower()))
         except StopIteration:
@@ -69,29 +80,42 @@ def create_manufacturers(netbox_api):
     return manufacturers
 
 
-def create_devices(netbox_api, devices):
+def create_devices(netbox_api, devices, threads=10):
     device_types_mapper = NetboxMapper(netbox_api, "dcim", "device-types")
     device_types = LRU(
         on_miss=lambda slug: next(device_types_mapper.get(slug=slug))
     )
 
     device_mapper = NetboxMapper(netbox_api, "dcim", "devices")
-    for name, props in devices.items():
-        device_type = props.pop("model")
 
-        try:
-            device = next(device_mapper.get(name=name.lower()))
-        except StopIteration:
-            # XXX: find a way to classify devices by roles
-            device = device_mapper.post(
-                name=name, slug=name.lower(),
-                device_type=device_types[device_type.lower()],
-                device_role=1,
-                site=1,
+    with ThreadPoolExecutor(max_workers=threads) as executor:
+        futures = []
+        for name, props in devices.items():
+            future = executor.submit(
+                _thread_push_device, device_mapper, device_types, name, props
             )
+            futures.append(future)
 
-        update_netbox_obj_from(device, props)
-        device.put()
+        [future.result() in concurrent.futures.as_completed(futures)]
+
+
+def _thread_push_device(device_mapper, cache_types, device, props):
+    device_type = props.pop("model")
+
+    name = str(device)
+    try:
+        device = next(device_mapper.get(name=name.lower()))
+    except StopIteration:
+        # XXX: find a way to classify devices by roles
+        device = device_mapper.post(
+            name=name, slug=name.lower(),
+            device_type=cache_types[device_type.lower()],
+            device_role=1,
+            site=1,
+        )
+
+    update_netbox_obj_from(device, props)
+    device.put()
 
 
 def create_device_types(netbox_api, types, manufacturers):
@@ -99,6 +123,7 @@ def create_device_types(netbox_api, types, manufacturers):
     for name, props in types.items():
         manufacturer_name = props.pop("manufacturer")
 
+        name = str(name)
         try:
             t = next(mapper.get(slug=name.lower()))
         except StopIteration:

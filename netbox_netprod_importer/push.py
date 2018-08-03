@@ -94,6 +94,9 @@ class NetboxPusher():
 
     def _push_main_data(self):
         mapper = self._mappers["ip"]
+        if self.props.get("serial"):
+            self._device.serial = self.props["serial"]
+
         for ip_key in ("primary_ip4", "primary_ip6"):
             ip = self.props.get(ip_key)
             if ip:

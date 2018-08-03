@@ -33,6 +33,8 @@ def parse_devices_yaml_def(devices_yaml, creds=None, threads=10):
             for future in futures_with_progress:
                 try:
                     devices[futures[future]] = future.result()
-                except napalm.base.exceptions.ConnectionException:
-                    logger.error("Cannot connect to device %s", hostname)
+                except Exception as e:
+                    logger.error(
+                        "Cannot connect to device %s: %s", hostname, e
+                    )
     return devices

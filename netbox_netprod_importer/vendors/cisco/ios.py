@@ -30,12 +30,12 @@ class IOSParser(CiscoParser):
             raise TypeCouldNotBeParsedError()
 
     def _get_ifstatus_by_abrev_if(self):
-        cmd = "show interface status | section 1"
+        cmd = "show interface status"
 
         if not self.cache.get("ifstatus"):
             status_conf_dump = self.device.cli([cmd])[cmd]
             self.cache["ifstatus"] = {}
-            for l in status_conf_dump.splitlines():
+            for l in status_conf_dump.splitlines()[1:]:
                 split_l = l.split()
                 if_abrev = split_l[0]
                 if_type = split_l[-1]

@@ -40,6 +40,7 @@ class DeviceImporter():
         logging.debug("Trying to resolve the primaries IP")
         try:
             props.update(self.resolve_primary_ip())
+            props.update(self._handle_serial_num())
         except NoReverseFoundError:
             logger.error(
                 "Cannot fill primary ip for host %s, no reverse found.",
@@ -77,6 +78,10 @@ class DeviceImporter():
             raise NoReverseFoundError(self.hostname)
 
         return main_ip
+
+    def _handle_serial_num(self):
+        serial = self.device.get_facts()["serial_number"]
+        return {"serial": serial} if serial else {}
 
     def _handle_interfaces_props(self, props):
         logger.debug("Get properties of each interface")
