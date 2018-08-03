@@ -4,7 +4,9 @@ import logging
 import socket
 import napalm
 
-from netbox_netprod_importer.exceptions import NoReverseFoundError
+from netbox_netprod_importer.exceptions import (
+    NoReverseFoundError, DeviceNotSupportedError
+)
 from netbox_netprod_importer.vendors import DeviceParsers
 
 logger = logging.getLogger("netbox_importer")
@@ -80,7 +82,12 @@ class DeviceImporter():
         return main_ip
 
     def _handle_serial_num(self):
-        serial = self.device.get_facts()["serial_number"]
+        try:
+            serial = self.device.get_facts()["serial_number"]
+        except IndexError:
+            logger.error("Device %s not supported", self.hostname)
+            raise DeviceNotSupportedError(self.hostname)
+
         return {"serial": serial} if serial else {}
 
     def _handle_interfaces_props(self, props):
