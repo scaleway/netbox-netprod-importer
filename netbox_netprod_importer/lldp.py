@@ -12,18 +12,19 @@ def build_graph_from_lldp(importers):
     for host, importer in importers.items():
         host_node = graph.get_or_create(host)
 
-        try:
-            lldp_neighbours = importer.get_lldp_neighbours().items()
-        except ValueError:
-            logger.error("LLDP parsing not supported on %s", host)
-            continue
+        with importer:
+            try:
+                lldp_neighbours = importer.get_lldp_neighbours().items()
+            except ValueError:
+                logger.error("LLDP parsing not supported on %s", host)
+                continue
 
-        for port, port_neighbours in lldp_neighbours:
-            for neighbour in port_neighbours:
-                neighbour_node = graph.get_or_create(neighbour["hostname"])
-                host_node.add_neighbour(
-                    port, neighbour_node, neighbour["port"]
-                )
+            for port, port_neighbours in lldp_neighbours:
+                for neighbour in port_neighbours:
+                    neighbour_node = graph.get_or_create(neighbour["hostname"])
+                    host_node.add_neighbour(
+                        port, neighbour_node, neighbour["port"]
+                    )
 
     return graph
 

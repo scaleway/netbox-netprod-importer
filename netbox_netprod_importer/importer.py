@@ -1,4 +1,5 @@
 from collections import defaultdict
+from contextlib import ContextDecorator
 from importlib import import_module
 import logging
 import socket
@@ -12,7 +13,7 @@ from netbox_netprod_importer.vendors import DeviceParsers
 logger = logging.getLogger("netbox_importer")
 
 
-class DeviceImporter():
+class DeviceImporter(ContextDecorator):
 
     def __init__(self, hostname, napalm_driver_name, target=None, creds=None,
                  napalm_optional_args=None):
@@ -26,7 +27,6 @@ class DeviceImporter():
             hostname=self.target, username=creds[0], password=creds[1],
             optional_args=napalm_optional_args
         )
-        self.device.open()
         self.specific_parser = self._get_specific_device_parser(
             napalm_driver_name
         )
@@ -36,7 +36,25 @@ class DeviceImporter():
 
         return parser_class(self.device)
 
+    def __enter__(self):
+        return self.open()
+
+    def __exit__(self, *exc):
+        if self.device.device:
+            return self.close()
+
+    def open(self):
+        try:
+            self.device.open()
+        except Exception as e:
+            logger.error("Cannot connect to device %s: %s", self.hostname, e)
+
+    def close(self):
+        self.device.close()
+
     def poll(self):
+        assert self.device.device
+
         props = {}
 
         logging.debug("Trying to resolve the primaries IP")
@@ -88,6 +106,8 @@ class DeviceImporter():
         return main_ip
 
     def _handle_serial_num(self):
+        assert self.device.device
+
         try:
             serial = self.device.get_facts()["serial_number"]
         except IndexError:
@@ -105,6 +125,8 @@ class DeviceImporter():
         return props
 
     def get_interfaces(self):
+        assert self.device.device
+
         napalm_interfaces = self.device.get_interfaces()
 
         interfaces = {}
@@ -147,6 +169,8 @@ class DeviceImporter():
         raise KeyError()
 
     def fill_interfaces_ip(self, interfaces=None):
+        assert self.device.device
+
         if interfaces is None:
             interfaces = defaultdict(dict)
 
@@ -161,4 +185,5 @@ class DeviceImporter():
         return interfaces
 
     def get_lldp_neighbours(self):
+        assert self.device.device
         return self.device.get_lldp_neighbors()

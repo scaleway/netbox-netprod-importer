@@ -65,7 +65,7 @@ def poll_datas(parsed_args):
 
     threads = parsed_args.threads
     importers = parse_devices_yaml_def(
-        parsed_args.devices, creds, threads=threads
+        parsed_args.devices, creds
     )
     devices_props = {
         host: props for host, props in
@@ -105,11 +105,12 @@ def _multithreaded_devices_polling(importers, threads=10):
 
 
 def _poll_and_push(host, importer):
-    props = importer.poll()
-    pusher = NetboxPusher(host, props)
-    pusher.push()
+    with importer:
+        props = importer.poll()
+        pusher = NetboxPusher(host, props)
+        pusher.push()
 
-    return props
+        return props
 
 
 def push(parsed_args, devices_props, graph):
