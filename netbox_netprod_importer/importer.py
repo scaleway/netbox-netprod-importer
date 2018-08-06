@@ -42,11 +42,17 @@ class DeviceImporter():
         logging.debug("Trying to resolve the primaries IP")
         try:
             props.update(self.resolve_primary_ip())
-            props.update(self._handle_serial_num())
         except NoReverseFoundError:
             logger.error(
                 "Cannot fill primary ip for host %s, no reverse found.",
                 self.hostname
+            )
+
+        try:
+            props.update(self._handle_serial_num())
+        except DeviceNotSupportedError:
+            logger.error(
+                "Cannot fetch serial, device %s not supported", self.hostname
             )
 
         self._handle_interfaces_props(props)
@@ -85,7 +91,6 @@ class DeviceImporter():
         try:
             serial = self.device.get_facts()["serial_number"]
         except IndexError:
-            logger.error("Device %s not supported", self.hostname)
             raise DeviceNotSupportedError(self.hostname)
 
         return {"serial": serial} if serial else {}
