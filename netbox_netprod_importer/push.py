@@ -76,6 +76,11 @@ class NetboxPusher():
             )
             if if_prop.get("lag"):
                 interfaces_lag[if_name] = if_prop.pop("lag")
+            if self.overwrite and if_prop.get("mode"):
+                # cannot really guess (yet) the interface mode, so only set it
+                # if overwrite
+                self._handle_interface_mode(interface, if_prop["mode"])
+                if_prop.pop("mode")
 
             for k, v in if_prop.items():
                 setattr(interface, k, v)
@@ -89,6 +94,14 @@ class NetboxPusher():
                     self._clean_unmatched_ip_addresses(interface, *addrs)
 
         self._update_interfaces_lag(interfaces, interfaces_lag)
+
+    def _handle_interface_mode(self, netbox_if, mode):
+        netbox_mode = self.search_value_in_choices(
+            self._mappers["dcim_choices"], "interface:mode",
+            mode
+        )
+
+        netbox_if.mode = netbox_mode
 
     def _attach_interface_to_ip_addresses(self, netbox_if, *ip_addresses):
         mapper = self._mappers["ip"]

@@ -131,8 +131,11 @@ class DeviceImporter(ContextDecorator):
         napalm_interfaces = self.device.get_interfaces()
 
         interfaces = {}
+        trunks = []
         for ifname, napalm_ifprops in napalm_interfaces.items():
-            if self._is_subinterface(ifname)[0]:
+            is_subif, parent_if = self._is_subinterface(ifname)
+            if is_subif:
+                trunks.append(parent_if)
                 continue
 
             interfaces[ifname] = {
@@ -144,6 +147,10 @@ class DeviceImporter(ContextDecorator):
                 "mtu": napalm_ifprops.get("mtu", None),
                 "type": self.specific_parser.get_interface_type(ifname),
             }
+
+        for trunk in trunks:
+            if trunk in interfaces:
+                interfaces[trunk]["mode"] = "Tagged"
 
         interfaces_lag = self.specific_parser.get_interfaces_lag(interfaces)
         for ifname, lag in interfaces_lag.items():
