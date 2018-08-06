@@ -9,10 +9,11 @@ logger = logging.getLogger("netbox_importer")
 class NetboxPusher():
     _device = None
 
-    def __init__(self, hostname, props):
+    def __init__(self, hostname, props, overwrite=False):
         self.netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
         self.hostname = hostname
         self.props = props
+        self.overwrite = overwrite
 
         self._mappers = {
             "dcim_choices": NetboxMapper(
@@ -30,8 +31,25 @@ class NetboxPusher():
     def push(self):
         # XXX: raise an exception if device not found
         self._device = next(self._mappers["devices"].get(name=self.hostname))
+        if self.overwrite:
+            self._clean_unmatched_interfaces()
         self._push_interfaces()
         self._push_main_data()
+
+    def _clean_unmatched_interfaces(self):
+        pushed_interfaces = self._mappers["interfaces"].get(
+            device_id=self._device
+        )
+
+        for netbox_if in pushed_interfaces:
+            if netbox_if.name not in self.props["interfaces"]:
+                self._clean_attached_ip(netbox_if)
+                netbox_if.delete()
+
+    def _clean_attached_ip(self, netbox_if):
+        attached_addrs = self._mappers["ip"].get(interface_id=netbox_if)
+        for a in attached_addrs:
+            a.delete()
 
     def _push_interfaces(self):
         interfaces_props = self.props["interfaces"]
@@ -64,15 +82,18 @@ class NetboxPusher():
 
             interface.put()
             if if_prop.get("ip"):
-                self._attach_interface_to_ip_addresses(
+                addrs = self._attach_interface_to_ip_addresses(
                     interface, *if_prop["ip"]
                 )
+                if self.overwrite:
+                    self._clean_unmatched_ip_addresses(interface, *addrs)
 
         self._update_interfaces_lag(interfaces, interfaces_lag)
 
-    def _attach_interface_to_ip_addresses(self, interface, *ip_addresses):
+    def _attach_interface_to_ip_addresses(self, netbox_if, *ip_addresses):
         mapper = self._mappers["ip"]
 
+        addresses = []
         for ip in ip_addresses:
             try:
                 ip_netbox_obj = next(mapper.get(q=ip))
@@ -80,8 +101,19 @@ class NetboxPusher():
                 ip_netbox_obj = mapper.post(address=ip)
 
             # XXX: handle anycast
-            ip_netbox_obj.interface = interface
+            ip_netbox_obj.interface = netbox_if
             ip_netbox_obj.put()
+            addresses.append(ip_netbox_obj)
+
+        return addresses
+
+    def _clean_unmatched_ip_addresses(self, netbox_if, *netbox_ip):
+        attached_addrs = self._mappers["ip"].get(interface_id=netbox_if)
+        netbox_ip_ids = set(obj.id for obj in netbox_ip)
+
+        for addr in attached_addrs:
+            if addr.id not in netbox_ip_ids:
+                addr.delete()
 
     def _update_interfaces_lag(self, interfaces, interfaces_lag):
         """

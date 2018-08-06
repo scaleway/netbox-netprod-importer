@@ -41,6 +41,11 @@ def parse_args():
         help="number of threads to run",
         dest="threads", default=10, type=int
     )
+    parser.add_argument(
+        "--overwrite",
+        help="overwrite devices already pushed",
+        dest="overwrite", action="store_true"
+    )
     parser.set_defaults(func=poll_datas)
 
     parser.add_argument(
@@ -69,7 +74,10 @@ def poll_datas(parsed_args):
     )
     devices_props = {
         host: props for host, props in
-        _multithreaded_devices_polling(importers, threads=threads)
+        _multithreaded_devices_polling(
+            importers, threads=threads,
+            overwrite=parsed_args.overwrite
+        )
     }
 
     graph = build_graph_from_lldp(importers)
@@ -84,11 +92,11 @@ def poll_datas(parsed_args):
     }))
 
 
-def _multithreaded_devices_polling(importers, threads=10):
+def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
     with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = {}
         for host, importer in importers.items():
-            future = executor.submit(_poll_and_push, host, importer)
+            future = executor.submit(_poll_and_push, host, importer, overwrite)
 
             futures[future] = host
 
@@ -104,10 +112,10 @@ def _multithreaded_devices_polling(importers, threads=10):
                 logger.error("Error when polling device %s", host)
 
 
-def _poll_and_push(host, importer):
+def _poll_and_push(host, importer, overwrite):
     with importer:
         props = importer.poll()
-        pusher = NetboxPusher(host, props)
+        pusher = NetboxPusher(host, props, overwrite=overwrite)
         pusher.push()
 
         return props
