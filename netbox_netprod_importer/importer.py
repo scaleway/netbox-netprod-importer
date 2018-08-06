@@ -2,6 +2,7 @@ from collections import defaultdict
 from contextlib import ContextDecorator
 from importlib import import_module
 import logging
+import re
 import socket
 import napalm
 
@@ -131,6 +132,9 @@ class DeviceImporter(ContextDecorator):
 
         interfaces = {}
         for ifname, napalm_ifprops in napalm_interfaces.items():
+            if self._is_subinterface(ifname)[0]:
+                continue
+
             interfaces[ifname] = {
                 "enabled": napalm_ifprops["is_enabled"],
                 "description": napalm_ifprops["description"],
@@ -158,6 +162,13 @@ class DeviceImporter(ContextDecorator):
 
         return interfaces
 
+    def _is_subinterface(self, interface):
+        ifsplit = interface.split(".")
+        if len(ifsplit) > 1:
+            return True, ifsplit[0]
+        else:
+            return False, interface
+
     def _search_key_case_insensitive(self, dictionary, key):
         if key in dictionary:
             return key
@@ -175,7 +186,14 @@ class DeviceImporter(ContextDecorator):
             interfaces = defaultdict(dict)
 
         for ifname, ifprops in self.device.get_interfaces_ip().items():
-            interfaces[ifname]["ip"] = tuple(
+            is_subif, parent_if = self._is_subinterface(ifname)
+            if is_subif:
+                ifname = parent_if
+
+            if not interfaces[ifname].get("ip"):
+                interfaces[ifname]["ip"] = []
+
+            interfaces[ifname]["ip"].extend(
                 "{}/{}".format(ip, ip_props["prefix_length"])
                 for proto in ("ipv4", "ipv6")
                 if ifprops.get(proto, None)
