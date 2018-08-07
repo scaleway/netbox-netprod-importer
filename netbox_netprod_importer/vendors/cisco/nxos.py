@@ -94,3 +94,29 @@ class NXOSParser(CiscoParser):
             }
 
         return self.cache["ifstatus"]
+
+    def get_detailed_lldp_neighbours(self):
+        """
+        Napalm does not show id for neighbours. Gives a little more info
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+                "mgmt_id": neighbour id
+            }]
+        """
+        cmd = "show lldp neighbors detail | json"
+
+        cmd_output = self.device.cli([cmd])[cmd]
+        neighbours = json.loads(
+            cmd_output
+        )["TABLE_nbor_detail"]["ROW_nbor_detail"]
+
+        for n in neighbours:
+            yield {
+                "local_port": n["l_port_id"],
+                "hostname": n["sys_name"],
+                "port": n["port_id"],
+                "chassis_id": n["chassis_id"]
+            }

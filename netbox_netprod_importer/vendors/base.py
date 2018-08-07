@@ -21,3 +21,12 @@ class _AbstractVendorParser(ABC):
             "Get type of interface %s on host %s",
             interface, self.device.hostname
         )
+
+    def get_all_derivatives_for_netif(self, interface):
+        """
+        Get all possible derivatives for an interface name
+        """
+        yield interface
+
+    def get_detailed_lldp_neighbours(self):
+        raise NotImplementedError()

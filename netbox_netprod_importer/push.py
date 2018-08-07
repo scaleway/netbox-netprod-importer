@@ -1,7 +1,15 @@
 from abc import ABC, abstractmethod
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 import logging
+
+import cachetools
 from netboxapi import NetboxAPI, NetboxMapper
 from ocs.conf import get_config
+from tqdm import tqdm
+
+from netbox_netprod_importer.vendors.cisco import CiscoParser
+from netbox_netprod_importer.exceptions import DeviceNotFoundError
 
 
 logger = logging.getLogger("netbox_importer")
@@ -19,6 +27,8 @@ class _NetboxPusher(ABC):
                 self.netbox_api, app_name="dcim", model="devices"
             ), "interfaces": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="interfaces"
+            ), "interface-connections": NetboxMapper(
+                self.netbox_api, app_name="dcim", model="interface-connections"
             ), "ip": NetboxMapper(
                 self.netbox_api, app_name="ipam", model="ip-addresses"
             )
@@ -183,3 +193,171 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                     )
 
         self._device.put()
+
+
+class NetboxInterconnectionsPusher(_NetboxPusher):
+    """
+    Push in Netbox a graph representing the interconnections between devices
+    """
+
+    def __init__(self, importers, *args, overwrite=False, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.importers = importers
+        self.overwrite = overwrite
+        self.interfaces_cache = cachetools.LRUCache(128)
+
+    def push(self, threads=1):
+        with ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = {}
+            queue = set()
+            for importer in self.importers.values():
+                future = executor.submit(
+                    self._handle_device, importer, queue
+                )
+                futures[future] = importer.hostname
+
+            futures_with_progress = tqdm(
+                concurrent.futures.as_completed(futures),
+                total=len(futures)
+            )
+            for future in futures_with_progress:
+                host = futures[future]
+                try:
+                    future.result()
+                except ValueError:
+                    logger.error("LLDP parsing not supported on %s", host)
+                except Exception as e:
+                    logger.error(
+                        "Error when defining interconnections on host %s: %s",
+                        host, e
+                    )
+
+    def _handle_device(self, importer, queue):
+        with importer:
+            for interco in importer.get_lldp_neighbours():
+                hashable_interco = tuple(sorted((
+                    interco["hostname"], importer.hostname,
+                    interco["local_port"], interco["port"]
+                )))
+                if hashable_interco in queue:
+                    continue
+
+                try:
+                    queue.add(hashable_interco)
+
+                    try:
+                        self._interconnect_using_lldp_names(importer, interco)
+                    except DeviceNotFoundError:
+                        if "chassis_id" not in interco:
+                            raise
+
+                        self._interconnect_using_lldp_id(importer, interco)
+
+                except Exception as e:
+                    logger.error("Error with interco %s: %s", interco, e)
+
+    def _interconnect_using_lldp_names(self, importer, interco):
+        a = importer.hostname
+        netif_a = self._get_netif_or_derivative(a, interco["local_port"])
+        b = interco["hostname"]
+        netif_b = self._get_netif_or_derivative(b, interco["port"])
+
+        self._interconnect_devices(a, netif_a, netif_b)
+
+    def _interconnect_using_lldp_id(self, importer, interco):
+        a = importer.hostname
+        netif_a = self._get_netif_or_derivative(a, interco["local_port"])
+        netif_b = self._find_netbox_netif_from_lldp_id(
+            interco["chassis_id"], interco["port"]
+        )
+
+        self._interconnect_devices(a, netif_a, netif_b)
+
+    def _find_netbox_netif_from_lldp_id(self, lldp_id, if_name):
+        """
+        Find an interface in netbox from a LLDP ID and its name
+
+        LLDP ID is usually the mac address of one interface of our device. Look
+        for it in netbox, then search the if_name
+        """
+        some_device_netif = next(
+            self._mappers["interfaces"].get(mac_address=lldp_id)
+        )
+
+        device = some_device_netif.device
+        return self._get_netif_or_derivative(device.name, if_name)
+
+    def _interconnect_devices(self, a, netif_a, netif_b):
+        props = {
+            "interface_a": netif_a,
+            "interface_b": netif_b,
+            "connection_status": True
+        }
+
+        if netif_a.interface_connection:
+            connected_netif_id = int(
+                netif_a.interface_connection["interface"]["id"]
+            )
+            if connected_netif_id == netif_b.id:
+                return
+
+            netif_connections = self._mappers["interface-connections"].get(
+                device=a
+            )
+            netif_connection = self._find_connection_in_netif_connections(
+                netif_connections, netif_a
+            )
+            for k, v in props.items():
+                setattr(netif_connection, k, v)
+
+            netif_connection.put()
+            return netif_connection
+
+        return self._mappers["interface-connections"].post(**props)
+
+    def _find_connection_in_netif_connections(self, netif_connections, netif):
+        for c in netif_connections:
+            if c.interface_a.id == netif.id:
+                return c
+
+        raise ValueError(
+            "No connection found for network interface {}".format(netif)
+        )
+
+    def _get_netif_or_derivative(self, hostname, netif):
+        interfaces = self._get_interfaces_for_device(hostname)
+
+        if netif in interfaces:
+            return interfaces[netif]
+
+        for k in interfaces:
+            for i in self._get_all_derivatives_for_netif(k):
+                if i == netif:
+                    return interfaces[k]
+
+        raise ValueError(
+            "Interface {} not found".format(netif)
+        )
+
+    def _get_interfaces_for_device(self, hostname):
+        interfaces = self.interfaces_cache.get(hostname)
+        if interfaces is not None:
+            return interfaces
+
+        try:
+            device = next(self._mappers["devices"].get(name=hostname))
+        except StopIteration:
+            raise DeviceNotFoundError(hostname)
+
+        interfaces = {
+            netif.name: netif
+            for netif in self._mappers["interfaces"].get(device_id=device.id)
+        }
+        self.interfaces_cache[hostname] = interfaces
+
+        return interfaces
+
+    def _get_all_derivatives_for_netif(self, netif):
+        yield netif
+        yield CiscoParser.get_abrev_if(netif)

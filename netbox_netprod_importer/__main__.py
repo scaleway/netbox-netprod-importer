@@ -10,9 +10,10 @@ from ocs.conf import get_config
 from tqdm import tqdm
 
 from . import __appname__, __version__
-from netbox_netprod_importer.lldp import build_graph_from_lldp
 from netbox_netprod_importer.devices_list import parse_devices_yaml_def
-from netbox_netprod_importer.push import NetboxDevicePropsPusher
+from netbox_netprod_importer.push import (
+    NetboxDevicePropsPusher, NetboxInterconnectionsPusher
+)
 
 
 logger = logging.getLogger("netbox_importer")
@@ -72,24 +73,14 @@ def poll_datas(parsed_args):
     importers = parse_devices_yaml_def(
         parsed_args.devices, creds
     )
-    devices_props = {
-        host: props for host, props in
-        _multithreaded_devices_polling(
+    for host, props in _multithreaded_devices_polling(
             importers, threads=threads,
             overwrite=parsed_args.overwrite
-        )
-    }
+    ):
+        continue
 
-    graph = build_graph_from_lldp(importers, threads=threads)
-
-    print(json.dumps({
-        "devices": devices_props,
-        "neighbours": {
-            h: {port: [str(neighbour) for neighbour in neighbours]}
-            for h, n in graph.nodes.items()
-            for port, neighbours in n.neighbours.items()
-        }
-    }))
+    interco_pusher = NetboxInterconnectionsPusher(importers)
+    interco_pusher.push(threads)
 
 
 def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
@@ -119,12 +110,6 @@ def _poll_and_push(host, importer, overwrite):
         pusher.push()
 
         return props
-
-
-def push(parsed_args, devices_props, graph):
-    for host, props in devices_props.items():
-        pusher = NetboxPusher(host, devices_props[host])
-        pusher.push()
 
 
 if __name__ == "__main__":

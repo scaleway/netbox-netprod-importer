@@ -24,7 +24,7 @@ class IOSParser(CiscoParser):
         from pynxos.errors import CLIError
 
         try:
-            abrev_if = self._get_abrev_if(interface)
+            abrev_if = self.get_abrev_if(interface)
             return self._get_ifstatus_by_abrev_if()[abrev_if]
         except (KeyError, CLIError):
             raise TypeCouldNotBeParsedError()
@@ -43,9 +43,3 @@ class IOSParser(CiscoParser):
                 self.cache["ifstatus"][if_abrev] = if_type
 
         return self.cache["ifstatus"]
-
-    def _get_abrev_if(self, interface):
-        if_index_re = re.search(r"\d.*", interface)
-        if_index_re = if_index_re.group() if if_index_re else ""
-
-        return interface[:2] + if_index_re

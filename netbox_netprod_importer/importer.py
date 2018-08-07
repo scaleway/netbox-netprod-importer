@@ -212,5 +212,28 @@ class DeviceImporter(ContextDecorator):
         return interfaces
 
     def get_lldp_neighbours(self):
+        """
+        Either try the specific way to get lldp neighbours, or try using napalm
+        if not supported
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+                "mgmt_id": neighbour id # only with specific parser
+            }]
+        """
+
         assert self.device.device
-        return self.device.get_lldp_neighbors()
+
+        try:
+            yield from self.specific_parser.get_detailed_lldp_neighbours()
+        except NotImplementedError:
+            napalm_neighbours = self.device.get_lldp_neighbors()
+            for port, port_neighbours in napalm_neighbours.items():
+                for neighbour in port_neighbours:
+                    yield {
+                        "local_port": port,
+                        "hostname": neighbour["hostname"],
+                        "port": neighbour["port"]
+                    }
