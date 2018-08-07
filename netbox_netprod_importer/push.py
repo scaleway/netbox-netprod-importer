@@ -76,7 +76,10 @@ class NetboxPusher():
             )
             if if_prop.get("lag"):
                 interfaces_lag[if_name] = if_prop.pop("lag")
-            if self.overwrite and if_prop.get("mode"):
+
+            if not self.overwrite and "mode" in if_prop:
+                if_prop.pop("mode")
+            elif if_prop.get("mode"):
                 # cannot really guess (yet) the interface mode, so only set it
                 # if overwrite
                 self._handle_interface_mode(interface, if_prop["mode"])

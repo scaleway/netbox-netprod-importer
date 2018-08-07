@@ -151,6 +151,8 @@ class DeviceImporter(ContextDecorator):
         for trunk in trunks:
             if trunk in interfaces:
                 interfaces[trunk]["mode"] = "Tagged"
+            else:
+                interfaces[trunk]["mode"] = None
 
         interfaces_lag = self.specific_parser.get_interfaces_lag(interfaces)
         for ifname, lag in interfaces_lag.items():
