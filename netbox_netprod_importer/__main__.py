@@ -80,7 +80,7 @@ def poll_datas(parsed_args):
         )
     }
 
-    graph = build_graph_from_lldp(importers)
+    graph = build_graph_from_lldp(importers, threads=threads)
 
     print(json.dumps({
         "devices": devices_props,
@@ -108,8 +108,8 @@ def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
             host = futures[future]
             try:
                 yield host, future.result()
-            except Exception:
-                logger.error("Error when polling device %s", host)
+            except Exception as e:
+                logger.error("Error when polling device %s: %s", host, e)
 
 
 def _poll_and_push(host, importer, overwrite):

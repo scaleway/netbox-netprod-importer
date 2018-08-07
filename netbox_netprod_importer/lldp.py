@@ -1,5 +1,8 @@
 import collections
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 import logging
+from tqdm import tqdm
 
 from netbox_netprod_importer.exceptions import MissingGraphError
 
@@ -7,26 +10,42 @@ from netbox_netprod_importer.exceptions import MissingGraphError
 logger = logging.getLogger("netbox_importer")
 
 
-def build_graph_from_lldp(importers):
+def build_graph_from_lldp(importers, threads=10):
     graph = NetworkConnections()
-    for host, importer in importers.items():
-        host_node = graph.get_or_create(host)
+    with ThreadPoolExecutor(max_workers=threads) as executor:
+        futures = {}
+        for host, importer in importers.items():
+            host_node = graph.get_or_create(host)
+            future = executor.submit(_get_lldp_neighbours, importer)
+            futures[future] = host
 
-        with importer:
+        futures_with_progress = tqdm(
+            concurrent.futures.as_completed(futures),
+            total=len(futures)
+        )
+
+        for future in futures_with_progress:
+            host = futures[future]
             try:
-                lldp_neighbours = importer.get_lldp_neighbours().items()
+                lldp_neighbours = future.result()
+                for port, port_neighbours in lldp_neighbours.items():
+                    for neighbour in port_neighbours:
+                        neighbour_node = graph.get_or_create(
+                            neighbour["hostname"]
+                        )
+                        host_node.add_neighbour(
+                            port, neighbour_node, neighbour["port"]
+                        )
             except ValueError:
                 logger.error("LLDP parsing not supported on %s", host)
                 continue
 
-            for port, port_neighbours in lldp_neighbours:
-                for neighbour in port_neighbours:
-                    neighbour_node = graph.get_or_create(neighbour["hostname"])
-                    host_node.add_neighbour(
-                        port, neighbour_node, neighbour["port"]
-                    )
-
     return graph
+
+
+def _get_lldp_neighbours(importer):
+    with importer:
+        return importer.get_lldp_neighbours()
 
 
 class NetworkConnections():
