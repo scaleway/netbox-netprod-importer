@@ -12,7 +12,7 @@ from tqdm import tqdm
 from . import __appname__, __version__
 from netbox_netprod_importer.lldp import build_graph_from_lldp
 from netbox_netprod_importer.devices_list import parse_devices_yaml_def
-from netbox_netprod_importer.push import NetboxPusher
+from netbox_netprod_importer.push import NetboxDevicePropsPusher
 
 
 logger = logging.getLogger("netbox_importer")
@@ -115,7 +115,7 @@ def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
 def _poll_and_push(host, importer, overwrite):
     with importer:
         props = importer.poll()
-        pusher = NetboxPusher(host, props, overwrite=overwrite)
+        pusher = NetboxDevicePropsPusher(host, props, overwrite=overwrite)
         pusher.push()
 
         return props

@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import logging
 from netboxapi import NetboxAPI, NetboxMapper
 from ocs.conf import get_config
@@ -6,14 +7,10 @@ from ocs.conf import get_config
 logger = logging.getLogger("netbox_importer")
 
 
-class NetboxPusher():
-    _device = None
+class _NetboxPusher(ABC):
 
-    def __init__(self, hostname, props, overwrite=False):
+    def __init__(self, *args, **kwargs):
         self.netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
-        self.hostname = hostname
-        self.props = props
-        self.overwrite = overwrite
 
         self._mappers = {
             "dcim_choices": NetboxMapper(
@@ -27,6 +24,34 @@ class NetboxPusher():
             )
         }
         self._choices_cache = {}
+
+    @abstractmethod
+    def push(self):
+        pass
+
+    def search_value_in_choices(self, mapper, id, label):
+        if mapper not in self._choices_cache:
+            try:
+                self._choices_cache[mapper] = next(mapper.get())
+            except StopIteration:
+                pass
+
+        for choice in self._choices_cache[mapper][id]:
+            if choice["label"] == label:
+                return choice["value"]
+
+        raise KeyError("Label {} not in choices".format(label))
+
+
+class NetboxDevicePropsPusher(_NetboxPusher):
+    _device = None
+
+    def __init__(self, hostname, props, *args, overwrite=False, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.hostname = hostname
+        self.props = props
+        self.overwrite = overwrite
 
     def push(self):
         # XXX: raise an exception if device not found
@@ -158,16 +183,3 @@ class NetboxPusher():
                     )
 
         self._device.put()
-
-    def search_value_in_choices(self, mapper, id, label):
-        if mapper not in self._choices_cache:
-            try:
-                self._choices_cache[mapper] = next(mapper.get())
-            except StopIteration:
-                pass
-
-        for choice in self._choices_cache[mapper][id]:
-            if choice["label"] == label:
-                return choice["value"]
-
-        raise KeyError("Label {} not in choices".format(label))
