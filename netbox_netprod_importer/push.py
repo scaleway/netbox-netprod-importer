@@ -208,6 +208,8 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         self.interfaces_cache = cachetools.LRUCache(128)
 
     def push(self, threads=1):
+        result = {"done": 0, "errors_interco": 0, "errors_device": 0}
+
         with ThreadPoolExecutor(max_workers=threads) as executor:
             futures = {}
             queue = set()
@@ -224,16 +226,25 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             for future in futures_with_progress:
                 host = futures[future]
                 try:
-                    future.result()
+                    task_result = future.result()
+                    result["done"] += task_result["done"]
+                    result["errors_interco"] += task_result["errors"]
                 except ValueError:
-                    logger.error("LLDP parsing not supported on %s", host)
+                    logger.debug(
+                        "LLDP parsing not supported on {}".format(host)
+                    )
+                    result["errors_device"] += 1
                 except Exception as e:
-                    logger.error(
+                    logger.debug(
                         "Error when defining interconnections on host %s: %s",
                         host, e
                     )
+                    result["errors_device"] += 1
+
+        return result
 
     def _handle_device(self, importer, queue):
+        result = {"done": 0, "errors": 0}
         with importer:
             for interco in importer.get_lldp_neighbours():
                 hashable_interco = tuple(sorted((
@@ -254,8 +265,13 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
                         self._interconnect_using_lldp_id(importer, interco)
 
+                    result["done"] += 1
                 except Exception as e:
-                    logger.error("Error with interco %s: %s", interco, e)
+                    result["errors"] += 1
+                    logger.debug("Error with interco %s: %s", interco, e)
+                    continue
+
+        return result
 
     def _interconnect_using_lldp_names(self, importer, interco):
         a = importer.hostname

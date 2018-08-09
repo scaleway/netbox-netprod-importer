@@ -79,7 +79,18 @@ def poll_datas(parsed_args):
         continue
 
     interco_pusher = NetboxInterconnectionsPusher(importers)
-    interco_pusher.push(threads)
+    interco_result = interco_pusher.push(threads)
+    print("{} interconnection(s) applied".format(interco_result["done"]))
+    if interco_result["errors_device"]:
+        logger.error(
+            "Error getting neighbours on %s device(s)",
+            interco_result["errors_device"]
+        )
+    if interco_result["errors_interco"]:
+        logger.error(
+            "Error pushing %s interconnection(s)",
+            interco_result["errors_interco"]
+        )
 
 
 def _multithreaded_devices_polling(importers, threads=10, overwrite=False):

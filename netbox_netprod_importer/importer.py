@@ -45,10 +45,7 @@ class DeviceImporter(ContextDecorator):
             return self.close()
 
     def open(self):
-        try:
-            self.device.open()
-        except Exception as e:
-            logger.error("Cannot connect to device %s: %s", self.hostname, e)
+        self.device.open()
 
     def close(self):
         self.device.close()
