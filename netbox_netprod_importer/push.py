@@ -213,11 +213,11 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         with ThreadPoolExecutor(max_workers=threads) as executor:
             futures = {}
             queue = set()
-            for importer in self.importers.values():
+            for host, importer in self.importers.items():
                 future = executor.submit(
-                    self._handle_device, importer, queue
+                    self._handle_device, host, importer, queue
                 )
-                futures[future] = importer.hostname
+                futures[future] = host
 
             futures_with_progress = tqdm(
                 concurrent.futures.as_completed(futures),
@@ -243,7 +243,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         return result
 
-    def _handle_device(self, importer, queue):
+    def _handle_device(self, hostname, importer, queue):
         result = {"done": 0, "errors": 0}
         with importer:
             for interco in importer.get_lldp_neighbours():
@@ -258,12 +258,16 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                     queue.add(hashable_interco)
 
                     try:
-                        self._interconnect_using_lldp_names(importer, interco)
+                        self._interconnect_using_lldp_names(
+                            hostname, importer, interco
+                        )
                     except DeviceNotFoundError:
                         if "chassis_id" not in interco:
                             raise
 
-                        self._interconnect_using_lldp_id(importer, interco)
+                        self._interconnect_using_lldp_id(
+                            hostname, importer, interco
+                        )
 
                     result["done"] += 1
                 except Exception as e:
@@ -273,8 +277,8 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         return result
 
-    def _interconnect_using_lldp_names(self, importer, interco):
-        a = importer.hostname
+    def _interconnect_using_lldp_names(self, hostname, importer, interco):
+        a = hostname
         netif_a = self._get_netif_or_derivative(a, interco["local_port"])
         b = interco["hostname"]
 
@@ -288,8 +292,8 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         self._interconnect_devices(a, netif_a, netif_b)
 
-    def _interconnect_using_lldp_id(self, importer, interco):
-        a = importer.hostname
+    def _interconnect_using_lldp_id(self, hostname, importer, interco):
+        a = hostname
         netif_a = self._get_netif_or_derivative(a, interco["local_port"])
         netif_b = self._find_netbox_netif_from_lldp_id(
             interco["chassis_id"], interco["port"]
