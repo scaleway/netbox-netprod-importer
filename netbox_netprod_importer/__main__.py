@@ -6,7 +6,6 @@ import logging
 import socket
 import sys
 import argparse
-from ocs.conf import get_config
 from tqdm import tqdm
 
 from . import __appname__, __version__

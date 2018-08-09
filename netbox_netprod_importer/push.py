@@ -261,6 +261,13 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         a = importer.hostname
         netif_a = self._get_netif_or_derivative(a, interco["local_port"])
         b = interco["hostname"]
+
+        for dom in get_config("ocs").get("remove_domains", []):
+            dom = "." + dom.lstrip(".").rstrip(".")
+            if b.endswith(dom):
+                b = b.rstrip(dom)
+                break
+
         netif_b = self._get_netif_or_derivative(b, interco["port"])
 
         self._interconnect_devices(a, netif_a, netif_b)
