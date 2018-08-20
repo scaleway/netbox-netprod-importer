@@ -22,31 +22,43 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Import into netbox network devices in production"
     )
-    parser.add_argument(
-        "devices", metavar="devices", type=str,
-        help="Yaml file containing a definition of devices to poll"
+    subcommands = parser.add_subparsers()
+
+    sp_import = subcommands.add_parser(
+        "import", aliases=["imp"], help=("import devices data")
     )
-    parser.add_argument(
-        "-u", "--user", metavar="user",
-        help="user to use for connections to the devices",
-        dest="user", type=str
+    sp_import.set_defaults(func=import_data)
+
+    sp_interconnect = subcommands.add_parser(
+        "interconnect", aliases=["interco"], help=("interconnect devices")
     )
-    parser.add_argument(
-        "-p", "--password",
-        help="ask for credentials for connections to the devices",
-        dest="ask_password", action="store_true"
-    )
-    parser.add_argument(
-        "-t", "--threads",
-        help="number of threads to run",
-        dest="threads", default=10, type=int
-    )
-    parser.add_argument(
-        "--overwrite",
-        help="overwrite devices already pushed",
-        dest="overwrite", action="store_true"
-    )
-    parser.set_defaults(func=poll_datas)
+    sp_interconnect.set_defaults(func=interconnect)
+
+    for sp in (sp_import, sp_interconnect):
+        sp.add_argument(
+            "devices", metavar="devices", type=str,
+            help="Yaml file containing a definition of devices to poll"
+        )
+        sp.add_argument(
+            "-u", "--user", metavar="user",
+            help="user to use for connections to the devices",
+            dest="user", type=str
+        )
+        sp.add_argument(
+            "-p", "--password",
+            help="ask for credentials for connections to the devices",
+            dest="ask_password", action="store_true"
+        )
+        sp.add_argument(
+            "-t", "--threads",
+            help="number of threads to run",
+            dest="threads", default=10, type=int
+        )
+        sp.add_argument(
+            "--overwrite",
+            help="overwrite devices already pushed",
+            dest="overwrite", action="store_true"
+        )
 
     parser.add_argument(
         "--version", action="version",
@@ -63,12 +75,10 @@ def parse_args():
         sys.exit(1)
 
 
-def poll_datas(parsed_args):
-    creds = ()
-    if parsed_args.ask_password:
-        creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
-
+def import_data(parsed_args):
+    creds = _get_creds(parsed_args)
     threads = parsed_args.threads
+
     importers = parse_devices_yaml_def(
         parsed_args.devices, creds
     )
@@ -78,19 +88,13 @@ def poll_datas(parsed_args):
     ):
         continue
 
-    interco_pusher = NetboxInterconnectionsPusher(importers)
-    interco_result = interco_pusher.push(threads)
-    print("{} interconnection(s) applied".format(interco_result["done"]))
-    if interco_result["errors_device"]:
-        logger.error(
-            "Error getting neighbours on %s device(s)",
-            interco_result["errors_device"]
-        )
-    if interco_result["errors_interco"]:
-        logger.error(
-            "Error pushing %s interconnection(s)",
-            interco_result["errors_interco"]
-        )
+
+def _get_creds(parsed_args):
+    creds = ()
+    if parsed_args.ask_password:
+        creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
+
+    return creds
 
 
 def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
@@ -120,6 +124,29 @@ def _poll_and_push(host, importer, overwrite):
         pusher.push()
 
         return props
+
+
+def interconnect(parsed_args):
+    creds = _get_creds(parsed_args)
+    threads = parsed_args.threads
+
+    importers = parse_devices_yaml_def(
+        parsed_args.devices, creds
+    )
+
+    interco_pusher = NetboxInterconnectionsPusher(importers)
+    interco_result = interco_pusher.push(threads)
+    print("{} interconnection(s) applied".format(interco_result["done"]))
+    if interco_result["errors_device"]:
+        logger.error(
+            "Error getting neighbours on %s device(s)",
+            interco_result["errors_device"]
+        )
+    if interco_result["errors_interco"]:
+        logger.error(
+            "Error pushing %s interconnection(s)",
+            interco_result["errors_interco"]
+        )
 
 
 if __name__ == "__main__":
