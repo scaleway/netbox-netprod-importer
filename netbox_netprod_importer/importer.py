@@ -135,6 +135,9 @@ class DeviceImporter(ContextDecorator):
                 trunks.append(parent_if)
                 continue
 
+            if not self._is_macaddr(napalm_ifprops["mac_address"]):
+                napalm_ifprops["mac_address"] = None
+
             interfaces[ifname] = {
                 "enabled": napalm_ifprops["is_enabled"],
                 "description": napalm_ifprops["description"],
@@ -143,13 +146,12 @@ class DeviceImporter(ContextDecorator):
                 # https://github.com/napalm-automation/napalm/pull/531
                 "mtu": napalm_ifprops.get("mtu", None),
                 "type": self.specific_parser.get_interface_type(ifname),
+                "mode": None,
             }
 
         for trunk in trunks:
             if trunk in interfaces:
                 interfaces[trunk]["mode"] = "Tagged"
-            else:
-                interfaces[trunk]["mode"] = None
 
         interfaces_lag = self.specific_parser.get_interfaces_lag(interfaces)
         for ifname, lag in interfaces_lag.items():
@@ -170,10 +172,22 @@ class DeviceImporter(ContextDecorator):
 
     def _is_subinterface(self, interface):
         ifsplit = interface.split(".")
-        if len(ifsplit) > 1:
+        if len(ifsplit) > 1 and ifsplit[0].lower() != "vlan":
             return True, ifsplit[0]
         else:
             return False, interface
+
+    def _is_macaddr(self, macaddr):
+        macaddr_simplified = macaddr.replace(":", "").replace(".", "")
+        if len(macaddr_simplified) != 12:
+            return False
+
+        try:
+            hex(int(macaddr_simplified, 16))
+        except ValueError:
+            return False
+
+        return True
 
     def _search_key_case_insensitive(self, dictionary, key):
         if key in dictionary:
