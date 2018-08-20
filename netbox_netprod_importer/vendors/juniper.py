@@ -13,6 +13,14 @@ class JuniperParser(_AbstractVendorParser):
         super().get_interface_type(interface)
         return "Other"
 
+    @staticmethod
+    def get_real_ifname(interface):
+        ifsplit = interface.split(".")
+        if len(ifsplit) > 1 and ifsplit[0].lower() != "vlan":
+            return ifsplit[0]
+        else:
+            return interface
+
 
 class JunOSParser(JuniperParser):
     pass

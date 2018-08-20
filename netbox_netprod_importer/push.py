@@ -9,6 +9,7 @@ from ocs.conf import get_config
 from tqdm import tqdm
 
 from netbox_netprod_importer.vendors.cisco import CiscoParser
+from netbox_netprod_importer.vendors.juniper import JuniperParser
 from netbox_netprod_importer.exceptions import DeviceNotFoundError
 
 
@@ -388,3 +389,4 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
     def _get_all_derivatives_for_netif(self, netif):
         yield netif
         yield CiscoParser.get_abrev_if(netif)
+        yield JuniperParser.get_real_ifname(netif)
