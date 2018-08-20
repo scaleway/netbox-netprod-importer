@@ -177,18 +177,6 @@ class DeviceImporter(ContextDecorator):
         else:
             return False, interface
 
-    def _is_macaddr(self, macaddr):
-        macaddr_simplified = macaddr.replace(":", "").replace(".", "")
-        if len(macaddr_simplified) != 12:
-            return False
-
-        try:
-            hex(int(macaddr_simplified, 16))
-        except ValueError:
-            return False
-
-        return True
-
     def _search_key_case_insensitive(self, dictionary, key):
         if key in dictionary:
             return key

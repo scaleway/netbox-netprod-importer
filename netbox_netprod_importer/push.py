@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -11,6 +12,7 @@ from tqdm import tqdm
 from netbox_netprod_importer.vendors.cisco import CiscoParser
 from netbox_netprod_importer.vendors.juniper import JuniperParser
 from netbox_netprod_importer.exceptions import DeviceNotFoundError
+from netbox_netprod_importer.tools import is_macaddr, macaddr_to_int
 
 
 logger = logging.getLogger("netbox_importer")
@@ -354,15 +356,31 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         )
 
     def _get_netif_or_derivative(self, hostname, netif):
+        """
+        Get netif or derivative names of hostname
+
+        netif can be a macaddr, but to be conservative, it will only work if
+        only one interface has this macaddr.
+        """
         interfaces = self._get_interfaces_for_device(hostname)
 
         if netif in interfaces:
             return interfaces[netif]
 
-        for k in interfaces:
-            for i in self._get_all_derivatives_for_netif(k):
-                if i == netif:
-                    return interfaces[k]
+        if is_macaddr(netif):
+            mac_addresses = defaultdict(list)
+            for i in interfaces:
+                mac_addresses[macaddr_to_int(i.mac_address)].append(i)
+
+            int_netif_mac = macaddr_to_int(netif)
+            if mac_addresses.get(int_netif_mac, 0) == 1:
+                return mac_addresses[int_netif_mac]
+        else:
+            for netif_deriv in self._get_all_derivatives_for_netif(netif):
+                for k in interfaces:
+                    for i in self._get_all_derivatives_for_netif(k):
+                        if i == netif_deriv:
+                            return interfaces[k]
 
         raise ValueError(
             "Interface {} not found".format(netif)
