@@ -137,16 +137,20 @@ def create_device_types(netbox_api, types, manufacturers):
         t.__upstream_attrs__.remove("subdevice_role")
         t.put()
 
-        create_device_type_interfaces(netbox_api, t, props["ports"])
+        create_device_type_interfaces(
+            netbox_api, manufacturer_name, t, props["ports"]
+        )
 
 
-def create_device_type_interfaces(netbox_api, device_type, ports):
+def create_device_type_interfaces(netbox_api, manufacturer,
+                                  device_type, ports):
     mapper = NetboxMapper(netbox_api, "dcim", "interface-templates")
 
     for port_type, nb in ports.items():
         if nb > 1:
+            start = 1 if manufacturer == "cisco" else 0
             port_names = (
-                "{}/{}".format(port_type, i) for i in range(1, nb + 1)
+                "{}/{}".format(port_type, i) for i in range(start, nb + start)
             )
         else:
             port_names = (port_type, )
