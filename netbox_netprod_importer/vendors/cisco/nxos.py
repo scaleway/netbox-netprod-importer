@@ -41,7 +41,7 @@ class NXOSParser(CiscoParser):
         for pattern_iftype in InterfacesRegex:
             pattern = pattern_iftype.value
             if re.match(pattern, part_num):
-                return getattr(NetboxInterfaceTypes, pattern_iftype).value
+                return getattr(NetboxInterfaceTypes, pattern_iftype.name).value
 
         raise TypeCouldNotBeParsedError()
 

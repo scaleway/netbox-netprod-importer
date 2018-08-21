@@ -17,7 +17,9 @@ class IOSParser(CiscoParser):
             for pattern_iftype in InterfacesRegex:
                 pattern = pattern_iftype.value
                 if re.match(pattern, cisco_if_type):
-                    return getattr(NetboxInterfaceTypes, pattern_iftype).value
+                    return getattr(
+                        NetboxInterfaceTypes, pattern_iftype.name
+                    ).value
         except TypeCouldNotBeParsedError:
             pass
 

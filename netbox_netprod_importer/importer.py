@@ -10,6 +10,7 @@ from netbox_netprod_importer.exceptions import (
     NoReverseFoundError, DeviceNotSupportedError
 )
 from netbox_netprod_importer.vendors import DeviceParsers
+from netbox_netprod_importer.tools import is_macaddr
 
 logger = logging.getLogger("netbox_importer")
 
@@ -135,7 +136,7 @@ class DeviceImporter(ContextDecorator):
                 trunks.append(parent_if)
                 continue
 
-            if not self._is_macaddr(napalm_ifprops["mac_address"]):
+            if not is_macaddr(napalm_ifprops["mac_address"]):
                 napalm_ifprops["mac_address"] = None
 
             interfaces[ifname] = {
