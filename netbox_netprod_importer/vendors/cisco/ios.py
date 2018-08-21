@@ -1,6 +1,7 @@
 import re
 
 from netbox_netprod_importer.exceptions import TypeCouldNotBeParsedError
+from netbox_netprod_importer.vendors.constants import NetboxInterfaceTypes
 from .constants import InterfacesRegex
 from .base import CiscoParser
 
@@ -12,9 +13,11 @@ class IOSParser(CiscoParser):
         interface_type = "Other"
         try:
             cisco_if_type = self._guess_type_from_if_type(interface)
-            for pattern in InterfacesRegex:
-                if re.match(pattern.value[0], cisco_if_type):
-                    return pattern.value[1]
+
+            for pattern_iftype in InterfacesRegex:
+                pattern = pattern_iftype.value
+                if re.match(pattern, cisco_if_type):
+                    return getattr(NetboxInterfaceTypes, pattern_iftype).value
         except TypeCouldNotBeParsedError:
             pass
 

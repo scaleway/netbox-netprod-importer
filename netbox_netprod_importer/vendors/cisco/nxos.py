@@ -3,6 +3,7 @@ import re
 import logging
 
 from netbox_netprod_importer.exceptions import TypeCouldNotBeParsedError
+from netbox_netprod_importer.vendors.constants import NetboxInterfaceTypes
 from .constants import InterfacesRegex
 from .base import CiscoParser
 
@@ -37,9 +38,10 @@ class NXOSParser(CiscoParser):
             logger.debug("%s has no transceiver detail", interface)
             raise TypeCouldNotBeParsedError()
 
-        for pattern in InterfacesRegex:
-            if re.match(pattern.value[0], part_num):
-                return pattern.value[1]
+        for pattern_iftype in InterfacesRegex:
+            pattern = pattern_iftype.value
+            if re.match(pattern, part_num):
+                return getattr(NetboxInterfaceTypes, pattern_iftype).value
 
         raise TypeCouldNotBeParsedError()
 
