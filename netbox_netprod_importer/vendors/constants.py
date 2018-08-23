@@ -13,3 +13,4 @@ class NetboxInterfaceTypes(Enum):
     qsfp28 = "QSFP+ (40GE)"
     xenpack = "XENPACK (10GE)"
     x2 = "X2"
+    xfp = "XFP (10GE)"
