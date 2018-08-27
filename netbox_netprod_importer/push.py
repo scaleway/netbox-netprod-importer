@@ -349,11 +349,11 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
     def _find_connection_in_netif_connections(self, netif_connections, netif):
         for c in netif_connections:
-            if c.interface_a.id == netif.id:
+            if c.interface_a.id == netif.id or c.interface_b.id == netif.id:
                 return c
 
         raise ValueError(
-            "No connection found for network interface {}".format(netif)
+            "No connection found for network interface {}".format(netif.id)
         )
 
     def _get_netif_or_derivative(self, hostname, netif):
