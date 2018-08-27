@@ -132,3 +132,42 @@ class JunOSParser(JuniperParser):
             slot_el.text = str(vars()[slot_type])
 
         return lxml.etree.tostring(xml_tree).decode()
+
+    def get_detailed_lldp_neighbours(self):
+        try:
+            lldp_neighbours_xml = self.device._rpc(
+                self._gen_rpc_lldp_neighbours()
+            )
+        except RpcError as e:
+            logger.debug("RPC error: %s", e)
+            raise
+
+        parsed_xml = defusedxml.lxml.fromstring(lldp_neighbours_xml)
+
+        for n in parsed_xml.xpath(".//lldp-neighbor-information"):
+            yield {
+                "local_port": (
+                    n.xpath(
+                        "lldp-local-interface"
+                    )[0].text.split(".")[0].strip()
+                ),
+                "hostname": (
+                    n.xpath("lldp-remote-system-name")[0].text.strip()
+                ),
+                "port": (
+                    n.xpath(
+                        "lldp-remote-port-description"
+                    )[0].text.split(".")[0].strip()
+                ),
+                "chassis_id": (
+                    n.xpath("lldp-remote-chassis-id")[0].text.strip()
+                ),
+            }
+
+    def _gen_rpc_lldp_neighbours(self):
+        get_lldp_neighbours_el = lxml.etree.Element(
+            "get-lldp-neighbors-information"
+        )
+        xml_tree = get_lldp_neighbours_el.getroottree()
+
+        return lxml.etree.tostring(xml_tree).decode()

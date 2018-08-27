@@ -29,4 +29,14 @@ class _AbstractVendorParser(ABC):
         yield interface
 
     def get_detailed_lldp_neighbours(self):
+        """
+        Napalm does not show id for neighbours. Gives a little more info
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+                "mgmt_id": neighbour id
+            }]
+        """
         raise NotImplementedError()

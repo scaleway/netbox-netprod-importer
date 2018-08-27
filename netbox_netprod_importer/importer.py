@@ -223,7 +223,6 @@ class DeviceImporter(ContextDecorator):
                 "mgmt_id": neighbour id # only with specific parser
             }]
         """
-
         assert self.device.device
 
         try:
