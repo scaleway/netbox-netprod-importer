@@ -24,6 +24,9 @@ class JuniperParser(_AbstractVendorParser):
     def get_interfaces_lag(self, interfaces):
         return super().get_interfaces_lag(interfaces)
 
+    def get_interface_type(self, interface):
+        return super().get_interface_type(interface)
+
     @staticmethod
     def get_real_ifname(interface):
         ifsplit = interface.split(".")
@@ -34,6 +37,37 @@ class JuniperParser(_AbstractVendorParser):
 
 
 class JunOSParser(JuniperParser):
+
+    def get_interfaces_lag(self, interfaces):
+        interfaces_lag = defaultdict(set)
+
+        try:
+            interfaces_info_xml = self.device._rpc(
+                self._gen_rpc_request_interfaces_info()
+            )
+        except RpcError as e:
+            logger.debug("RPC error: %s", e)
+            raise
+
+        parsed_xml = defusedxml.lxml.fromstring(interfaces_info_xml)
+
+        for ifblock in parsed_xml.xpath(".//physical-interface"):
+            ifname = ifblock.xpath("name")[0].text.strip()
+            if ifname not in interfaces:
+                continue
+
+            bundle_xpath = ifblock.xpath(".//ae-bundle-name")
+            if bundle_xpath:
+                bundle_name = bundle_xpath[0].text.split(".")[0].strip()
+                interfaces_lag[ifname] = bundle_name
+
+        return interfaces_lag
+
+    def _gen_rpc_request_interfaces_info(self):
+        get_pic_details_el = lxml.etree.Element("get-interface-information")
+        xml_tree = get_pic_details_el.getroottree()
+
+        return lxml.etree.tostring(xml_tree).decode()
 
     def get_interface_type(self, interface):
         try:

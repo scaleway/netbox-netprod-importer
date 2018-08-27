@@ -161,7 +161,7 @@ class DeviceImporter(ContextDecorator):
                     self._search_key_case_insensitive(interfaces, lag)
                 )
             except KeyError:
-                logger.error("%s not exist in polled interfaces", ifname)
+                logger.error("%s not exist in polled interfaces", lag)
                 continue
 
             interfaces[ifname]["lag"] = real_lag_name
