@@ -79,12 +79,9 @@ def import_data(parsed_args):
     creds = _get_creds(parsed_args)
     threads = parsed_args.threads
 
-    importers = parse_devices_yaml_def(
-        parsed_args.devices, creds
-    )
     for host, props in _multithreaded_devices_polling(
-            importers, threads=threads,
-            overwrite=parsed_args.overwrite
+            importers=parse_devices_yaml_def(parsed_args.devices, creds),
+            threads=threads, overwrite=parsed_args.overwrite
     ):
         continue
 
@@ -98,6 +95,7 @@ def _get_creds(parsed_args):
 
 
 def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
+    importers = importers.copy()
     with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = {}
         for host, importer in importers.items():
@@ -113,6 +111,7 @@ def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
             host = futures[future]
             try:
                 yield host, future.result()
+                importers.pop(host)
             except Exception as e:
                 logger.error("Error when polling device %s: %s", host, e)
 
@@ -130,12 +129,13 @@ def interconnect(parsed_args):
     creds = _get_creds(parsed_args)
     threads = parsed_args.threads
 
-    importers = parse_devices_yaml_def(
-        parsed_args.devices, creds
+    interco_pusher = NetboxInterconnectionsPusher(
+        overwrite=parsed_args.overwrite
     )
-
-    interco_pusher = NetboxInterconnectionsPusher(importers)
-    interco_result = interco_pusher.push(threads)
+    interco_result = interco_pusher.push(
+        importers=parse_devices_yaml_def(parsed_args.devices, creds),
+        threads=threads,
+    )
     print("{} interconnection(s) applied".format(interco_result["done"]))
     if interco_result["errors_device"]:
         logger.error(

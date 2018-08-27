@@ -203,20 +203,20 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
     Push in Netbox a graph representing the interconnections between devices
     """
 
-    def __init__(self, importers, *args, overwrite=False, **kwargs):
+    def __init__(self, *args, overwrite=False, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.importers = importers
         self.overwrite = overwrite
         self.interfaces_cache = cachetools.LRUCache(128)
 
-    def push(self, threads=1):
+    def push(self, importers, threads=1):
         result = {"done": 0, "errors_interco": 0, "errors_device": 0}
 
+        importers = importers.copy()
         with ThreadPoolExecutor(max_workers=threads) as executor:
             futures = {}
             queue = set()
-            for host, importer in self.importers.items():
+            for host, importer in importers.items():
                 future = executor.submit(
                     self._handle_device, host, importer, queue
                 )
@@ -243,6 +243,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                         host, e
                     )
                     result["errors_device"] += 1
+                importers.pop(host)
 
         return result
 
