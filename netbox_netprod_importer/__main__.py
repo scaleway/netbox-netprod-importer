@@ -76,8 +76,6 @@ def parse_args():
         logging.basicConfig(
             level=logging.DEBUG, format="%(levelname)s:%(name)s:%(message)s"
         )
-    else:
-        logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     if hasattr(args, "func"):
         args.func(parsed_args=args)
