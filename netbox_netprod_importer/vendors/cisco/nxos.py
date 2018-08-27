@@ -72,13 +72,13 @@ class NXOSParser(CiscoParser):
         if not if_type.strip("-"):
             try:
                 if int(if_speed) == 1000:
-                    return InterfacesRegex.eth1000.value[1]
+                    return NetboxInterfaceTypes.eth1000.value
             except ValueError:
                 pass
         else:
             for pattern in InterfacesRegex:
-                if re.match(pattern.value[0], if_type):
-                    return pattern.value[1]
+                if re.match(pattern.value, if_type):
+                    return getattr(NetboxInterfaceTypes, pattern.name).value
 
         raise TypeCouldNotBeParsedError()
 
