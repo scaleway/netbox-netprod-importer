@@ -59,6 +59,10 @@ def parse_args():
             help="overwrite devices already pushed",
             dest="overwrite", action="store_true"
         )
+        sp.add_argument(
+            "-d", "--debug", help="enable debug, verbose output",
+            dest="debug", action="store_true"
+        )
 
     parser.add_argument(
         "--version", action="version",
@@ -67,6 +71,13 @@ def parse_args():
 
     arg_parser = parser
     args = arg_parser.parse_args()
+
+    if args.debug:
+        logging.basicConfig(
+            level=logging.DEBUG, format="%(levelname)s:%(name)s:%(message)s"
+        )
+    else:
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     if hasattr(args, "func"):
         args.func(parsed_args=args)
