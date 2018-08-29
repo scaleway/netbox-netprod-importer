@@ -11,7 +11,9 @@ from tqdm import tqdm
 
 from netbox_netprod_importer.vendors.cisco import CiscoParser
 from netbox_netprod_importer.vendors.juniper import JuniperParser
-from netbox_netprod_importer.exceptions import DeviceNotFoundError
+from netbox_netprod_importer.exceptions import (
+    DeviceNotFoundError, NetInterfaceNotFoundError
+)
 from netbox_netprod_importer.tools import is_macaddr, macaddr_to_int
 
 
@@ -312,9 +314,12 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         LLDP ID is usually the mac address of one interface of our device. Look
         for it in netbox, then search the if_name
         """
-        some_device_netif = next(
-            self._mappers["interfaces"].get(mac_address=lldp_id)
-        )
+        try:
+            some_device_netif = next(
+                self._mappers["interfaces"].get(mac_address=lldp_id)
+            )
+        except StopIteration:
+            raise NetInterfaceNotFoundError(lldp_id)
 
         device = some_device_netif.device
         return self._get_netif_or_derivative(device.name, if_name)

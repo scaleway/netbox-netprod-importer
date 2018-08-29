@@ -13,6 +13,14 @@ class DeviceNotFoundError(Exception):
         self.hostname = hostname
 
 
+class NetInterfaceNotFoundError(Exception):
+    def __init__(self, netif):
+        super().__init__(
+            "Network interface {} not found on Netbox".format(netif)
+        )
+        self.netif = netif
+
+
 class DeviceNotSupportedError(Exception):
     def __init__(self, hostname):
         super().__init__("Device {} not supported".format(hostname))
