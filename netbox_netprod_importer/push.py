@@ -296,7 +296,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         netif_b = self._get_netif_or_derivative(b, interco["port"])
 
-        self._interconnect_devices(a, netif_a, netif_b)
+        self.interconnect_netbox_netif(netif_a, netif_b)
 
     def _interconnect_using_lldp_id(self, hostname, importer, interco):
         a = hostname
@@ -305,7 +305,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             interco["chassis_id"], interco["port"]
         )
 
-        self._interconnect_devices(a, netif_a, netif_b)
+        self.interconnect_netbox_netif(netif_a, netif_b)
 
     def _find_netbox_netif_from_lldp_id(self, lldp_id, if_name):
         """
@@ -324,7 +324,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         device = some_device_netif.device
         return self._get_netif_or_derivative(device.name, if_name)
 
-    def _interconnect_devices(self, a, netif_a, netif_b):
+    def interconnect_netbox_netif(self, netif_a, netif_b):
         props = {
             "interface_a": netif_a,
             "interface_b": netif_b,
@@ -341,6 +341,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 self._delete_connection_to_netbox_netif(netif_b)
 
         if netif_a.interface_connection:
+            a = netif_a.device
             netif_connections = self._mappers["interface-connections"].get(
                 device=a
             )
