@@ -326,13 +326,16 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             "connection_status": True
         }
 
-        if netif_a.interface_connection:
+        if netif_b.interface_connection:
             connected_netif_id = int(
-                netif_a.interface_connection["interface"]["id"]
+                netif_b.interface_connection["interface"]["id"]
             )
-            if connected_netif_id == netif_b.id:
+            if connected_netif_id == netif_a.id:
                 return
+            elif netif_a.interface_connection:
+                self._delete_connection_to_netbox_netif(netif_b)
 
+        if netif_a.interface_connection:
             netif_connections = self._mappers["interface-connections"].get(
                 device=a
             )
@@ -346,6 +349,15 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             return netif_connection
 
         return self._mappers["interface-connections"].post(**props)
+
+    def _delete_connection_to_netbox_netif(self, netif):
+        connections = self._mappers["interface-connections"].get(
+            device=netif.device
+        )
+        netif_connection = self._find_connection_in_netif_connections(
+            connections, netif
+        )
+        netif_connection.delete()
 
     def _find_connection_in_netif_connections(self, netif_connections, netif):
         for c in netif_connections:
