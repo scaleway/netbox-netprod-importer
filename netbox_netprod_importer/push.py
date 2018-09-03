@@ -331,6 +331,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             "connection_status": True
         }
 
+        netif_connection = None
         if netif_b.interface_connection:
             connected_netif_id = int(
                 netif_b.interface_connection["interface"]["id"]
@@ -339,26 +340,40 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 return
             elif netif_a.interface_connection:
                 self._delete_connection_to_netbox_netif(netif_b)
+                # force a refresh to clear attached connections
+                netif_b = next(netif_b.get())
+            else:
+                netif_connections = self._mappers["interface-connections"].get(
+                    device=netif_b.device.name
+                )
+                netif_connection = self._find_connection_in_netif_connections(
+                    netif_connections, netif_b
+                )
 
         if netif_a.interface_connection:
             a = netif_a.device
             netif_connections = self._mappers["interface-connections"].get(
-                device=a
+                device=a.name
             )
             netif_connection = self._find_connection_in_netif_connections(
                 netif_connections, netif_a
             )
+
+        if netif_connection:
             for k, v in props.items():
                 setattr(netif_connection, k, v)
 
             netif_connection.put()
-            return netif_connection
+        else:
+            netif_connection = self._mappers["interface-connections"].post(
+                **props
+            )
 
-        return self._mappers["interface-connections"].post(**props)
+        return netif_connection
 
     def _delete_connection_to_netbox_netif(self, netif):
         connections = self._mappers["interface-connections"].get(
-            device=netif.device
+            device=netif.device.name
         )
         netif_connection = self._find_connection_in_netif_connections(
             connections, netif
