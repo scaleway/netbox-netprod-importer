@@ -358,9 +358,6 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 **props
             )
 
-        # force refresh of interfaces
-        netif_b.get()
-        netif_a.get()
         return netif_connection
 
     def _get_current_interco_of_netif(self, netif):
