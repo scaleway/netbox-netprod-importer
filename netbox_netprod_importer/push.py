@@ -3,6 +3,7 @@ from collections import defaultdict
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 import logging
+import threading
 
 import cachetools
 from netboxapi import NetboxAPI, NetboxMapper
@@ -210,6 +211,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         self.overwrite = overwrite
         self.interfaces_cache = cachetools.LRUCache(128)
+        self._lock = threading.Lock()
 
     def push(self, importers, threads=1):
         result = {"done": 0, "errors_interco": 0, "errors_device": 0}
@@ -296,7 +298,11 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         netif_b = self._get_netif_or_derivative(b, interco["port"])
 
-        self.interconnect_netbox_netif(netif_a, netif_b)
+        with self._lock:
+            # force a refresh of the interfaces
+            netif_a = next(netif_a.get())
+            netif_b = next(netif_b.get())
+            self.interconnect_netbox_netif(netif_a, netif_b)
 
     def _interconnect_using_lldp_id(self, hostname, importer, interco):
         a = hostname
@@ -305,7 +311,11 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             interco["chassis_id"], interco["port"]
         )
 
-        self.interconnect_netbox_netif(netif_a, netif_b)
+        with self._lock:
+            # force a refresh of the interfaces
+            netif_a = next(netif_a.get())
+            netif_b = next(netif_b.get())
+            self.interconnect_netbox_netif(netif_a, netif_b)
 
     def _find_netbox_netif_from_lldp_id(self, lldp_id, if_name):
         """
