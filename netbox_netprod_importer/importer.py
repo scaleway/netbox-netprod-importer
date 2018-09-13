@@ -9,7 +9,7 @@ import napalm
 from netbox_netprod_importer.exceptions import (
     NoReverseFoundError, DeviceNotSupportedError
 )
-from netbox_netprod_importer.vendors import DeviceParsers
+from netbox_netprod_importer.vendors import DeviceParsers, StubParser
 from netbox_netprod_importer.tools import is_macaddr
 
 logger = logging.getLogger("netbox_importer")
@@ -34,7 +34,14 @@ class DeviceImporter(ContextDecorator):
         )
 
     def _get_specific_device_parser(self, os):
-        parser_class = getattr(DeviceParsers, os).value
+        try:
+            parser_class = getattr(DeviceParsers, os).value
+        except AttributeError:
+            logger.info(
+                "{} is not totally supported, will be limited to napalm "
+                "features"
+            )
+            parser_class = StubParser
 
         return parser_class(self.device)
 
@@ -43,7 +50,7 @@ class DeviceImporter(ContextDecorator):
 
     def __exit__(self, *exc):
         if self.device.device:
-            return self.close()
+            self.close()
 
     def open(self):
         self.device.open()
@@ -198,6 +205,12 @@ class DeviceImporter(ContextDecorator):
             is_subif, parent_if = self._is_subinterface(ifname)
             if is_subif:
                 ifname = parent_if
+
+            if ifname not in interfaces:
+                logger.debug(
+                    "Interface {} has IP but was not listed".format(ifname)
+                )
+                continue
 
             if not interfaces[ifname].get("ip"):
                 interfaces[ifname]["ip"] = []
