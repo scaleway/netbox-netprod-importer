@@ -23,6 +23,14 @@ def parse_args():
         help="Yaml file containing a definition of devices to poll"
     )
     parser.add_argument(
+        "role", metavar="role", type=int,
+        help="Device role id to use"
+    )
+    parser.add_argument(
+        "site", metavar="site", type=int,
+        help="Site id to use"
+    )
+    parser.add_argument(
         "--types", metavar="device_types",
         type=str, help="Yaml file containing a definition of device types"
     )
@@ -50,12 +58,13 @@ def push_devices(parsed_args):
     if parsed_args.types:
         create_device_types(
             netbox_api, parse_yaml_file(parsed_args.types),
-            manufacturers
+            manufacturers,
         )
 
     create_devices(
         netbox_api, parse_yaml_file(parsed_args.devices),
-        threads=parsed_args.threads
+        threads=parsed_args.threads, role_id=parsed_args.role,
+        site_id=parsed_args.site
     )
 
 
@@ -80,7 +89,7 @@ def create_manufacturers(netbox_api):
     return manufacturers
 
 
-def create_devices(netbox_api, devices, threads=10):
+def create_devices(netbox_api, devices, role_id, site_id, threads=10):
     device_types_mapper = NetboxMapper(netbox_api, "dcim", "device-types")
     device_types = LRU(
         on_miss=lambda slug: next(device_types_mapper.get(slug=slug))
@@ -92,26 +101,26 @@ def create_devices(netbox_api, devices, threads=10):
         futures = []
         for name, props in devices.items():
             future = executor.submit(
-                _thread_push_device, device_mapper, device_types, name, props
+                _thread_push_device, device_mapper, device_types, name, props,
+                role_id, site_id
             )
             futures.append(future)
 
         [future.result() in concurrent.futures.as_completed(futures)]
 
 
-def _thread_push_device(device_mapper, cache_types, device, props):
+def _thread_push_device(device_mapper, cache_types, device, props,
+                        role_id, site_id):
     device_type = props.pop("model")
 
     name = str(device)
     try:
         device = next(device_mapper.get(name=name.lower()))
     except StopIteration:
-        # XXX: find a way to classify devices by roles
         device = device_mapper.post(
             name=name, slug=name.lower(),
             device_type=cache_types[device_type.lower()],
-            device_role=1,
-            site=1,
+            device_role=role_id, site=site_id,
         )
 
     update_netbox_obj_from(device, props)
