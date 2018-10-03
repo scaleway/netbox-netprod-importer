@@ -11,6 +11,7 @@ import argparse
 from boltons.cacheutils import LRU
 from netboxapi import NetboxAPI, NetboxMapper
 from ocs.conf import get_config
+import requests
 import yaml
 
 
@@ -56,10 +57,14 @@ def push_devices(parsed_args):
     manufacturers = create_manufacturers(netbox_api)
 
     if parsed_args.types:
-        create_device_types(
-            netbox_api, parse_yaml_file(parsed_args.types),
-            manufacturers,
-        )
+        try:
+            create_device_types(
+                netbox_api, parse_yaml_file(parsed_args.types),
+                manufacturers,
+            )
+        except requests.exceptions.HTTPError as e:
+            print(e.response.json())
+            raise
 
     create_devices(
         netbox_api, parse_yaml_file(parsed_args.devices),
@@ -91,27 +96,37 @@ def create_manufacturers(netbox_api):
 
 def create_devices(netbox_api, devices, role_id, site_id, threads=10):
     device_types_mapper = NetboxMapper(netbox_api, "dcim", "device-types")
-    device_types = LRU(
-        on_miss=lambda slug: next(device_types_mapper.get(slug=slug))
-    )
-
+    platforms_mapper = NetboxMapper(netbox_api, "dcim", "platforms")
+    caches = {
+        "device_types": LRU(
+            on_miss=lambda slug: next(device_types_mapper.get(slug=slug))
+        ),
+        "platforms": LRU(
+            on_miss=lambda slug: next(platforms_mapper.get(slug=slug))
+        )
+    }
     device_mapper = NetboxMapper(netbox_api, "dcim", "devices")
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = []
         for name, props in devices.items():
             future = executor.submit(
-                _thread_push_device, device_mapper, device_types, name, props,
+                _thread_push_device, device_mapper, caches, name, props,
                 role_id, site_id
             )
             futures.append(future)
 
-        [future.result() in concurrent.futures.as_completed(futures)]
+        try:
+            [future.result() in concurrent.futures.as_completed(futures)]
+        except requests.exceptions.HTTPError as e:
+            print(e.response.data)
+            raise
 
 
-def _thread_push_device(device_mapper, cache_types, device, props,
+def _thread_push_device(device_mapper, caches, device, props,
                         role_id, site_id):
     device_type = props.pop("model")
+    platform = props.pop("platform", None)
 
     name = str(device)
     try:
@@ -119,11 +134,13 @@ def _thread_push_device(device_mapper, cache_types, device, props,
     except StopIteration:
         device = device_mapper.post(
             name=name, slug=name.lower(),
-            device_type=cache_types[device_type.lower()],
+            device_type=caches["device_types"][device_type.lower()],
             device_role=role_id, site=site_id,
         )
 
     update_netbox_obj_from(device, props)
+    if platform:
+        device.platform = caches["platforms"][platform.lower()]
     device.put()
 
 

@@ -152,14 +152,19 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
         addresses = []
         for ip in ip_addresses:
+            # check if ip attached isn't already correct
             try:
-                ip_netbox_obj = next(mapper.get(q=ip))
+                ip_netbox_obj = next(mapper.get(q=ip, interface_id=netbox_if))
             except StopIteration:
-                ip_netbox_obj = mapper.post(address=ip)
+                try:
+                    ip_netbox_obj = next(mapper.get(q=ip))
+                except StopIteration:
+                    ip_netbox_obj = mapper.post(address=ip)
 
-            # XXX: handle anycast
-            ip_netbox_obj.interface = netbox_if
-            ip_netbox_obj.put()
+                # XXX: handle anycast
+                ip_netbox_obj.interface = netbox_if
+                ip_netbox_obj.put()
+
             addresses.append(ip_netbox_obj)
 
         return addresses
