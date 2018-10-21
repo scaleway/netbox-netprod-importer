@@ -45,14 +45,15 @@ class _NetboxPusher(ABC):
     def push(self):
         pass
 
-    def search_value_in_choices(self, mapper, id, label):
-        if mapper not in self._choices_cache:
+    def search_value_in_choices(self, mapper_name, id, label):
+        if mapper_name not in self._choices_cache:
             try:
-                self._choices_cache[mapper] = next(mapper.get())
+                mapper = self._mappers[mapper_name]
+                self._choices_cache[mapper_name] = next(mapper.get())
             except StopIteration:
                 pass
 
-        for choice in self._choices_cache[mapper][id]:
+        for choice in self._choices_cache[mapper_name][id]:
             if choice["label"] == label:
                 return choice["value"]
 
@@ -112,7 +113,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
             if_type = if_prop.pop("type")
             if_prop["form_factor"] = self.search_value_in_choices(
-                self._mappers["dcim_choices"], "interface:form_factor",
+                "dcim_choices", "interface:form_factor",
                 if_type
             )
             if if_prop.get("lag"):
@@ -141,7 +142,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
     def _handle_interface_mode(self, netbox_if, mode):
         netbox_mode = self.search_value_in_choices(
-            self._mappers["dcim_choices"], "interface:mode",
+            "dcim_choices", "interface:mode",
             mode
         )
 
