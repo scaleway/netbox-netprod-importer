@@ -24,28 +24,29 @@ class TestNXOSParser():
         self.device.open()
         self.parser = NXOSParser(self.device)
 
-    def test_group_interfaces_by_aggreg(self):
-        interfaces =  ("Ethernet1/1", )
+    def test_get_interfaces_lag(self):
+        interfaces = ("Ethernet1/1", )
         expected_port_channels = {
-            "port-channel10": ["Ethernet1/1"],
+            "Ethernet1/1": "port-channel10"
         }
 
-        port_channels = self.parser.group_interfaces_by_aggreg(interfaces)
+        port_channels = self.parser.get_interfaces_lag(interfaces)
 
         assert port_channels == expected_port_channels
 
-    def test_group_interfaces_by_aggreg_multiple_netif(self):
+    def test_get_interfaces_lag_multiple_netif(self):
         interfaces =  [
             "Ethernet1/1", "Ethernet1/2", "Ethernet1/3", "mgmt0",
             "port-channel10", "port-channel11", "port-channel12", "Vlan200",
         ]
 
         expected_port_channels = {
-            "port-channel10": ["Ethernet1/1", "Ethernet1/3"],
-            "port-channel12": ["Ethernet1/2"],
+            "Ethernet1/1": "port-channel10",
+            "Ethernet1/2": "port-channel12",
+            "Ethernet1/3": "port-channel10",
         }
 
-        port_channels = self.parser.group_interfaces_by_aggreg(interfaces)
+        port_channels = self.parser.get_interfaces_lag(interfaces)
 
         assert port_channels == expected_port_channels
 

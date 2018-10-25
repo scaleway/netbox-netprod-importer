@@ -1,0 +1,13 @@
+{"TABLE_interface": {"ROW_interface": [
+    {"interface": "Ethernet1/1", "sfp": "present", "type": "CFP-100G-SR10"},
+    {"interface": "Ethernet1/2", "sfp": "present", "type": "CFP2-100G-ER4"},
+    {"interface": "Ethernet1/3", "sfp": "present", "type": "1000BASE-T"},
+    {"interface": "Ethernet1/4", "sfp": "present", "type": "1000BASE-SX"},
+    {"interface": "Ethernet1/5", "sfp": "present", "type": "SFP-H10GB-CU3M"},
+    {"interface": "Ethernet1/6", "sfp": "present", "type": "SFP-H25G-CU1M"},
+    {"interface": "Ethernet1/7", "sfp": "present", "type": "QSFP-40G-SR-BD"},
+    {"interface": "Ethernet1/8", "sfp": "present", "type": "QSFP-4X10G-AC"},
+    {"interface": "Ethernet1/9", "sfp": "present", "type": "XENPAK-10GB-LRM"},
+    {"interface": "Ethernet1/10", "sfp": "present", "type": "X2-10GB-T"},
+    {"interface": "Ethernet1/10", "sfp": "present", "type": "X2-10GB-T"},
+]}}

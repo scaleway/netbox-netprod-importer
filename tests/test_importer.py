@@ -16,6 +16,7 @@ BASE_PATH = os.path.dirname(__file__)
 class BaseTestImporter():
     importer = None
     profile = None
+    path = "mock_driver/global"
 
     @pytest.fixture(autouse=True)
     def build_importer(self, monkeypatch):
@@ -23,7 +24,7 @@ class BaseTestImporter():
         self.importer = DeviceImporter(
             "localhost", self.profile, "foo",
             napalm_optional_args={
-                "path": os.path.join(BASE_PATH, "mock_driver/global"),
+                "path": os.path.join(BASE_PATH, self.path),
                 "profile": [self.profile],
             }
         )
@@ -38,14 +39,15 @@ class BaseTestImporter():
         )
 
     def test_resolve_primary_ip(self):
-        ip = self.importer.resolve_primary_ip()
+        with self.importer:
+            ip = self.importer.resolve_primary_ip()
 
         assert (
-            ipaddress.ip_address(ip["primary_ipv4"]) ==
+            ipaddress.ip_address(ip["primary_ip4"]) ==
             ipaddress.ip_address("127.0.0.1")
         )
         assert (
-            ipaddress.ip_address(ip["primary_ipv6"]) ==
+            ipaddress.ip_address(ip["primary_ip6"]) ==
             ipaddress.ip_address("::1")
         )
 
@@ -53,27 +55,17 @@ class BaseTestImporter():
         mocker.patch("socket.getaddrinfo", side_effect=socket.gaierror)
 
         with pytest.raises(NoReverseFoundError):
-            self.importer.resolve_primary_ip()
+            with self.importer:
+                self.importer.resolve_primary_ip()
 
     def test_resolve_primary_ip_missing_AAAA(self, mocker):
         mocker.patch(
             "socket.getaddrinfo", side_effect=(mocker.DEFAULT, socket.gaierror)
         )
-        ip = self.importer.resolve_primary_ip()
+        with self.importer:
+            ip = self.importer.resolve_primary_ip()
 
-        assert sorted(ip.keys()) == sorted(("primary_ipv4", ))
-
-    def test_get_interfaces_ifnames(self, monkeypatch):
-        self.stub_get_interface_type(monkeypatch)
-        interfaces = self.importer.get_interfaces()
-
-        if_names =  (
-            "mgmt0", "Ethernet1/1", "Ethernet1/2", "port-channel10",
-            "port-channel11", "port-channel12", "Vlan1", "Vlan200",
-            "Ethernet101/1/1", "Ethernet101/1/2",
-        )
-
-        assert sorted(interfaces.keys()) == sorted(if_names)
+        assert sorted(ip.keys()) == sorted(("primary_ip4", ))
 
     def stub_get_interface_type(self, monkeypatch):
         monkeypatch.setattr(
@@ -82,16 +74,39 @@ class BaseTestImporter():
             lambda *args: None
         )
 
+
+class TestNXOSImporter(BaseTestImporter):
+    profile = "nxos"
+    path = "mock_driver/cisco/nxos/"
+
+    def test_get_interfaces_ifnames(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        with self.importer:
+            interfaces = self.importer.get_interfaces()
+
+            if_names = (
+                "mgmt0", "Ethernet1/1", "Ethernet1/2", "port-channel10",
+                "port-channel11", "port-channel12", "Vlan1", "Vlan200",
+                "Ethernet101/1/1", "Ethernet101/1/2",
+            )
+
+            assert sorted(interfaces.keys()) == sorted(if_names)
+
     def test_get_interfaces_ifprop(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
-        interfaces = self.importer.get_interfaces()
+        with self.importer:
+            interfaces = self.importer.get_interfaces()
 
         assert interfaces["Ethernet1/2"]["enabled"]
-        assert interfaces["Ethernet1/2"]["description"] == "dfe-dc2-2-pub"
-        assert interfaces["Ethernet1/2"]["mac_address"] == "CC:46:D6:6E:0F:79"
+        assert interfaces["Ethernet1/2"]["description"] == "dummy text"
+        assert (
+            interfaces["Ethernet1/2"]["mac_address"].upper() ==
+            "CC:46:D6:6E:0F:79"
+        )
 
     def test_fill_interfaces_ip_no_dict(self):
-        ip_by_interfaces = self.importer.fill_interfaces_ip()
+        with self.importer:
+            ip_by_interfaces = self.importer.fill_interfaces_ip()
 
         expected_ip = tuple(
             ipaddress.ip_interface(ip)
@@ -106,23 +121,46 @@ class BaseTestImporter():
         assert output_ip == expected_ip
 
     def test_fill_interfaces_ip_ifnames(self):
-        ip_by_interfaces = self.importer.fill_interfaces_ip()
+        with self.importer:
+            ip_by_interfaces = self.importer.fill_interfaces_ip()
 
         expected_if = ("mgmt0", "Vlan1", "Vlan200")
         assert sorted(expected_if) == sorted(ip_by_interfaces.keys())
 
     def test_fill_interfaces_with_dict(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
-        interfaces = self.importer.get_interfaces()
-        self.importer.fill_interfaces_ip(interfaces)
+        with self.importer:
+            interfaces = self.importer.get_interfaces()
+            self.importer.fill_interfaces_ip(interfaces)
 
         for ifname in ("mgmt0", "Vlan1", "Vlan200"):
             assert interfaces[ifname]["ip"]
 
 
-class TestNXOSImporter(BaseTestImporter):
-    profile = "nxos"
-
-
 class TestJunOSImporter(BaseTestImporter):
     profile = "junos"
+    path = "mock_driver/junos/"
+
+    def test_get_interfaces_ifnames(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        with self.importer:
+            interfaces = self.importer.get_interfaces()
+
+            if_names = (
+                "lo0", "ge-0/0/0", "ge-0/0/1", "ae10", "ae11", "ae12",
+                "ge-1/0/0", "ge-1/0/1", "vlan.1", "vlan.200"
+            )
+
+            assert sorted(interfaces.keys()) == sorted(if_names)
+
+    def test_get_interfaces_ifprop(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        with self.importer:
+            interfaces = self.importer.get_interfaces()
+
+        assert interfaces["ge-0/0/1"]["enabled"]
+        assert interfaces["ge-0/0/1"]["description"] == "dummy text"
+        assert (
+            interfaces["ge-0/0/1"]["mac_address"].upper() ==
+            "CC:46:D6:6E:0F:79"
+        )

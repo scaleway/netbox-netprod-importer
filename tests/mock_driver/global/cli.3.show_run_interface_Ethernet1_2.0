@@ -1,3 +1,5 @@
 interface Ethernet1/2
+  switchport mode trunk
+  switchport trunk allowed vlan 1
   mtu 9216
   channel-group 12 mode active

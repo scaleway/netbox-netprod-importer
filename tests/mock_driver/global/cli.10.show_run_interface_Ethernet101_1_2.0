@@ -1,0 +1,2 @@
+interface Ethernet101/1/2
+  mtu 9216

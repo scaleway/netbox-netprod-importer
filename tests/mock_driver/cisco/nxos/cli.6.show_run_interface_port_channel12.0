@@ -1,0 +1,2 @@
+interface port-channel12
+  mtu 9216

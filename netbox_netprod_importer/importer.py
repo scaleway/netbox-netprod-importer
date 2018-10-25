@@ -200,13 +200,16 @@ class DeviceImporter(ContextDecorator):
 
         if interfaces is None:
             interfaces = defaultdict(dict)
+            skip_unlisted_if = False
+        else:
+            skip_unlisted_if = True
 
         for ifname, ifprops in self.device.get_interfaces_ip().items():
             is_subif, parent_if = self._is_subinterface(ifname)
             if is_subif:
                 ifname = parent_if
 
-            if ifname not in interfaces:
+            if skip_unlisted_if and ifname not in interfaces:
                 logger.debug(
                     "Interface {} has IP but was not listed".format(ifname)
                 )

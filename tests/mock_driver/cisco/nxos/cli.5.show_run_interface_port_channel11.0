@@ -1,0 +1,4 @@
+interface port-channel11
+  switchport
+  switchport mode fex-fabric
+  fex associate 11
