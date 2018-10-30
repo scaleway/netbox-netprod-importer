@@ -27,6 +27,11 @@ def parse_args():
     sp_import = subcommands.add_parser(
         "import", aliases=["imp"], help=("import devices data")
     )
+    sp_import.add_argument(
+        "--overwrite",
+        help="overwrite devices already pushed",
+        dest="overwrite", action="store_true"
+    )
     sp_import.set_defaults(func=import_data)
 
     sp_interconnect = subcommands.add_parser(
@@ -53,11 +58,6 @@ def parse_args():
             "-t", "--threads",
             help="number of threads to run",
             dest="threads", default=10, type=int
-        )
-        sp.add_argument(
-            "--overwrite",
-            help="overwrite devices already pushed",
-            dest="overwrite", action="store_true"
         )
         sp.add_argument(
             "-d", "--debug", help="enable debug, verbose output",
@@ -138,9 +138,7 @@ def interconnect(parsed_args):
     creds = _get_creds(parsed_args)
     threads = parsed_args.threads
 
-    interco_pusher = NetboxInterconnectionsPusher(
-        overwrite=parsed_args.overwrite
-    )
+    interco_pusher = NetboxInterconnectionsPusher()
     interco_result = interco_pusher.push(
         importers=parse_devices_yaml_def(parsed_args.devices, creds),
         threads=threads,

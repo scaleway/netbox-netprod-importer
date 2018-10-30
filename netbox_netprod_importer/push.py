@@ -212,10 +212,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
     Push in Netbox a graph representing the interconnections between devices
     """
 
-    def __init__(self, *args, overwrite=False, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.overwrite = overwrite
         self.interfaces_cache = cachetools.LRUCache(128)
         self._lock = threading.Lock()
 
