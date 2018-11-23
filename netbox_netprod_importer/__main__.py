@@ -41,11 +41,11 @@ def parse_args():
 
     for sp in (sp_import, sp_interconnect):
         sp.add_argument(
-            "devices", metavar="devices", type=str,
+            "devices", metavar="DEVICES", type=str,
             help="Yaml file containing a definition of devices to poll"
         )
         sp.add_argument(
-            "-u", "--user", metavar="user",
+            "-u", "--user", metavar="USER",
             help="user to use for connections to the devices",
             dest="user", type=str
         )
@@ -55,7 +55,7 @@ def parse_args():
             dest="ask_password", action="store_true"
         )
         sp.add_argument(
-            "-t", "--threads",
+            "-t", "--threads", metavar="THREADS",
             help="number of threads to run",
             dest="threads", default=10, type=int
         )

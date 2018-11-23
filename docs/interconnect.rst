@@ -23,14 +23,14 @@ Usage
 The interconnections feature can be started through the subcommand
 ``interconnect``::
 
-    usage: netbox-netprod-importer interconnect [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-d] devices
+    usage: netbox-netprod-importer interconnect [-h] [-u USER] [-p] [-t THREADS] [-d] DEVICES
 
     positional arguments:
-      devices               Yaml file containing a definition of devices to poll
+      DEVICES               Yaml file containing a definition of devices to poll
 
     optional arguments:
       -h, --help            show this help message and exit
-      -u user, --user user  user to use for connections to the devices
+      -u USER, --user USER  user to use for connections to the devices
       -p, --password        ask for credentials for connections to the devices
       -t THREADS, --threads THREADS
                             number of threads to run
