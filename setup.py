@@ -46,7 +46,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'netbox-netprod-importer = netbox_netprod_importer.__main__:cli_run',
+            'netbox-netprod-importer = netbox_netprod_importer.__main__:parse_args',
         ],
     }
 )
