@@ -1,0 +1,33 @@
+########################
+#### Global options ####
+########################
+
+## Be more verbose ##
+debug: False
+
+
+################
+#### Netbox ####
+################
+
+netbox:
+  # Netbox API URL
+  url: "https://netbox.tld/api"
+  # username: "user"
+  # password: "password"
+  # or to use a token instead
+  token: "CHANGEME"
+
+
+##########################
+#### Interconnections ####
+##########################
+
+# On some devices, LLDP will expose the host FQDN. If devices are stored on
+# Netbox only by their hostname, the interconnection process will not be able
+# to find them. Fill this list to strip the domain name from exposed names.
+remove_domains:
+  - "foo.tld"
+  - "bar.tld"
+
+# vim: set ts=2 sw=2:
