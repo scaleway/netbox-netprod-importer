@@ -94,9 +94,14 @@ def import_data(parsed_args):
     creds = _get_creds(parsed_args)
     threads = parsed_args.threads
 
+    print("Initializing importers…")
+    importers = parse_devices_yaml_def(parsed_args.devices, creds)
+    print()
+
+    print("Fetching and pushing data…")
     for host, props in _multithreaded_devices_polling(
-            importers=parse_devices_yaml_def(parsed_args.devices, creds),
-            threads=threads, overwrite=parsed_args.overwrite
+            importers=importers, threads=threads,
+            overwrite=parsed_args.overwrite
     ):
         continue
 
@@ -151,10 +156,13 @@ def interconnect(parsed_args):
     netbox_api = NetboxAPI(**get_config()["netbox"])
 
     interco_pusher = NetboxInterconnectionsPusher(netbox_api)
-    interco_result = interco_pusher.push(
-        importers=parse_devices_yaml_def(parsed_args.devices, creds),
-        threads=threads,
-    )
+
+    print("Initializing importers…")
+    importers = parse_devices_yaml_def(parsed_args.devices, creds)
+    print()
+
+    print("Finding neighbours and interconnecting…")
+    interco_result = interco_pusher.push(importers=importers, threads=threads)
     print("{} interconnection(s) applied".format(interco_result["done"]))
     if interco_result["errors_device"]:
         logger.error(
