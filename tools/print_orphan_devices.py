@@ -5,7 +5,7 @@ import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 import sys
 from netboxapi import NetboxAPI, NetboxMapper
-from ocs.conf import get_config
+from netbox_netprod_importer.config import get_config
 import tqdm
 
 
@@ -36,7 +36,7 @@ def parse_args():
 
 
 def print_orphans(parsed_args):
-    netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
+    netbox_api = NetboxAPI(**get_config()["netbox"])
     devices_mapper = NetboxMapper(netbox_api, "dcim", "devices")
 
     threads = parsed_args.threads

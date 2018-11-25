@@ -6,9 +6,11 @@ import logging
 import socket
 import sys
 import argparse
+from netboxapi import NetboxAPI
 from tqdm import tqdm
 
 from . import __appname__, __version__
+from netbox_netprod_importer.config import get_config, load_config
 from netbox_netprod_importer.devices_list import parse_devices_yaml_def
 from netbox_netprod_importer.push import (
     NetboxDevicePropsPusher, NetboxInterconnectionsPusher
@@ -78,6 +80,10 @@ def parse_args():
         )
 
     if hasattr(args, "func"):
+        try:
+            load_config()
+        except FileNotFoundError:
+            sys.exit(2)
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
@@ -105,10 +111,13 @@ def _get_creds(parsed_args):
 
 def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
     importers = importers.copy()
+    netbox_api = NetboxAPI(**get_config()["netbox"])
     with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = {}
         for host, importer in importers.items():
-            future = executor.submit(_poll_and_push, host, importer, overwrite)
+            future = executor.submit(
+                _poll_and_push, netbox_api, host, importer, overwrite
+            )
 
             futures[future] = host
 
@@ -125,10 +134,12 @@ def _multithreaded_devices_polling(importers, threads=10, overwrite=False):
                 logger.error("Error when polling device %s: %s", host, e)
 
 
-def _poll_and_push(host, importer, overwrite):
+def _poll_and_push(netbox_api, host, importer, overwrite):
     with importer:
         props = importer.poll()
-        pusher = NetboxDevicePropsPusher(host, props, overwrite=overwrite)
+        pusher = NetboxDevicePropsPusher(
+            netbox_api, host, props, overwrite=overwrite
+        )
         pusher.push()
 
         return props
@@ -137,8 +148,9 @@ def _poll_and_push(host, importer, overwrite):
 def interconnect(parsed_args):
     creds = _get_creds(parsed_args)
     threads = parsed_args.threads
+    netbox_api = NetboxAPI(**get_config()["netbox"])
 
-    interco_pusher = NetboxInterconnectionsPusher()
+    interco_pusher = NetboxInterconnectionsPusher(netbox_api)
     interco_result = interco_pusher.push(
         importers=parse_devices_yaml_def(parsed_args.devices, creds),
         threads=threads,

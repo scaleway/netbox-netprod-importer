@@ -6,8 +6,7 @@ import logging
 import threading
 
 import cachetools
-from netboxapi import NetboxAPI, NetboxMapper
-from ocs.conf import get_config
+from netboxapi import NetboxMapper
 from tqdm import tqdm
 
 from netbox_netprod_importer.vendors.cisco import CiscoParser
@@ -23,8 +22,8 @@ logger = logging.getLogger("netbox_importer")
 
 class _NetboxPusher(ABC):
 
-    def __init__(self, *args, **kwargs):
-        self.netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
+    def __init__(self, netbox_api, *args, **kwargs):
+        self.netbox_api = netbox_api
 
         self._mappers = {
             "dcim_choices": NetboxMapper(
@@ -63,8 +62,9 @@ class _NetboxPusher(ABC):
 class NetboxDevicePropsPusher(_NetboxPusher):
     _device = None
 
-    def __init__(self, hostname, props, *args, overwrite=False, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, netbox_api, hostname, props, *args, overwrite=False,
+                 **kwargs):
+        super().__init__(netbox_api, *args, **kwargs)
 
         self.hostname = hostname
         self.props = props
@@ -212,9 +212,10 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
     Push in Netbox a graph representing the interconnections between devices
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, remove_domains=None, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.remove_domains = remove_domains or []
         self.interfaces_cache = cachetools.LRUCache(128)
         self._lock = threading.Lock()
 
@@ -295,7 +296,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         netif_a = self._get_netif_or_derivative(a, interco["local_port"])
         b = interco["hostname"]
 
-        for dom in get_config("ocs").get("remove_domains", []):
+        for dom in self.remove_domains:
             dom = "." + dom.lstrip(".").rstrip(".")
             if b.endswith(dom):
                 b = b.rstrip(dom)

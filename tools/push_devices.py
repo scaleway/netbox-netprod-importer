@@ -10,7 +10,7 @@ import sys
 import argparse
 from boltons.cacheutils import LRU
 from netboxapi import NetboxAPI, NetboxMapper
-from ocs.conf import get_config
+from netbox_netprod_importer.config import get_config
 import requests
 import yaml
 
@@ -53,7 +53,7 @@ def parse_args():
 
 
 def push_devices(parsed_args):
-    netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
+    netbox_api = NetboxAPI(**get_config()["netbox"])
     manufacturers = create_manufacturers(netbox_api)
 
     if parsed_args.types:

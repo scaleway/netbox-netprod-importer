@@ -87,9 +87,9 @@ Adapt it and save it either as:
 
   - `~/.config/netbox-netprod-importer/config.yml`
   - `/etc/netbox-netprod-importer/config.yml`
-  - `$REPO_DIR/config.yml`
 
-Where `$REPO_DIR` is the current cloned repository of netbox-netprod-importer.
+Or can be set with the environment variable ``CONFIG_PATH``. Example:
+``CONFIG_PATH=./config.yml netbox-netprod-importer …``
 
 
 Device list

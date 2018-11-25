@@ -6,7 +6,7 @@ import logging
 import yaml
 import sys
 from netboxapi import NetboxAPI, NetboxMapper
-from ocs.conf import get_config
+from netbox_netprod_importer.config import get_config
 from tqdm import tqdm
 
 
@@ -39,7 +39,7 @@ def parse_args():
 
 
 def print_orphans(parsed_args):
-    netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
+    netbox_api = NetboxAPI(**get_config()["netbox"])
     for p in get_orphans(netbox_api):
         print(p)
 
@@ -61,7 +61,7 @@ def get_orphans(netbox_api):
 
 
 def fix_vrf(parsed_args):
-    netbox_api = NetboxAPI(**get_config("ocs").get("netbox"))
+    netbox_api = NetboxAPI(**get_config()["netbox"])
     ip_mapper = NetboxMapper(netbox_api, "ipam", "ip-addresses")
     prefixes_mapper = NetboxMapper(netbox_api, "ipam", "prefixes")
     for i in tqdm(ip_mapper.get()):
