@@ -3,6 +3,7 @@ from collections import defaultdict
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 import logging
+from requests.exceptions import HTTPError
 import threading
 
 import cachetools
@@ -12,7 +13,8 @@ from tqdm import tqdm
 from netbox_netprod_importer.vendors.cisco import CiscoParser
 from netbox_netprod_importer.vendors.juniper import JuniperParser
 from netbox_netprod_importer.exceptions import (
-    DeviceNotFoundError, NetInterfaceNotFoundError
+    DeviceNotFoundError, NetInterfaceNotFoundError, IPPushingError,
+    NetIfPushingError
 )
 from netbox_netprod_importer.tools import is_macaddr, macaddr_to_int
 
@@ -106,9 +108,13 @@ class NetboxDevicePropsPusher(_NetboxPusher):
             try:
                 interface = next(interface_query)
             except StopIteration:
-                interface = self._mappers["interfaces"].post(
-                    device=self._device, name=if_name
-                )
+                try:
+                    interface = self._mappers["interfaces"].post(
+                        device=self._device, name=if_name
+                    )
+                except HTTPError as e:
+                    raise NetIfPushingError(if_name, e)
+
             interfaces[if_name] = interface
 
             if_type = if_prop.pop("type")
@@ -130,7 +136,10 @@ class NetboxDevicePropsPusher(_NetboxPusher):
             for k, v in if_prop.items():
                 setattr(interface, k, v)
 
-            interface.put()
+            try:
+                interface.put()
+            except HTTPError as e:
+                raise NetIfPushingError(interface.name, e)
             if if_prop.get("ip"):
                 addrs = self._attach_interface_to_ip_addresses(
                     interface, *if_prop["ip"]
@@ -160,11 +169,17 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                 try:
                     ip_netbox_obj = next(mapper.get(q=ip))
                 except StopIteration:
-                    ip_netbox_obj = mapper.post(address=ip)
+                    try:
+                        ip_netbox_obj = mapper.post(address=ip)
+                    except HTTPError as e:
+                        raise IPPushingError(ip, e)
 
                 # XXX: handle anycast
                 ip_netbox_obj.interface = netbox_if
-                ip_netbox_obj.put()
+                try:
+                    ip_netbox_obj.put()
+                except HTTPError as e:
+                    raise IPPushingError(ip_netbox_obj.address, e)
 
             addresses.append(ip_netbox_obj)
 
@@ -185,7 +200,10 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         for if_name, lag in interfaces_lag.items():
             interface = interfaces[if_name]
             interface.lag = interfaces[lag]
-            interface.put()
+            try:
+                interface.put()
+            except HTTPError as e:
+                raise NetIfPushingError(interface.name, e)
 
     def _push_main_data(self):
         mapper = self._mappers["ip"]
