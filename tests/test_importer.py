@@ -77,7 +77,7 @@ class BaseTestImporter():
 
 class TestNXOSImporter(BaseTestImporter):
     profile = "nxos"
-    path = "mock_driver/cisco/nxos/"
+    path = "mock_driver/global/cisco/nxos/"
 
     def test_get_interfaces_ifnames(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)
@@ -139,7 +139,7 @@ class TestNXOSImporter(BaseTestImporter):
 
 class TestJunOSImporter(BaseTestImporter):
     profile = "junos"
-    path = "mock_driver/junos/"
+    path = "mock_driver/global/junos/"
 
     def test_get_interfaces_ifnames(self, monkeypatch):
         self.stub_get_interface_type(monkeypatch)

@@ -4,8 +4,8 @@ from enum import Enum
 class InterfacesRegex(Enum):
     cfp = r"^CFP-.*"
     cfp2 = r"^CFP2-.*"
-    eth100 = r".*(?i)100Base(-T|TX)"
-    eth1000 = r".*(?i)1000(BASE)?(-T|TX)"
+    eth100 = r".*(i?)100Base(-T|TX)"
+    eth1000 = r".*(i?)1000(BASE)?(-T|TX)"
     sfp = r"^1000BASE-.X"
     sfp_plus = r"^(.?WDM-)?SFP-.?10G.*-.*"
     sfp28 = r"^SFP-.?25G-.*"

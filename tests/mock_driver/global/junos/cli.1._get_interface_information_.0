@@ -1,0 +1,41 @@
+<rpc-reply xmlns:junos="http://xml.juniper.net/junos/12.3R3/junos">
+    <interface-information xmlns="http://xml.juniper.net/junos/12.3R3/junos-interface" junos:style="normal">
+        <physical-interface>
+            <name>ge-0/0/0</name>
+            <admin-status junos:format="Enabled">up</admin-status>
+            <oper-status>up</oper-status>
+            <link-level-type>Ethernet</link-level-type>
+            <source-filtering>disabled</source-filtering>
+            <speed>Auto</speed>
+            <duplex>Auto</duplex>
+            <if-media-type>Copper</if-media-type>
+            <logical-interface>
+                <name>ge-0/0/47.0</name>
+                <address-family>
+                    <address-family-name>aenet</address-family-name>
+                    <ae-bundle-name>ae0.0</ae-bundle-name>
+                </address-family>
+            </logical-interface>
+        </physical-interface>
+        <physical-interface>
+            <name>ge-0/0/1</name>
+            <admin-status junos:format="Enabled">up</admin-status>
+            <oper-status>up</oper-status>
+            <link-level-type>Ethernet</link-level-type>
+            <source-filtering>disabled</source-filtering>
+            <speed>Auto</speed>
+            <duplex>Auto</duplex>
+            <if-media-type>Copper</if-media-type>
+            <logical-interface>
+                <name>ge-0/0/47.0</name>
+                <address-family>
+                    <address-family-name>aenet</address-family-name>
+                    <ae-bundle-name>ae0.0</ae-bundle-name>
+                </address-family>
+            </logical-interface>
+        </physical-interface>
+    </interface-information>
+    <cli>
+        <banner>{master:0}</banner>
+    </cli>
+</rpc-reply>
