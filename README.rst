@@ -65,3 +65,18 @@ Run::
   pip3 install netbox-netprod-importer
 
 netbox-netprod-importer is tested under python 3.4 to 3.7
+
+
+Contributors
+------------
+
+Tool initially developed by `Online.net  <https://www.online.net>`_ .
+
+* Anthony Ruhier <anthony.ruhier@gmail.com>
+
+
+License
+-------
+
+Tool under the GPLv3 license. Do not hesitate to report bugs, ask me some
+questions or do some pull request if you want to!
