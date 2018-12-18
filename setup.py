@@ -6,8 +6,8 @@ with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    "appdirs", "boltons", "cachetools", "defusedxml", "lxml", "napalm",
-    "netboxapi", "tqdm"
+    "appdirs", "cachetools", "defusedxml", "lxml", "napalm", "netboxapi",
+    "simplejson", "tqdm"
 ]
 setup_requirements = [
     "pytest-runner",
