@@ -115,6 +115,9 @@ class NXOSParser(CiscoParser):
             cmd_output
         )["TABLE_nbor_detail"]["ROW_nbor_detail"]
 
+        if isinstance(neighbours, dict):
+            neighbours = [neighbours]
+
         for n in neighbours:
             yield {
                 "local_port": n["l_port_id"],
