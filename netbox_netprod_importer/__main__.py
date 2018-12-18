@@ -154,8 +154,11 @@ def interconnect(parsed_args):
     creds = _get_creds(parsed_args)
     threads = parsed_args.threads
     netbox_api = NetboxAPI(**get_config()["netbox"])
+    remove_domains = get_config().get("remove_domains")
 
-    interco_pusher = NetboxInterconnectionsPusher(netbox_api)
+    interco_pusher = NetboxInterconnectionsPusher(
+        netbox_api, remove_domains=remove_domains
+    )
 
     print("Initializing importers…")
     importers = parse_devices_yaml_def(parsed_args.devices, creds)
