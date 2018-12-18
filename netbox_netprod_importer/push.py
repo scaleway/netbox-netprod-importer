@@ -237,16 +237,16 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         self.interfaces_cache = cachetools.LRUCache(128)
         self._lock = threading.Lock()
 
-    def push(self, importers, threads=1):
+    def push(self, importers, threads=1, overwrite=False):
         result = {"done": 0, "errors_interco": 0, "errors_device": 0}
 
         importers = importers.copy()
         with ThreadPoolExecutor(max_workers=threads) as executor:
             futures = {}
-            queue = set()
+            discovered = defaultdict(dict)
             for host, importer in importers.items():
                 future = executor.submit(
-                    self._handle_device, host, importer, queue
+                    self._handle_device, host, importer, discovered, overwrite
                 )
                 futures[future] = host
 
@@ -275,37 +275,50 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         return result
 
-    def _handle_device(self, hostname, importer, queue):
+    def _handle_device(self, hostname, importer, discovered, overwrite):
         result = {"done": 0, "errors": 0}
         with importer:
             for interco in importer.get_lldp_neighbours():
-                hashable_interco = tuple(sorted((
-                    interco["hostname"], importer.hostname,
-                    interco["local_port"], interco["port"]
-                )))
-                if hashable_interco in queue:
+                already_discovered = (
+                    discovered[importer.hostname].get(
+                        interco["local_port"], None
+                    ) == (interco["hostname"], interco["port"])
+                )
+                if already_discovered:
                     continue
 
                 try:
-                    queue.add(hashable_interco)
+                    discovered[importer.hostname][interco["local_port"]] = (
+                        interco["hostname"], interco["port"]
+                    )
+                    discovered[interco["hostname"]][interco["port"]] = (
+                        importer.hostname, interco["local_port"]
+                    )
 
                     try:
-                        self._interconnect_using_lldp_names(
+                        netif_connection = self._interconnect_using_lldp_names(
                             hostname, importer, interco
                         )
                     except DeviceNotFoundError:
                         if "chassis_id" not in interco:
                             raise
 
-                        self._interconnect_using_lldp_id(
+                        netif_connection = self._interconnect_using_lldp_id(
                             hostname, importer, interco
                         )
+
+                    self._update_discovered_from_netif_connection(
+                        discovered, netif_connection
+                    )
 
                     result["done"] += 1
                 except Exception as e:
                     result["errors"] += 1
                     logger.debug("Error with interco %s: %s", interco, e)
                     continue
+
+        if overwrite:
+            self._clean_undetected_intercos(hostname, discovered)
 
         return result
 
@@ -326,7 +339,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             # force a refresh of the interfaces
             netif_a = next(netif_a.get())
             netif_b = next(netif_b.get())
-            self.interconnect_netbox_netif(netif_a, netif_b)
+            return self.interconnect_netbox_netif(netif_a, netif_b)
 
     def _interconnect_using_lldp_id(self, hostname, importer, interco):
         a = hostname
@@ -339,7 +352,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             # force a refresh of the interfaces
             netif_a = next(netif_a.get())
             netif_b = next(netif_b.get())
-            self.interconnect_netbox_netif(netif_a, netif_b)
+            return self.interconnect_netbox_netif(netif_a, netif_b)
 
     def _find_netbox_netif_from_lldp_id(self, lldp_id, if_name):
         """
@@ -359,6 +372,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         return self._get_netif_or_derivative(device.name, if_name)
 
     def interconnect_netbox_netif(self, netif_a, netif_b):
+        """
+        :returns interface_connection: wanted interface connection
+        """
         props = {
             "interface_a": netif_a,
             "interface_b": netif_b,
@@ -371,7 +387,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 netif_b.interface_connection["interface"]["id"]
             )
             if connected_netif_id == netif_a.id:
-                return
+                return next(self._mappers["interface-connections"].get(
+                    netif_b.interface_connection["id"]
+                ))
             elif netif_a.interface_connection:
                 self._delete_connection_to_netbox_netif(netif_b)
                 # force a refresh to clear attached connections
@@ -394,7 +412,16 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         return netif_connection
 
+    def _delete_connection_to_netbox_netif(self, netif):
+        netif_connection = self._get_current_interco_of_netif(netif)
+        netif_connection.delete()
+
     def _get_current_interco_of_netif(self, netif):
+        if not netif.interface_connection:
+            raise ValueError(
+                "No connection found for network interface {}".format(netif.id)
+            )
+
         if netif.interface_connection.get("id"):
             return next(self._mappers["interface-connections"].get(
                 netif.interface_connection["id"]
@@ -406,15 +433,6 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             return self._find_connection_in_netif_connections(
                 netif_connections, netif
             )
-
-    def _delete_connection_to_netbox_netif(self, netif):
-        connections = self._mappers["interface-connections"].get(
-            device=netif.device.name
-        )
-        netif_connection = self._find_connection_in_netif_connections(
-            connections, netif
-        )
-        netif_connection.delete()
 
     def _find_connection_in_netif_connections(self, netif_connections, netif):
         for c in netif_connections:
@@ -478,3 +496,28 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         yield netif
         yield CiscoParser.get_abrev_if(netif)
         yield JuniperParser.get_real_ifname(netif)
+
+    def _update_discovered_from_netif_connection(self, discovered, netif_conn):
+        """
+        Update the discovered dict with the correct netif names
+
+        Names received during the discovery are not always the ones really
+        connected in netbox (thanks to the guessing algorithms). Add in
+        the `discovered` dict with the correct ones.
+        """
+        netif_a = netif_conn.interface_a
+        hostname_a = netif_a.device.name
+        netif_b = netif_conn.interface_b
+        hostname_b = netif_b.device.name
+
+        discovered[hostname_a][netif_a.name] = (hostname_b, netif_b.name)
+        discovered[hostname_b][netif_b.name] = (hostname_a, netif_a.name)
+        return discovered
+
+    def _clean_undetected_intercos(self, hostname, discovered):
+        for netif in self._get_interfaces_for_device(hostname).values():
+            if netif.name not in discovered[hostname]:
+                try:
+                    self._delete_connection_to_netbox_netif(netif)
+                except ValueError:
+                    pass

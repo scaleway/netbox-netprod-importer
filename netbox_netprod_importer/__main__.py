@@ -29,11 +29,6 @@ def parse_args():
     sp_import = subcommands.add_parser(
         "import", aliases=["imp"], help=("import devices data")
     )
-    sp_import.add_argument(
-        "--overwrite",
-        help="overwrite devices already pushed",
-        dest="overwrite", action="store_true"
-    )
     sp_import.set_defaults(func=import_data)
 
     sp_interconnect = subcommands.add_parser(
@@ -60,6 +55,11 @@ def parse_args():
             "-t", "--threads", metavar="THREADS",
             help="number of threads to run",
             dest="threads", default=10, type=int
+        )
+        sp.add_argument(
+            "--overwrite",
+            help="overwrite data already pushed",
+            dest="overwrite", action="store_true"
         )
         sp.add_argument(
             "-d", "--debug", help="enable debug, verbose output",
@@ -162,7 +162,9 @@ def interconnect(parsed_args):
     print()
 
     print("Finding neighbours and interconnecting…")
-    interco_result = interco_pusher.push(importers=importers, threads=threads)
+    interco_result = interco_pusher.push(
+        importers=importers, threads=threads, overwrite=parsed_args.overwrite
+    )
     print("{} interconnection(s) applied".format(interco_result["done"]))
     if interco_result["errors_device"]:
         logger.error(
