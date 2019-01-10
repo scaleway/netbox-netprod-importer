@@ -137,7 +137,8 @@ class DeviceImporter(ContextDecorator):
 
         interfaces = {}
         trunks = []
-        for ifname, napalm_ifprops in napalm_interfaces.items():
+        # sort to test it more easily
+        for ifname, napalm_ifprops in sorted(napalm_interfaces.items()):
             is_subif, parent_if = self._is_subinterface(ifname)
             if is_subif:
                 trunks.append(parent_if)

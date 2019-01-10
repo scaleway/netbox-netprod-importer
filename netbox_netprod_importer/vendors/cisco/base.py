@@ -19,7 +19,7 @@ class CiscoParser(_AbstractVendorParser):
         super().get_interfaces_lag(interfaces)
 
         interfaces_lag = defaultdict(list)
-        for interface in interfaces:
+        for interface in sorted(interfaces):
             cmd = "show run interface {}".format(interface)
             interface_conf_dump = self.device.cli([cmd])[cmd]
 
