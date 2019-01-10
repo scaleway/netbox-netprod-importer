@@ -1,55 +1,60 @@
 {
-	"TABLE_interface": {
-		"ROW_interface": [{
-				"interface": "Ethernet1/1",
+    "TABLE_interface": {
+        "ROW_interface": [{
+                "interface": "Ethernet1/1",
                 "speed": "100G",
-				"type": "CFP-100G-SR10"
-			},
-			{
-				"interface": "Ethernet1/2",
+                "type": "CFP-100G-SR10"
+            },
+            {
+                "interface": "Ethernet1/2",
                 "speed": "100G",
-				"type": "CFP2-100G-ER4"
-			},
-			{
-				"interface": "Ethernet1/3",
+                "type": "CFP2-100G-ER4"
+            },
+            {
+                "interface": "Ethernet1/3",
                 "speed": "1G",
-				"type": "1000BASE-T"
-			},
-			{
-				"interface": "Ethernet1/4",
+                "type": "1000BASE-T"
+            },
+            {
+                "interface": "Ethernet1/4",
                 "speed": "1G",
-				"type": "1000BASE-SX"
-			},
-			{
-				"interface": "Ethernet1/5",
+                "type": "1000BASE-SX"
+            },
+            {
+                "interface": "Ethernet1/5",
                 "speed": "10G",
-				"type": "SFP-H10GB-CU3M"
-			},
-			{
-				"interface": "Ethernet1/6",
+                "type": "SFP-H10GB-CU3M"
+            },
+            {
+                "interface": "Ethernet1/6",
                 "speed": "25G",
-				"type": "SFP-H25G-CU1M"
-			},
-			{
-				"interface": "Ethernet1/7",
+                "type": "SFP-H25G-CU1M"
+            },
+            {
+                "interface": "Ethernet1/7",
                 "speed": "40G",
-				"type": "QSFP-40G-SR-BD"
-			},
-			{
-				"interface": "Ethernet1/8",
+                "type": "QSFP-40G-SR-BD"
+            },
+            {
+                "interface": "Ethernet1/8",
                 "speed": "40G",
-				"type": "QSFP-4X10G-AC"
-			},
-			{
-				"interface": "Ethernet1/9",
+                "type": "QSFP-4X10G-AC"
+            },
+            {
+                "interface": "Ethernet1/9",
                 "speed": "10G",
-				"type": "XENPAK-10GB-LRM"
-			},
-			{
-				"interface": "Ethernet1/10",
+                "type": "XENPAK-10GB-LRM"
+            },
+            {
+                "interface": "Ethernet1/10",
                 "speed": "10G",
-				"type": "X2-10GB-T"
-			}
-		]
-	}
+                "type": "X2-10GB-T"
+            },
+            {
+                "interface": "mgmt0",
+                "speed": "",
+                "type": ""
+            }
+        ]
+    }
 }

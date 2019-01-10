@@ -15,12 +15,14 @@
 			{
 				"interface": "Ethernet1/3",
 				"sfp": "present",
-				"type": "1000BASE-T"
+				"type": "1000BASE-T",
+				"partnum": ""
 			},
 			{
 				"interface": "Ethernet1/4",
 				"sfp": "present",
-				"type": "1000BASE-SX"
+				"type": "1000BASE-SX",
+				"partnum": ""
 			},
 			{
 				"interface": "Ethernet1/5",
@@ -57,6 +59,10 @@
 				"sfp": "present",
 				"type": "X2-10GB-T",
 				"partnum": "X2-10GB-T-FU"
+			},
+			{
+				"interface": "mgmt0",
+				"partnum": ""
 			}
 		]
 	}
