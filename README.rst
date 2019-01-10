@@ -5,7 +5,7 @@ Netbox network production importer
 .. image:: https://travis-ci.org/Anthony25/netbox-netprod-importer.svg?branch=master
     :target: https://travis-ci.org/Anthony25/netbox-netprod-importer
 
-netbox-netprod-importer in a tool dedicated to help moving your current
+netbox-netprod-importer is a tool dedicated to help moving your current
 knowledge base to `Netbox <https://netbox.readthedocs.io/en/latest/>`_ as an
 IPAM/DCIM, independently of your the current information system. It connects to
 a given list of network devices and parse their status and configuration to
