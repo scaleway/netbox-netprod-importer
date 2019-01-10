@@ -38,7 +38,9 @@ class BaseTestImporter():
             lambda *args: mock_driver
         )
 
-    def test_resolve_primary_ip(self):
+    def test_resolve_primary_ip(self, mocker):
+        m = mocker.patch("socket.getaddrinfo")
+        m.side_effect = [[[None]*4 + [["127.0.0.1"]]], [[None]*4 + [["::1"]]]]
         with self.importer:
             ip = self.importer.resolve_primary_ip()
 
