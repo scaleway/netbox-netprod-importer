@@ -33,7 +33,7 @@ Installation
 
 Run::
 
-  pip3 install netbox-netprod-importer
+  pip3 install netbox_netprod_importer
 
 Or by using setuptools::
 
