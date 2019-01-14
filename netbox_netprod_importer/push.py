@@ -13,10 +13,12 @@ from tqdm import tqdm
 from netbox_netprod_importer.vendors.cisco import CiscoParser
 from netbox_netprod_importer.vendors.juniper import JuniperParser
 from netbox_netprod_importer.exceptions import (
-    DeviceNotFoundError, NetInterfaceNotFoundError, IPPushingError,
+    DeviceNotFoundError, IPPushingError, NetInterfaceNotFoundError,
     NetIfPushingError
 )
-from netbox_netprod_importer.tools import is_macaddr, macaddr_to_int
+from netbox_netprod_importer.tools import (
+    generic_netbox_error, is_macaddr, macaddr_to_int
+)
 
 
 logger = logging.getLogger("netbox_importer")
@@ -72,9 +74,15 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         self.props = props
         self.overwrite = overwrite
 
+    @generic_netbox_error
     def push(self):
-        # XXX: raise an exception if device not found
-        self._device = next(self._mappers["devices"].get(name=self.hostname))
+        try:
+            self._device = next(
+                self._mappers["devices"].get(name=self.hostname)
+            )
+        except StopIteration:
+            raise DeviceNotFoundError(self.hostname)
+
         if self.overwrite:
             self._clean_unmatched_interfaces()
         self._push_interfaces()
@@ -322,6 +330,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         return result
 
+    @generic_netbox_error
     def _interconnect_using_lldp_names(self, hostname, importer, interco):
         a = hostname
         netif_a = self._get_netif_or_derivative(a, interco["local_port"])
@@ -341,6 +350,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             netif_b = next(netif_b.get())
             return self.interconnect_netbox_netif(netif_a, netif_b)
 
+    @generic_netbox_error
     def _interconnect_using_lldp_id(self, hostname, importer, interco):
         a = hostname
         netif_a = self._get_netif_or_derivative(a, interco["local_port"])
@@ -514,6 +524,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         discovered[hostname_b][netif_b.name] = (hostname_a, netif_a.name)
         return discovered
 
+    @generic_netbox_error
     def _clean_undetected_intercos(self, hostname, discovered):
         for netif in self._get_interfaces_for_device(hostname).values():
             if netif.name not in discovered[hostname]:

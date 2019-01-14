@@ -25,6 +25,14 @@ class _NetboxPushingError(Exception):
             return self.netbox_exc.response.content.decode()
 
 
+class GenericNetboxError(_NetboxPushingError):
+    def __init__(self, netbox_req_exc):
+        self.netbox_exc = netbox_req_exc
+
+        reason = self._extract_netbox_error()
+        super().__init__("{} -- {}".format(netbox_req_exc, reason))
+
+
 class IPPushingError(_NetboxPushingError):
     def __init__(self, ip, netbox_req_exc):
         self.ip = ip
