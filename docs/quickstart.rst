@@ -85,8 +85,8 @@ The configuration is quite minimal yaml file::
 
 Adapt it and save it either as:
 
-  - `~/.config/netbox-netprod-importer/config.yml`
-  - `/etc/netbox-netprod-importer/config.yml`
+  - `~/.config/netbox_importer/config.yml`
+  - `/etc/netbox_importer/config.yml`
 
 Or can be set with the environment variable ``CONFIG_PATH``. Example:
 ``CONFIG_PATH=./config.yml netbox-netprod-importer …``
