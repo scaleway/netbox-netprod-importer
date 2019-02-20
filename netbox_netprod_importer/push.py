@@ -36,8 +36,8 @@ class _NetboxPusher(ABC):
                 self.netbox_api, app_name="dcim", model="devices"
             ), "interfaces": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="interfaces"
-            ), "interface-connections": NetboxMapper(
-                self.netbox_api, app_name="dcim", model="interface-connections"
+            ), "cables": NetboxMapper(
+                self.netbox_api, app_name="dcim", model="cables"
             ), "ip": NetboxMapper(
                 self.netbox_api, app_name="ipam", model="ip-addresses"
             )
@@ -386,29 +386,31 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         :returns interface_connection: wanted interface connection
         """
         props = {
-            "interface_a": netif_a,
-            "interface_b": netif_b,
-            "connection_status": True
+            'termination_a_type': 'dcim.interface',  # because we work with physical devices only
+            'termination_a_id': netif_a.id,
+            'termination_b_type': 'dcim.interface',  # see above
+            'termination_b_id': netif_b.id,
+            'connection_status': True
         }
 
         netif_connection = None
-        if netif_b.interface_connection:
+        if netif_b.connected_endpoint:
             connected_netif_id = int(
-                netif_b.interface_connection["interface"]["id"]
+                netif_b.connected_endpoint["id"]
             )
             if connected_netif_id == netif_a.id:
-                return next(self._mappers["interface-connections"].get(
-                    netif_b.interface_connection["id"]
+                return next(self._mappers["cable"].get(
+                    netif_b.connected_endpoint["cable"]
                 ))
-            elif netif_a.interface_connection:
+            elif netif_a.connected_endpoint:
                 self._delete_connection_to_netbox_netif(netif_b)
                 # force a refresh to clear attached connections
                 netif_b = next(netif_b.get())
             else:
-                netif_connection = self._get_current_interco_of_netif(netif_b)
+                netif_connection = self._get_current_cable_co_of_netif(netif_b)
 
-        if netif_a.interface_connection:
-            netif_connection = self._get_current_interco_of_netif(netif_a)
+        if netif_a.connected_endpoint:
+            netif_connection = self._get_current_cable_co_of_netif(netif_a)
 
         if netif_connection:
             for k, v in props.items():
@@ -416,32 +418,29 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
             netif_connection.put()
         else:
-            netif_connection = self._mappers["interface-connections"].post(
+            netif_connection = self._mappers["cables"].post(
                 **props
             )
 
         return netif_connection
 
     def _delete_connection_to_netbox_netif(self, netif):
-        netif_connection = self._get_current_interco_of_netif(netif)
+        netif_connection = self._get_current_cable_co_of_netif(netif)
         netif_connection.delete()
 
-    def _get_current_interco_of_netif(self, netif):
-        if not netif.interface_connection:
+    def _get_current_cable_co_of_netif(self, netif):
+        if not netif.connected_endpoint:
             raise ValueError(
                 "No connection found for network interface {}".format(netif.id)
             )
 
-        if netif.interface_connection.get("id"):
-            return next(self._mappers["interface-connections"].get(
-                netif.interface_connection["id"]
+        if netif.connected_endpoint.get("cable"):
+            return next(self._mappers["cables"].get(
+                netif.connected_endpoint["cable"]
             ))
         else:
-            netif_connections = self._mappers["interface-connections"].get(
-                device=netif.device.name
-            )
-            return self._find_connection_in_netif_connections(
-                netif_connections, netif
+            raise ValueError(
+                "No found cable connection for network interface {}".format(netif.id)
             )
 
     def _find_connection_in_netif_connections(self, netif_connections, netif):
