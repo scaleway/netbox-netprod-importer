@@ -399,7 +399,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 netif_b.connected_endpoint["id"]
             )
             if connected_netif_id == netif_a.id:
-                return next(self._mappers["cable"].get(
+                return next(self._mappers["cables"].get(
                     netif_b.connected_endpoint["cable"]
                 ))
             elif netif_a.connected_endpoint:
