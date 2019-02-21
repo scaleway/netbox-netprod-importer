@@ -472,7 +472,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
             int_netif_mac = macaddr_to_int(netif)
             if len(mac_addresses.get(int_netif_mac, 0)) == 1:
-                return mac_addresses[int_netif_mac]
+                return mac_addresses[int_netif_mac][0]
         else:
             for netif_deriv in self._get_all_derivatives_for_netif(netif):
                 for k in interfaces:
