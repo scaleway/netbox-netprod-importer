@@ -17,6 +17,8 @@ def is_macaddr(macaddr):
 
 
 def macaddr_to_int(macaddr):
+    if not macaddr:
+        return 0
     macaddr_simplified = macaddr.replace(":", "").replace(".", "")
     return int(macaddr_simplified, 16)
 
