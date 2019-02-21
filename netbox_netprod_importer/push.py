@@ -468,10 +468,10 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         if is_macaddr(netif):
             mac_addresses = defaultdict(list)
             for i in interfaces:
-                mac_addresses[macaddr_to_int(i.mac_address)].append(i)
+                mac_addresses[macaddr_to_int(interfaces[i].mac_address)].append(interfaces[i])
 
             int_netif_mac = macaddr_to_int(netif)
-            if mac_addresses.get(int_netif_mac, 0) == 1:
+            if len(mac_addresses.get(int_netif_mac, 0)) == 1:
                 return mac_addresses[int_netif_mac]
         else:
             for netif_deriv in self._get_all_derivatives_for_netif(netif):
