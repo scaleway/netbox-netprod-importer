@@ -394,13 +394,10 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         }
 
         netif_connection = None
-        if netif_b.interface_connection:
-            connected_netif_id = int(
-                netif_b.interface_connection["interface"]["id"]
-            )
-            if connected_netif_id == netif_a.id:
-                return next(self._mappers["interface-connections"].get(
-                    netif_b.interface_connection["id"]
+        if netif_b.connected_endpoint:
+            if netif_b.connected_endpoint.id == netif_a.id:
+                return next(self._mappers["cables"].get(
+                    netif_b.connected_endpoint.cable.id
                 ))
             elif netif_a.connected_endpoint:
                 self._delete_connection_to_netbox_netif(netif_b)
@@ -434,9 +431,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 "No connection found for network interface {}".format(netif.id)
             )
 
-        if netif.interface_connection.get("id"):
-            return next(self._mappers["interface-connections"].get(
-                netif.interface_connection["id"]
+        if netif.connected_endpoint.cable.id:
+            return next(self._mappers["cables"].get(
+                netif.connected_endpoint.cable.id
             ))
         else:
             raise ValueError(
