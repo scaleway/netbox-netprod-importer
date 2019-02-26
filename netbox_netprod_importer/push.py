@@ -320,6 +320,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                     )
 
                     result["done"] += 1
+                    logger.debug("True with interco %s:", interco)
                 except Exception as e:
                     result["errors"] += 1
                     logger.debug("Error with interco %s: %s", interco, e)
@@ -395,12 +396,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
 
         netif_connection = None
         if netif_b.connected_endpoint:
-            connected_netif_id = int(
-                netif_b.connected_endpoint["id"]
-            )
-            if connected_netif_id == netif_a.id:
+            if netif_b.connected_endpoint.id == netif_a.id:
                 return next(self._mappers["cables"].get(
-                    netif_b.connected_endpoint["cable"]
+                    netif_b.connected_endpoint.cable.id
                 ))
             elif netif_a.connected_endpoint:
                 self._delete_connection_to_netbox_netif(netif_b)
@@ -434,9 +432,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 "No connection found for network interface {}".format(netif.id)
             )
 
-        if netif.connected_endpoint.get("cable"):
+        if netif.connected_endpoint.cable.id:
             return next(self._mappers["cables"].get(
-                netif.connected_endpoint["cable"]
+                netif.connected_endpoint.cable.id
             ))
         else:
             raise ValueError(
@@ -467,11 +465,11 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         if is_macaddr(netif):
             mac_addresses = defaultdict(list)
             for i in interfaces:
-                mac_addresses[macaddr_to_int(i.mac_address)].append(i)
+                mac_addresses[macaddr_to_int(interfaces[i].mac_address)].append(interfaces[i])
 
             int_netif_mac = macaddr_to_int(netif)
-            if mac_addresses.get(int_netif_mac, 0) == 1:
-                return mac_addresses[int_netif_mac]
+            if len(mac_addresses.get(int_netif_mac, 0)) == 1:
+                return mac_addresses[int_netif_mac][0]
         else:
             for netif_deriv in self._get_all_derivatives_for_netif(netif):
                 for k in interfaces:
@@ -514,9 +512,9 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
         connected in netbox (thanks to the guessing algorithms). Add in
         the `discovered` dict with the correct ones.
         """
-        netif_a = netif_conn.interface_a
+        netif_a = netif_conn.termination_a
         hostname_a = netif_a.device.name
-        netif_b = netif_conn.interface_b
+        netif_b = netif_conn.termination_b
         hostname_b = netif_b.device.name
 
         discovered[hostname_a][netif_a.name] = (hostname_b, netif_b.name)
