@@ -113,12 +113,16 @@ Read the documentation of each subparser to use it in netbox-netprod-importer.
 Example
 ~~~~~~~
 
-2 switches are wanted to be imported:
+3 switches are wanted to be imported:
 
   - `switch-1.foo.tld`, which is a Cisco Nexus. The IP to target will be
     deduced by resolving the fqdn/hostname.
   - `switch-2.bar.tld`, which is a Juniper. `switch-2.bar.tld` does not
     resolve, so an IPv4 will be specified as target.
+  - `switch-3.foo.tld`, which is a Cisco Nexus. The IP to target will be
+    deduced by resolving the fqdn/hostname. And also determine the
+    interconnect via cdp. The cdp protocol works so far only with nxos
+    and nxos_ssh
 
 To declare 2 switches, define a yaml named `devices.yaml`::
 
@@ -128,6 +132,10 @@ To declare 2 switches, define a yaml named `devices.yaml`::
     switch-2.bar.tld:
       driver: "junos"
       target: "192.0.2.3"
+
+    switch-3.foo.tld:
+      driver: "nxos"
+      discovery_protocol: "cdp"
 
 Then to use it::
 
