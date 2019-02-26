@@ -14,14 +14,14 @@ logger = logging.getLogger("netbox_importer")
 def parse_devices_yaml_def(devices_yaml, creds=None):
     devices = {}
     with open(devices_yaml) as devices_yaml_str:
-        devices = {}
         for hostname, props in tqdm(yaml.safe_load(devices_yaml_str).items()):
             try:
                 devices[hostname] = DeviceImporter(
                     props.get("target") or hostname,
                     napalm_driver_name=props["driver"],
                     napalm_optional_args=props.get("optional_args"),
-                    creds=creds
+                    creds=creds,
+                    discovery_protocol=props.get("discovery_protocol")
                 )
             except Exception as e:
                 logger.error(
