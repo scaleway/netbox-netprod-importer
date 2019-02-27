@@ -121,8 +121,8 @@ Example
     resolve, so an IPv4 will be specified as target.
   - `switch-3.foo.tld`, which is a Cisco Nexus. The IP to target will be
     deduced by resolving the fqdn/hostname. And also determine the
-    interconnect via cdp. The cdp protocol works so far only with nxos
-    and nxos_ssh
+    interconnect via cdp. The cdp protocol works so far with nxos,
+    nxos_ssh and ios
 
 To declare 2 switches, define a yaml named `devices.yaml`::
 
