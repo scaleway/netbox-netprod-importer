@@ -51,7 +51,8 @@ class NXOSParser(CiscoParser):
 
         if not self.cache.get("transceivers"):
             transceiver_conf_dump = self.device.cli([cmd])[cmd]
-            transceivers = self._correct_and_convert_to_dict(transceiver_conf_dump)["TABLE_interface"]["ROW_interface"]
+            transceivers = self._correct_and_convert_to_dict(
+                transceiver_conf_dump)["TABLE_interface"]["ROW_interface"]
 
             self.cache["transceivers"] = {
                 i["interface"]: i for i in transceivers
@@ -86,7 +87,8 @@ class NXOSParser(CiscoParser):
 
         if not self.cache.get("ifstatus"):
             status_conf_dump = self.device.cli([cmd])[cmd]
-            status = self._correct_and_convert_to_dict(status_conf_dump)["TABLE_interface"]["ROW_interface"]
+            status = self._correct_and_convert_to_dict(status_conf_dump)[
+                "TABLE_interface"]["ROW_interface"]
 
             self.cache["ifstatus"] = {
                 i["interface"]: i for i in status
@@ -108,7 +110,8 @@ class NXOSParser(CiscoParser):
         cmd = "show lldp neighbors detail" + self._driver_end_selection()
 
         cmd_output = self.device.cli([cmd])[cmd]
-        neighbours = self._correct_and_convert_to_dict(cmd_output)["TABLE_nbor_detail"]["ROW_nbor_detail"]
+        neighbours = self._correct_and_convert_to_dict(cmd_output)[
+            "TABLE_nbor_detail"]["ROW_nbor_detail"]
 
         if isinstance(neighbours, dict):
             neighbours = [neighbours]
@@ -134,8 +137,8 @@ class NXOSParser(CiscoParser):
         cmd = "show cdp neighbors detail" + self._driver_end_selection()
 
         cmd_output = self.device.cli([cmd])[cmd]
-        neighbours = self._correct_and_convert_to_dict(cmd_output)["TABLE_cdp_neighbor_detail_info"][
-            "ROW_cdp_neighbor_detail_info"]
+        neighbours = self._correct_and_convert_to_dict(cmd_output)[
+            "TABLE_cdp_neighbor_detail_info"]["ROW_cdp_neighbor_detail_info"]
 
         if isinstance(neighbours, dict):
             neighbours = [neighbours]
