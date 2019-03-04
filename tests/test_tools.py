@@ -14,7 +14,7 @@ class TestTools():
         assert is_macaddr('00.11:22:AA:44.ff') == True
 
     def test_is_macaddr_true2(self):
-        assert is_macaddr('00:11:22:AA:44') == False
-
-    def test_is_macaddr_true3(self):
         assert is_macaddr('001122AA44cc') == True
+
+    def test_is_macaddr_false(self):
+        assert is_macaddr('00:11:22:AA:44') == False
