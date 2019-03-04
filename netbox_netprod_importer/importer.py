@@ -232,6 +232,41 @@ class DeviceImporter(ContextDecorator):
 
         return interfaces
 
+    def get_neighbours(self):
+        """
+        Either try the specific way to get lldp, cdp neighbours, or try using napalm
+        if not supported
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+                "mgmt_id": neighbour id # only with specific parser
+            }]
+        """
+        assert self.device.device
+        if self.discovery_protocol == "cdp":
+            yield from self.get_cdp_neighbours()
+        else:
+            yield from self.get_lldp_neighbours()
+
+
+    def get_cdp_neighbours(self):
+        """
+        Either try the specific way to get cdp neighbours
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+            }]
+        """
+        try:
+            yield from self.specific_parser.get_detailed_cdp_neighbours()
+        except NotImplementedError:
+            logger.error("%s platform does not support cdp", self.platform)
+            return []
+
     def get_lldp_neighbours(self):
         """
         Either try the specific way to get lldp neighbours, or try using napalm
@@ -244,13 +279,9 @@ class DeviceImporter(ContextDecorator):
                 "mgmt_id": neighbour id # only with specific parser
             }]
         """
-        assert self.device.device
 
         try:
-            if self.discovery_protocol == "cdp":
-                yield from self.specific_parser.get_detailed_cdp_neighbours()
-            else:
-                yield from self.specific_parser.get_detailed_lldp_neighbours()
+            yield from self.specific_parser.get_detailed_lldp_neighbours()
         except NotImplementedError:
             napalm_neighbours = self.device.get_lldp_neighbors()
             for port, port_neighbours in napalm_neighbours.items():

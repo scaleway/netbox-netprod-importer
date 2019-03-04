@@ -286,7 +286,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
     def _handle_device(self, hostname, importer, discovered, overwrite):
         result = {"done": 0, "errors": 0}
         with importer:
-            for interco in importer.get_lldp_neighbours():
+            for interco in importer.get_neighbours():
                 already_discovered = (
                     discovered[importer.hostname].get(
                         interco["local_port"], None
