@@ -74,12 +74,13 @@ def parse_args():
     arg_parser = parser
     args = arg_parser.parse_args()
 
-    if args.debug:
-        logging.basicConfig(
-            level=logging.DEBUG, format="%(levelname)s:%(name)s:%(message)s"
-        )
-
     if hasattr(args, "func"):
+        if args.debug:
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format="%(levelname)s:%(name)s:%(message)s"
+            )
+
         try:
             load_config()
         except FileNotFoundError:
