@@ -4,6 +4,7 @@ import re
 import logging
 
 from netbox_netprod_importer.vendors import _AbstractVendorParser
+from napalm.nxos.nxos import NXOSDriver
 
 
 logger = logging.getLogger("netbox_importer")
@@ -21,6 +22,9 @@ class CiscoParser(_AbstractVendorParser):
         interfaces_lag = defaultdict(list)
         for interface in sorted(interfaces):
             cmd = "show run interface {}".format(interface)
+            if isinstance(self.device, NXOSDriver):
+                self.device.device.api.cmd_method_raw = "cli_ascii"
+
             interface_conf_dump = self.device.cli([cmd])[cmd]
 
             channel_group_match = re.search(
