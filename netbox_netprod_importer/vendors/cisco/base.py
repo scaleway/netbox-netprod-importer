@@ -21,6 +21,9 @@ class CiscoParser(_AbstractVendorParser):
         interfaces_lag = defaultdict(list)
         for interface in sorted(interfaces):
             cmd = "show run interface {}".format(interface)
+            if self.device.platform == 'nxos':
+                self.device.device.api.cmd_method_raw = "cli_ascii"
+
             interface_conf_dump = self.device.cli([cmd])[cmd]
 
             channel_group_match = re.search(
