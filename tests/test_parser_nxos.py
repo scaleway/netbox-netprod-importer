@@ -36,6 +36,11 @@ class TestNXOSParser():
 
         assert port_channels == expected_port_channels
 
+    def test_get_abrev_if(self):
+        assert self.parser.get_abrev_if("Ethernet1/1") == "Eth1/1"
+        assert self.parser.get_abrev_if("port-channel10") == "po10"
+
+
     def test_get_interfaces_lag_multiple_netif(self):
         interfaces = [
             "Ethernet1/1", "Ethernet1/2", "Ethernet1/3", "mgmt0",
