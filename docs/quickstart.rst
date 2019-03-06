@@ -105,10 +105,15 @@ lists which hosts to target. One device is declared like the following::
       driver: napalm_driver_name
       # optional. Will be used instead of the switch fqdn to init the connection
       target: some_ip
+      # optional. Only needed for interconnect
+      discovery_protocol: lldp or cdp
 
 
 Read the documentation of each subparser to use it in netbox-netprod-importer.
 
+discovery_protocol can take the values "lldp" and "cdp". Since the CDP protocol
+is proprietary, it is only supported by CISSCO equipment. CDP detection only
+works with nxos, nxos_ssh and ios drivers.
 
 Example
 ~~~~~~~

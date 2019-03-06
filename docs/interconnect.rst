@@ -7,7 +7,7 @@ Interconnect devices
 
 Once all network interfaces are created, the interconnection feature allows
 to build a graph of some devices neighbours, and create an interconnection
-between each other in Netbox. It is based on LLDP and napalm, plus some custom
+between each other in Netbox. It is based on LLDP, CDP and napalm, plus some custom
 parsers to get more informations that what is fetched by the napalm drivers.
 
 The classic workflow is to start the interconnection after importing the
@@ -71,6 +71,10 @@ Considering a yaml file ``~/importer/devices.yml`` containing these devices::
     switch-2.bar.tld:
       driver: "junos"
       target: "192.0.2.3"
+
+    switch-3.foo.tld:
+      driver: "nxos"
+      discovery_protocol: "cdp"
 
 To simply apply the import on these devices, do::
 
@@ -166,3 +170,25 @@ layer 2 only. If multiple interfaces are found on Netbox by trying to match on
 their MAC address, the interconnection will fail, as the correct neighbour
 interface cannot be determined. This feature is permitted by the specific
 parsers, and platforms relying only on Napalm will not be able to do that.
+
+Also, if you want to connect switches to servers (linux), and on bond servers
+or team and in netbox you enter them with MAC addresses, the search will
+return more than one value, and which is not known. Of course, you can check
+the type of interface, but why if you can configure a normal return port_id.
+
+Ansible task to configure::
+
+  - name: configure lldpd
+    lineinfile:
+      dest: /etc/lldpd.conf
+      line: "configure ports {{ item }} lldp portidsubtype local {{ item }}"
+      state: present
+      backup: yes
+      create: yes
+    when: hostvars[inventory_hostname]['ansible_%s' | format(item)]['module'] is defined
+    loop: "{{ansible_interfaces }}"
+    tags:
+      - config_lldp
+    notify: restart lldpd
+
+Tested on RedHat 6 and 7, lldpd from EPEL repository.
