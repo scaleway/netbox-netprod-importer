@@ -119,3 +119,34 @@ class TestNXOSParser():
 
     def test_get_interface_type_no_transceiver(self):
         assert self.parser.get_interface_type("mgmt0") == "Other"
+
+    def test_get_detailed_lldp_neighbours(self):
+        must = [
+            {
+                "local_port": "Eth1/1",
+                "hostname": "DEV_1",
+                "port": "Eth1/1",
+                "chassis_id": "002a.6ad3.380c",
+            },
+            {
+                "local_port": "Eth1/2",
+                "hostname": "DEV_1",
+                "port": "Eth1/2",
+                "chassis_id": "002a.6ad3.380d",
+            },
+            {
+                "local_port": "Eth1/3",
+                "hostname": "server1",
+                "port": "eth0",
+                "chassis_id": "f898.ef9d.2197",
+            },
+            {
+                "local_port": "Eth1/10",
+                "hostname": "server3",
+                "port": "enp129s0f0",
+                "chassis_id": "f898.ef9d.4198",
+            }
+        ]
+        assert len([x for x in self.parser.get_detailed_lldp_neighbours()
+                    if x not in must]) == 0
+
