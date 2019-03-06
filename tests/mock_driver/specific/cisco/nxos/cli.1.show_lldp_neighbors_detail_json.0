@@ -1,0 +1,79 @@
+SB: Permission denied. SB: Permission denied. SB: Permission denied. {
+  "neigh_hdr": "neigh_hdr",
+  "TABLE_nbor_detail": {
+    "ROW_nbor_detail": [
+      {
+        "chassis_type": "4",
+        "chassis_id": "002a.6ad3.380c",
+        "port_type": "7",
+        "port_id": "Eth1/1",
+        "l_port_id": "Eth1/1",
+        "port_desc": "",
+        "sys_name": "DEV_1",
+        "sys_desc": "Cisco NX-OS(tm) n6000, Software (n6000-uk9), Version 7.3(3)N1(1), RELEASE SOFTWARE Copyright (c) 2002-2012, 2016-2017 by Cisco Systems, Inc. Compiled 4/27/2018 9:00:00",
+        "ttl": "175",
+        "system_capability": "B",
+        "enabled_capability": "B",
+        "mgmt_addr_type": "IPV4",
+        "mgmt_addr": "192.168.1.130",
+        "mgmt_addr_ipv6_type": "Address not advertised",
+        "mgmt_addr_ipv6": "not advertised",
+        "vlan_id": "1"
+      },
+      {
+        "chassis_type": "4",
+        "chassis_id": "002a.6ad3.380d",
+        "port_type": "7",
+        "port_id": "Eth1/2",
+        "l_port_id": "Eth1/2",
+        "port_desc": "",
+        "sys_name": "DEV_1",
+        "sys_desc": "Cisco NX-OS(tm) n6000,Software (n6000-uk9), Version 7.3(3)N1(1), RELEASE SOFTWARE Copyright (c) 2002-2012, 2016-2017 by Cisco Systems, Inc. Compiled 4/27/2018 9:00:00",
+        "ttl": "177",
+        "system_capability": "B",
+        "enabled_capability": "B",
+        "mgmt_addr_type": "IPV4",
+        "mgmt_addr": "192.168.1.130",
+        "mgmt_addr_ipv6_type": "Address not advertised",
+        "mgmt_addr_ipv6": "not advertised",
+        "vlan_id": "1"
+      },
+      {
+        "chassis_type": "4",
+        "chassis_id": "f898.ef9d.2197",
+        "port_type": "3",
+        "port_id": "eth0",
+        "l_port_id": "Eth1/3",
+        "port_desc": "eth0",
+        "sys_name": "server1",
+        "sys_desc": "Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64",
+        "ttl": "102",
+        "system_capability": "BWRS",
+        "enabled_capability": "S",
+        "mgmt_addr_type": "IPV4",
+        "mgmt_addr": "192.168.2.11",
+        "mgmt_addr_ipv6_type": "Address not advertised",
+        "mgmt_addr_ipv6": "not advertised",
+        "invalid_vlan_id": "Vlan ID: not advertised"
+      },
+      {
+        "chassis_type": "4",
+        "chassis_id": "f898.ef9d.4198",
+        "port_type": "3",
+        "port_id": "enp129s0f0",
+        "l_port_id": "Eth1/10",
+        "port_desc": "enp129s0f0",
+        "sys_name": "server3",
+        "sys_desc": "Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64",
+        "ttl": "108",
+        "system_capability": "BWRS",
+        "enabled_capability": "S",
+        "mgmt_addr_type": "IPV4",
+        "mgmt_addr": "192.168.2.13",
+        "mgmt_addr_ipv6_type": "Address not advertised",
+        "mgmt_addr_ipv6": "not advertised",
+        "invalid_vlan_id": "Vlan ID: not advertised"
+      }
+	]
+  }
+}

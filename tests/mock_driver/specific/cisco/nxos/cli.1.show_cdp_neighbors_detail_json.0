@@ -1,0 +1,74 @@
+{
+  "TABLE_cdp_neighbor_detail_info": {
+    "ROW_cdp_neighbor_detail_info": [
+      {
+        "ifindex": 1001,
+        "device_id": "DEV_1(F0000000000)",
+        "sysname": "DEV_1",
+        "numaddr": 1,
+        "v4addr": "192.168.1.130",
+        "platform_id": "N6K-C6001-64P",
+        "capability": "Supports-STP-Dispute",
+        "intf_id": "Ethernet1/1",
+        "port_id": "Ethernet1/1",
+        "ttl": 175,
+        "version": "Cisco Nexus Operating System (NX-OS) Software, Version 7.3(3)N1(1)",
+        "version_no": "v2",
+        "nativevlan": 1,
+        "duplexmode": "full",
+        "mtu": 0,
+        "syslocation": "Virtual",
+        "num_mgmtaddr": 0
+      },
+      {
+        "ifindex": 1002,
+        "device_id": "DEV_1(F0000000000)",
+        "sysname": "DEV_1",
+        "numaddr": 1,
+        "v4addr": "192.168.1.130",
+        "platform_id": "N6K-C6001-64P",
+        "capability": "Supports-STP-Dispute",
+        "intf_id": "Ethernet1/2",
+        "port_id": "Ethernet1/2",
+        "ttl": 177,
+        "version": "Cisco Nexus Operating System (NX-OS) Software, Version 7.3(3)N1(1)",
+        "version_no": "v2",
+        "nativevlan": 1,
+        "duplexmode": "full",
+        "mtu": 0,
+        "syslocation": "Virtual",
+        "num_mgmtaddr": 0
+      },
+      {
+        "ifindex": 1003,
+        "device_id": "server1",
+        "numaddr": 1,
+        "v4addr": "192.168.2.11",
+        "platform_id": "Linux",
+        "capability": "host",
+        "intf_id": "Ethernet1/3",
+        "port_id": "eth0",
+        "ttl": 102,
+        "version": "Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64",
+        "version_no": "v2",
+        "mtu": 0,
+        "num_mgmtaddr": 0
+      },
+      {
+        "ifindex": 1004,
+        "device_id": "server3",
+        "numaddr": 1,
+        "v4addr": "192.168.2.13",
+        "platform_id": "Linux",
+        "capability": "host",
+        "intf_id": "Ethernet1/10",
+        "port_id": "enp129s0f0",
+        "ttl": 118,
+        "version": "Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64",
+        "version_no": "v2",
+        "mtu": 0,
+        "num_mgmtaddr": 0
+      }
+    ]
+  }
+}
