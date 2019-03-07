@@ -36,7 +36,13 @@ def parse_args():
     )
     sp_interconnect.set_defaults(func=interconnect)
 
-    for sp in (sp_import, sp_interconnect):
+    sp_inventory = subcommands.add_parser(
+        "inventory", aliases=["inv"],
+        help=("inventory devices (import + interconnect)")
+    )
+    sp_inventory.set_defaults(func=inventory)
+
+    for sp in (sp_import, sp_interconnect, sp_inventory):
         sp.add_argument(
             "devices", metavar="DEVICES", type=str,
             help="Yaml file containing a definition of devices to poll"
@@ -50,6 +56,11 @@ def parse_args():
             "-p", "--password",
             help="ask for credentials for connections to the devices",
             dest="ask_password", action="store_true"
+        )
+        sp.add_argument(
+            "-P", "--Password", metavar="PASSWORD",
+            help="credentials for connections to the devices",
+            dest="password", type=str
         )
         sp.add_argument(
             "-t", "--threads", metavar="THREADS",
@@ -89,6 +100,9 @@ def parse_args():
         arg_parser.print_help()
         sys.exit(1)
 
+def inventory(parsed_args):
+    import_data(parsed_args)
+    interconnect(parsed_args)
 
 def import_data(parsed_args):
     creds = _get_creds(parsed_args)
@@ -110,6 +124,8 @@ def _get_creds(parsed_args):
     creds = ()
     if parsed_args.ask_password:
         creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
+    elif parsed_args.password:
+        creds = (parsed_args.user or getpass.getuser(), parsed_args.password)
 
     return creds
 
