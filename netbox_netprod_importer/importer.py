@@ -18,7 +18,7 @@ logger = logging.getLogger("netbox_importer")
 class DeviceImporter(ContextDecorator):
 
     def __init__(self, hostname, napalm_driver_name, target=None, creds=None,
-                 napalm_optional_args=None):
+                 napalm_optional_args=None, discovery_protocol='lldp'):
         self.hostname = hostname
         if not creds:
             creds = (None, None)
@@ -32,6 +32,7 @@ class DeviceImporter(ContextDecorator):
         self.specific_parser = self._get_specific_device_parser(
             napalm_driver_name
         )
+        self.discovery_protocol = discovery_protocol
 
     def _get_specific_device_parser(self, os):
         try:
@@ -231,6 +232,41 @@ class DeviceImporter(ContextDecorator):
 
         return interfaces
 
+    def get_neighbours(self):
+        """
+        Either try the specific way to get lldp, cdp neighbours, or try using napalm
+        if not supported
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+                "mgmt_id": neighbour id # only with specific parser
+            }]
+        """
+        assert self.device.device
+        if self.discovery_protocol == "cdp":
+            yield from self.get_cdp_neighbours()
+        else:
+            yield from self.get_lldp_neighbours()
+
+
+    def get_cdp_neighbours(self):
+        """
+        Either try the specific way to get cdp neighbours
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+            }]
+        """
+        try:
+            yield from self.specific_parser.get_detailed_cdp_neighbours()
+        except NotImplementedError:
+            logger.error("%s platform does not support cdp", self.platform)
+            return []
+
     def get_lldp_neighbours(self):
         """
         Either try the specific way to get lldp neighbours, or try using napalm
@@ -243,7 +279,6 @@ class DeviceImporter(ContextDecorator):
                 "mgmt_id": neighbour id # only with specific parser
             }]
         """
-        assert self.device.device
 
         try:
             yield from self.specific_parser.get_detailed_lldp_neighbours()

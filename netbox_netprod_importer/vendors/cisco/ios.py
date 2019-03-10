@@ -48,3 +48,29 @@ class IOSParser(CiscoParser):
                 self.cache["ifstatus"][if_abrev] = if_type
 
         return self.cache["ifstatus"]
+
+    def get_detailed_cdp_neighbours(self):
+        cmd = "show cdp neighbors detail"
+        cmd_output = self.device.cli([cmd])[cmd]
+        cmd_output = re.split('---+\n', cmd_output)
+        neighbours = []
+        for cdp_port_info in cmd_output:
+            if len(cdp_port_info):
+                info_port = re.split('\n\n', cdp_port_info)[0].split('\n')
+                hostname = local_port = port = ''
+                for line in info_port:
+                    if line.startswith('Device'):
+                        hostname = line.split(':')[1].strip()
+                    elif line.startswith('Interface'):
+                        local_port, port = line.split(',')
+                        local_port = local_port.split(':')[1].strip()
+                        port = port.split(':')[1].strip()
+                neighbours.append(
+                    {
+                        "local_port": local_port,
+                        "hostname": hostname,
+                        "port": port
+                    }
+                )
+        for n in neighbours:
+            yield n

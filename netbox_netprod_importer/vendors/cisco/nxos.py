@@ -6,6 +6,7 @@ from netbox_netprod_importer.exceptions import TypeCouldNotBeParsedError
 from netbox_netprod_importer.vendors.constants import NetboxInterfaceTypes
 from .constants import InterfacesRegex
 from .base import CiscoParser
+from napalm.nxos.nxos import NXOSDriver
 
 
 logger = logging.getLogger("netbox_importer")
@@ -46,13 +47,12 @@ class NXOSParser(CiscoParser):
         raise TypeCouldNotBeParsedError()
 
     def _get_transceiver_by_if(self):
-        cmd = "show interface transceiver | json"
+        cmd = "show interface transceiver" + self._driver_end_selection()
 
         if not self.cache.get("transceivers"):
             transceiver_conf_dump = self.device.cli([cmd])[cmd]
-            transceivers = json.loads(
-                transceiver_conf_dump
-            )["TABLE_interface"]["ROW_interface"]
+            transceivers = self._correct_and_convert_to_dict(
+                transceiver_conf_dump)["TABLE_interface"]["ROW_interface"]
 
             self.cache["transceivers"] = {
                 i["interface"]: i for i in transceivers
@@ -83,13 +83,12 @@ class NXOSParser(CiscoParser):
         raise TypeCouldNotBeParsedError()
 
     def _get_ifstatus_by_if(self):
-        cmd = "show interface status | json"
+        cmd = "show interface status" + self._driver_end_selection()
 
         if not self.cache.get("ifstatus"):
             status_conf_dump = self.device.cli([cmd])[cmd]
-            status = json.loads(
-                status_conf_dump
-            )["TABLE_interface"]["ROW_interface"]
+            status = self._correct_and_convert_to_dict(status_conf_dump)[
+                "TABLE_interface"]["ROW_interface"]
 
             self.cache["ifstatus"] = {
                 i["interface"]: i for i in status
@@ -105,15 +104,14 @@ class NXOSParser(CiscoParser):
                 "local_port": local port name,
                 "hostname": neighbour hostname (if handled),
                 "port": neighbour port name,
-                "mgmt_id": neighbour id
+                "chassis_id": neighbour id
             }]
         """
-        cmd = "show lldp neighbors detail | json"
+        cmd = "show lldp neighbors detail" + self._driver_end_selection()
 
         cmd_output = self.device.cli([cmd])[cmd]
-        neighbours = json.loads(
-            cmd_output
-        )["TABLE_nbor_detail"]["ROW_nbor_detail"]
+        neighbours = self._correct_and_convert_to_dict(cmd_output)[
+            "TABLE_nbor_detail"]["ROW_nbor_detail"]
 
         if isinstance(neighbours, dict):
             neighbours = [neighbours]
@@ -125,3 +123,43 @@ class NXOSParser(CiscoParser):
                 "port": n["port_id"],
                 "chassis_id": n["chassis_id"]
             }
+
+    def get_detailed_cdp_neighbours(self):
+        """
+        Napalm does not support cdp
+
+        :return neighbours: [{
+                "local_port": local port name,
+                "hostname": neighbour hostname (if handled),
+                "port": neighbour port name,
+            }]
+        """
+        cmd = "show cdp neighbors detail" + self._driver_end_selection()
+
+        cmd_output = self.device.cli([cmd])[cmd]
+        neighbours = self._correct_and_convert_to_dict(cmd_output)[
+            "TABLE_cdp_neighbor_detail_info"]["ROW_cdp_neighbor_detail_info"]
+
+        if isinstance(neighbours, dict):
+            neighbours = [neighbours]
+
+        for n in neighbours:
+            yield {
+                "local_port": n["intf_id"],
+                "hostname": re.sub("\(.*$", "", n["device_id"], count=1),
+                "port": n["port_id"],
+            }
+
+    def _driver_end_selection(self) -> str:
+        if type(self.device) is NXOSDriver:
+            self.device.device.api.cmd_method_raw = "cli"
+            return ""
+        else:
+            return " | json"
+
+    def _correct_and_convert_to_dict(self, cmd_output) -> dict:
+        if type(cmd_output) is not dict:
+            if not re.search("^{", cmd_output):
+                cmd_output = re.sub('^.+\. {', '{', cmd_output, count=1)
+            cmd_output = json.loads(cmd_output)
+        return cmd_output

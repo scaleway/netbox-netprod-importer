@@ -1,0 +1,81 @@
+-------------------------
+Device ID: DEV_1
+Entry address(es):
+  IP address: 192.168.1.130
+Platform: cisco WS-C6509-E,  Capabilities: Router Switch IGMP
+Interface: Ethernet1/1,  Port ID (outgoing port): Ethernet1/1
+Holdtime : 124 sec
+
+Version :
+Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9_WAN-M), Version 12.2(33)SXJ10, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2015 by Cisco Systems, Inc.
+Compiled Fri 14-Aug-15 08:58 by prod_rel_team
+
+advertisement version: 2
+VTP Management Domain: 'NSIB'
+Native VLAN: 1
+Duplex: full
+Power Available TLV:
+
+    Power request id: 0, Power management id: 0, Power available: 0, Power management level: 0
+Management address(es):
+  IP address: 192.168.1.130
+
+-------------------------
+Device ID: DEV_1
+Entry address(es):
+  IP address: 192.168.1.130
+Platform: cisco WS-C6509-E,  Capabilities: Router Switch IGMP
+Interface: Ethernet1/2,  Port ID (outgoing port): Ethernet1/2
+Holdtime : 124 sec
+
+Version :
+Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9_WAN-M), Version 12.2(33)SXJ10, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2015 by Cisco Systems, Inc.
+Compiled Fri 14-Aug-15 08:58 by prod_rel_team
+
+advertisement version: 2
+VTP Management Domain: 'NSIB'
+Native VLAN: 1
+Duplex: full
+Power Available TLV:
+
+    Power request id: 0, Power management id: 0, Power available: 0, Power management level: 0
+Management address(es):
+  IP address: 192.168.1.130
+
+-------------------------
+Device ID: server1
+Entry address(es):
+  IP address: 192.168.2.11
+Platform: Linux,  Capabilities: Host
+Interface: Ethernet1/3,  Port ID (outgoing port): eth0
+Holdtime : 94 sec
+
+Version :
+Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64
+
+advertisement version: 2
+Power Available TLV:
+
+    Power request id: 0, Power management id: 0, Power available: 0, Power management level: 0
+Management address(es):
+
+-------------------------
+Device ID: server3
+Entry address(es):
+  IP address: 192.168.2.13
+Platform: Linux,  Capabilities: Host
+Interface: Ethernet1/10,  Port ID (outgoing port): enp129s0f0
+Holdtime : 94 sec
+
+Version :
+Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64
+
+advertisement version: 2
+Power Available TLV:
+
+    Power request id: 0, Power management id: 0, Power available: 0, Power management level: 0
+Management address(es):
