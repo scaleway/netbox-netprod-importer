@@ -165,3 +165,8 @@ can be discovered and interconnected between each other::
 
 Full documentation for the interconnect feature can be found
 :ref:`here <interconnect>`.
+
+You can also run an inventory, which first starts the import and then the interconnect::
+
+    $ netbox-netprod-importer inventory devices.yaml
+
