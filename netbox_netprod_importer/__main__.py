@@ -75,16 +75,17 @@ def parse_args():
     args = arg_parser.parse_args()
 
     if hasattr(args, "func"):
-        if args.debug:
+        try:
+            load_config()
+        except FileNotFoundError:
+            sys.exit(2)
+
+        if args.debug or get_config().get("debug", False):
             logging.basicConfig(
                 level=logging.DEBUG,
                 format="%(levelname)s:%(name)s:%(message)s"
             )
 
-        try:
-            load_config()
-        except FileNotFoundError:
-            sys.exit(2)
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
