@@ -1,0 +1,38 @@
+
+Port      Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/1                      notconnect   760          auto   auto 10/100/1000BaseTX
+Gi1/0/2                      notconnect   760          auto   auto 10/100/1000BaseTX
+Gi1/0/3                      disabled     712          auto   auto 10/100/1000BaseTX
+Gi1/0/4                      disabled     712          auto   auto 10/100/1000BaseTX
+Gi1/0/5                      notconnect   760          auto   auto 10/100/1000BaseTX
+Gi1/0/6                      notconnect   trunk        auto   auto 10/100/1000BaseTX
+Gi1/0/7                      disabled     712          auto   auto 10/100/1000BaseTX
+Gi1/0/8                      disabled     712          auto   auto 10/100/1000BaseTX
+Gi1/0/9                      connected    trunk      a-full a-1000 10/100/1000BaseTX
+Gi1/0/10                     notconnect   760          auto   auto 10/100/1000BaseTX
+Gi1/0/11                     connected    764        a-full a-1000 10/100/1000BaseTX
+Gi1/0/12                     connected    764        a-full a-1000 10/100/1000BaseTX
+Gi1/0/13                     connected    760        a-full a-1000 10/100/1000BaseTX
+Gi1/0/14                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/15                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/16                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/17                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/18                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/19                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/20                     disabled     1            auto   auto 10/100/1000BaseTX
+Gi1/0/21                     connected    trunk      a-full a-1000 10/100/1000BaseTX
+Gi1/0/22                     connected    trunk      a-full a-1000 10/100/1000BaseTX
+Gi1/0/23                     connected    trunk      a-full a-1000 10/100/1000BaseTX
+Gi1/0/24                     connected    trunk      a-full a-1000 10/100/1000BaseTX
+Gi1/0/25                     connected    trunk      a-full a-1000 1000BaseSX SFP
+Gi1/0/26                     connected    trunk      a-full a-1000 1000BaseSX SFP
+Gi1/0/27                     connected    trunk      a-full a-1000 1000BaseSX SFP
+Gi1/0/28                     connected    trunk      a-full a-1000 1000BaseSX SFP
+Te1/1/1                      connected    routed       full    10G 10Gbase-LR
+Te1/1/3                      connected    trunk        full    10G 10Gbase-CU1M
+Te1/1/6                      connected    trunk        full    10G 10Gbase-CU1.5M
+Te1/2/6                      connected    trunk        full    10G 10Gbase-ACU7M
+Te1/2/7                      connected    5            full    10G 10Gbase-CU1M
+Te1/2/28                     connected    routed       full    10G 10Gbase-SR
+Te2/2/6                      connected    trunk        full    10G 10Gbase-SR
+Po1                          connected    trunk      a-full a-1000
