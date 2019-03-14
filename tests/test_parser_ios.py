@@ -40,3 +40,4 @@ class TestIOSParser():
         assert 'SFP+ (10GE)' == self.parser.get_interface_type(
             "TenGigabitEthernet1/2/6"
         )
+        assert 'Other' == self.parser.get_interface_type('Po1')
