@@ -62,8 +62,10 @@ def parse_args():
             dest="overwrite", action="store_true"
         )
         sp.add_argument(
-            "-d", "--debug", help="enable debug, verbose output",
-            dest="debug", action="store_true"
+            "-v", "--verbose", metavar="LEVEL",
+            help="enable debug or warning, verbose output",
+            dest="verbose",
+            choices=['warning', 'debug']
         )
 
     parser.add_argument(
@@ -75,10 +77,10 @@ def parse_args():
     args = arg_parser.parse_args()
 
     if hasattr(args, "func"):
-        if args.debug:
+        if args.verbose:
             logging.basicConfig(
-                level=logging.DEBUG,
-                format="%(levelname)s:%(name)s:%(message)s"
+                level=logging.DEBUG if args.verbose == 'debug' else logging.WARNING,
+                format="%(levelname)s: %(name)s: %(message)s"
             )
 
         try:

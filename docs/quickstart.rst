@@ -54,7 +54,7 @@ The configuration is quite minimal yaml file::
     ########################
 
     ## Be more verbose ##
-    debug: False
+    verbose: None
 
 
     ################

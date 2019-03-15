@@ -23,7 +23,7 @@ Usage
 The interconnections feature can be started through the subcommand
 ``interconnect``::
 
-    usage: netbox-netprod-importer interconnect [-h] [-u USER] [-p] [-t THREADS] [-d] DEVICES
+    usage: netbox-netprod-importer interconnect [-h] [-u USER] [-p] [-t THREADS] [-v warning|debug] DEVICES
 
     positional arguments:
       DEVICES               Yaml file containing a definition of devices to poll
@@ -35,7 +35,8 @@ The interconnections feature can be started through the subcommand
       -t THREADS, --threads THREADS
                             number of threads to run
       --overwrite           overwrite data already pushed
-      -d, --debug           enable debug, verbose output
+      -v LEVEL, --verbose LEVEL
+                            enable debug or warning, verbose output
 
 
 By default, connecting to the devices will use the default authentication
@@ -53,8 +54,8 @@ during the neighbour search, it will be kept as it is. This behavior can be
 changed by enabling the ``--overwrite`` option, which will, on each scanned
 device, clean all connections that have not been found.
 
-Toggle the debug mode with the ``-d/--debug`` option to get a more verbose
-output.
+Toggle the verbose mode with the ``-v/--verbose  warning/debug`` option to
+get a more verbose output.
 
 The ``devices`` parameter is a yaml file, representing the devices list to
 import, as detailed :ref:`here <quickstart_device_list>`.

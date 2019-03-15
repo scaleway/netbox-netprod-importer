@@ -31,7 +31,7 @@ Usage
 
 An import can be started through the subcommand ``import``::
 
-    usage: netbox-netprod-importer import [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-d] devices
+    usage: netbox-netprod-importer import [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-v warning|debug] devices
 
     positional arguments:
       devices               Yaml file containing a definition of devices to poll
@@ -43,7 +43,8 @@ An import can be started through the subcommand ``import``::
       -p, --password        ask for credentials for connections to the devices
       -t THREADS, --threads THREADS
                             number of threads to run
-      -d, --debug           enable debug, verbose output
+      -v LEVEL, --verbose LEVEL
+                            enable debug or warning, verbose output
 
 By default, connecting to the devices will use the default authentication
 mechanism of the napalm driver, which is normally the current user and no
@@ -62,8 +63,8 @@ seem to be configured anymore. This behavior can be changed by enabling the
 ``--overwrite`` option, which will clean all interfaces and IP that have not been
 found during the import.
 
-Toggle the debug mode with the ``-d/--debug`` option to get a more verbose
-output.
+Toggle the verbose mode with the ``-v/--verbose  warning/debug`` option to
+get a more verbose output.
 
 The ``devices`` parameter is a yaml file, representing the devices list to
 import, as detailed :ref:`here <quickstart_device_list>`.
