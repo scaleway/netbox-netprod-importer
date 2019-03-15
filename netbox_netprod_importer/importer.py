@@ -33,6 +33,7 @@ class DeviceImporter(ContextDecorator):
             napalm_driver_name
         )
         self.discovery_protocol = discovery_protocol
+        self.napalm_driver_name = napalm_driver_name
 
     def _get_specific_device_parser(self, os):
         try:
@@ -247,9 +248,21 @@ class DeviceImporter(ContextDecorator):
         assert self.device.device
         if self.discovery_protocol == "cdp":
             yield from self.get_cdp_neighbours()
+        elif self.discovery_protocol == "multiple" and \
+                self.napalm_driver_name in ['ios', 'nxos', 'nxos_ssh']:
+            yield from self.get_multiple_neighbours()
         else:
             yield from self.get_lldp_neighbours()
 
+    def get_multiple_neighbours(self):
+        neighbours = [n for n in self.get_cdp_neighbours()]
+        for n in self.get_lldp_neighbours():
+            if not any(self.specific_parser.get_abrev_if(elem['local_port']) \
+                       == self.specific_parser.get_abrev_if(n['local_port']) \
+                       for elem in neighbours):
+                yield n
+        for n in neighbours:
+            yield n
 
     def get_cdp_neighbours(self):
         """
