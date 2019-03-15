@@ -1,0 +1,25 @@
+{
+  "neigh_hdr": "neigh_hdr",
+  "TABLE_nbor_detail": {
+    "ROW_nbor_detail": [
+      {
+        "chassis_type": "4",
+        "chassis_id": "f898.ef9d.1ecf",
+        "port_type": "7",
+        "port_id": "enp129s0f0",
+        "l_port_id": "Eth1/10",
+        "port_desc": "enp129s0f0",
+        "sys_name": "server3",
+        "sys_desc": "Red Hat Enterprise Linux Server 7.4 (Maipo) Linux 3.10.0-693.37.4.el7.x86_64 #1 SMP Fri Aug 10 12:34:55 EDT 2018 x86_64",
+        "ttl": "118",
+        "system_capability": "BWRS",
+        "enabled_capability": "S",
+        "mgmt_addr_type": "IPV4",
+        "mgmt_addr": "192.168.2.13",
+        "mgmt_addr_ipv6_type": "Address not advertised",
+        "mgmt_addr_ipv6": "not advertised",
+        "invalid_vlan_id": "Vlan ID: not advertised"
+      }
+    ]
+  }
+}

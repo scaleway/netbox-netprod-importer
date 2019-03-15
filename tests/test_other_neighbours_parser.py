@@ -75,6 +75,12 @@ class TestNXOS(TestOtherNeighboursParcer):
     discovery_protocol = "cdp"
 
 
+class TestNXOS(TestOtherNeighboursParcer):
+    profile = "nxos"
+    path = "mock_driver/specific/cisco/nxos/"
+    discovery_protocol = "multiple"
+
+
 class TestIOS(TestOtherNeighboursParcer):
     profile = "ios"
     path = "mock_driver/specific/cisco/ios/"

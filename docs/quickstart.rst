@@ -128,6 +128,11 @@ Example
     deduced by resolving the fqdn/hostname. And also determine the
     interconnect via cdp. The cdp protocol works so far with nxos,
     nxos_ssh and ios
+  - `switch-4.foo.tld`, which is a Cisco Nexus. The IP to target will be
+     deduced by resolving the fqdn/hostname. And also determine the
+     interconnect via cdp and lldp. The `multiple` option only works for
+     nxos, nxos_ssh and ios.
+
 
 To declare 2 switches, define a yaml named `devices.yaml`::
 
@@ -141,6 +146,10 @@ To declare 2 switches, define a yaml named `devices.yaml`::
     switch-3.foo.tld:
       driver: "nxos"
       discovery_protocol: "cdp"
+
+    switch-4.foo.tld:
+      driver: "nxos"
+      discovery_protocol: "multiple"
 
 Then to use it::
 

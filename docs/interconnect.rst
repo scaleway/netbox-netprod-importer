@@ -76,6 +76,10 @@ Considering a yaml file ``~/importer/devices.yml`` containing these devices::
       driver: "nxos"
       discovery_protocol: "cdp"
 
+    switch-4.foo.tld:
+      driver: "nxos"
+      discovery_protocol: "multiple"
+
 To simply apply the import on these devices, do::
 
     $ netbox-netprod-importer interco ~/importer/devices.yml
