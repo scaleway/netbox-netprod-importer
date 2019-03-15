@@ -87,6 +87,7 @@ def parse_args():
             load_config()
         except FileNotFoundError:
             sys.exit(2)
+
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
