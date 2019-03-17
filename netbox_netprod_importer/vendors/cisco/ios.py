@@ -38,12 +38,16 @@ class IOSParser(CiscoParser):
         cmd = "show interface status"
 
         if not self.cache.get("ifstatus"):
-            status_conf_dump = self.device.cli([cmd])[cmd]
+            status_conf_dump = self.device.cli([cmd])[cmd].strip()
             self.cache["ifstatus"] = {}
+            start = status_conf_dump.find('Type')
             for l in status_conf_dump.splitlines()[1:]:
-                split_l = l.split()
+                split_l = l.split(maxsplit=1)
                 if_abrev = split_l[0]
-                if_type = split_l[-1]
+                try:
+                    if_type = l[start:]
+                except:
+                    if_type = None
 
                 self.cache["ifstatus"][if_abrev] = if_type
 
