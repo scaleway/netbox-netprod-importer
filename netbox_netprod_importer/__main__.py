@@ -85,6 +85,7 @@ def parse_args():
                 logging.setLevel(numeric_level)
         except FileNotFoundError:
             sys.exit(2)
+
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
