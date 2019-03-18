@@ -78,14 +78,14 @@ def parse_args():
     if hasattr(args, "func"):
         try:
             load_config()
-            if args.verbose:
-                numeric_level = getattr(logging, args.verbose.upper(), None)
-                if not isinstance(numeric_level, int):
-                    raise ValueError('Invalid log level: %s' % args.verbose)
-                logging.setLevel(numeric_level)
         except FileNotFoundError:
             sys.exit(2)
 
+        if args.verbose:
+            numeric_level = getattr(logging, args.verbose.upper(), None)
+            if not isinstance(numeric_level, int):
+                raise ValueError('Invalid log level: %s' % args.verbose)
+            logging.setLevel(numeric_level)
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
