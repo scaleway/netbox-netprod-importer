@@ -23,7 +23,7 @@ Usage
 The interconnections feature can be started through the subcommand
 ``interconnect``::
 
-    usage: netbox-netprod-importer interconnect [-h] [-u USER] [-p] [-t THREADS] [-v warning|debug] DEVICES
+    usage: netbox-netprod-importer interconnect [-h] [-u USER] [-p] [-t THREADS] [-v LEVEL] DEVICES
 
     positional arguments:
       DEVICES               Yaml file containing a definition of devices to poll
