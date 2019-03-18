@@ -3,6 +3,7 @@ import errno
 import logging
 import os
 import yaml
+import urllib3
 
 from netbox_netprod_importer import __appname__
 
@@ -38,6 +39,18 @@ def get_config(custom_path=None):
         with open(config_path, "r") as config_file:
             conf = yaml.safe_load(config_file)
             get_config.cache = conf
+            if conf.get("loglevel", "None") != "None":
+                numeric_level = getattr(logging, conf.get("loglevel").upper())
+                if not isinstance(numeric_level, int):
+                    raise ValueError('Invalid log level: %s' \
+                                     % conf.get("loglevel"))
+            else:
+                numeric_level = logging.ERROR
+            logging.basicConfig(level=numeric_level,
+                                format="%(levelname)s: %(name)s: %(message)s"
+                                )
+            if conf.get("disable_ssl_warnings", False):
+                urllib3.disable_warnings()
             return conf
     except FileNotFoundError as e:
         logger.debug(e)

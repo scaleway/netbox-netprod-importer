@@ -36,8 +36,8 @@ The interconnections feature can be started through the subcommand
                             number of threads to run
       --overwrite           overwrite data already pushed
       -v LEVEL, --verbose LEVEL
-                            enable debug or warning, verbose output
-
+                            verbose output debug, info, warning, error and
+                            critical, default: error
 
 By default, connecting to the devices will use the default authentication
 mechanism of the napalm driver, which is normally the current user and no
@@ -54,8 +54,8 @@ during the neighbour search, it will be kept as it is. This behavior can be
 changed by enabling the ``--overwrite`` option, which will, on each scanned
 device, clean all connections that have not been found.
 
-Toggle the verbose mode with the ``-v/--verbose  warning/debug`` option to
-get a more verbose output.
+Toggle the verbose mode with the ``-v/--verbose  LEVEL`` option to get a more
+verbose output. Default error.
 
 The ``devices`` parameter is a yaml file, representing the devices list to
 import, as detailed :ref:`here <quickstart_device_list>`.
