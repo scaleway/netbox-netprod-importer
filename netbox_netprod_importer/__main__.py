@@ -85,7 +85,7 @@ def parse_args():
             numeric_level = getattr(logging, args.verbose.upper(), None)
             if not isinstance(numeric_level, int):
                 raise ValueError('Invalid log level: %s' % args.verbose)
-            logging.basicConfig(level=numeric_level)
+            logging.getLogger().setLevel(numeric_level)
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
