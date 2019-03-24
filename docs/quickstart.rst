@@ -54,7 +54,10 @@ The configuration is quite minimal yaml file::
     ########################
 
     ## Be more verbose ##
-    debug: False
+    verbose: None
+
+    ## Disable ssl warnings in urllib3 ##
+    disable_ssl_warnings: False
 
 
     ################
@@ -90,6 +93,14 @@ Adapt it and save it either as:
 
 Or can be set with the environment variable ``CONFIG_PATH``. Example:
 ``CONFIG_PATH=./config.yml netbox-netprod-importer …``
+
+To turn off unverified HTTPS warning messages request:
+`InsecureRequestWarning: Unverified HTTPS request is being made. Advised
+verification verification is strongly advised. See:
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+InsecureRequestWarning)`
+In the configuration file, set the `disable_ssl_warnings` option to `True`
+Default `False`
 
 
 Device list

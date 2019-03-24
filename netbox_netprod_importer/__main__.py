@@ -62,8 +62,9 @@ def parse_args():
             dest="overwrite", action="store_true"
         )
         sp.add_argument(
-            "-d", "--debug", help="enable debug, verbose output",
-            dest="debug", action="store_true"
+            "-v", "--verbose", metavar="LEVEL",
+            help="enable debug or warning, verbose output",
+            dest="verbose"
         )
 
     parser.add_argument(
@@ -80,12 +81,11 @@ def parse_args():
         except FileNotFoundError:
             sys.exit(2)
 
-        if args.debug or get_config().get("debug", False):
-            logging.basicConfig(
-                level=logging.DEBUG,
-                format="%(levelname)s:%(name)s:%(message)s"
-            )
-
+        if args.verbose:
+            numeric_level = getattr(logging, args.verbose.upper(), None)
+            if not isinstance(numeric_level, int):
+                raise ValueError('Invalid log level: %s' % args.verbose)
+            logging.getLogger().setLevel(numeric_level)
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
