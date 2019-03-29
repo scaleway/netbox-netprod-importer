@@ -191,7 +191,7 @@ class NXOSParser(CiscoParser):
         from pynxos.errors import CLIError
         try:
             return self._get_interfaces_mode()[interface].get("oper_mode")
-        except (json.JSONDecodeError, KeyError, CLIError):
+        except (KeyError, CLIError):
             logger.debug("Switch %s, show interface switchport cmd error",
                          self.device.hostname)
         return None
@@ -202,7 +202,7 @@ class NXOSParser(CiscoParser):
             return int(
                 self._get_interfaces_mode()[interface].get("access_vlan")
             )
-        except (json.JSONDecodeError, KeyError, CLIError):
+        except (KeyError, CLIError):
             logger.debug("Switch %s, show interface switchport cmd error",
                          self.device.hostname)
         return None
@@ -213,7 +213,7 @@ class NXOSParser(CiscoParser):
             return int(
                 self._get_interfaces_mode()[interface].get("native_vlan")
             )
-        except (json.JSONDecodeError, KeyError, CLIError):
+        except (KeyError, CLIError):
             logger.debug("Switch %s, show interface switchport cmd error",
                          self.device.hostname)
         return None
