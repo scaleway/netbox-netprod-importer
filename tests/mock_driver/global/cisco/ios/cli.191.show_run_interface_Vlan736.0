@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 118 bytes
+!
+interface Vlan736
+ description
+ ip address 10.20.12.1 255.255.255.192
+ no ip redirects
+ no ip proxy-arp
+end

@@ -1,0 +1,14 @@
+
+Building configuration...
+
+Current configuration : 215 bytes
+!
+interface Vlan745
+ description
+ ip address 10.143.44.1 255.255.252.0
+ ip helper-address 10.143.38.120
+ ip helper-address 10.143.38.220
+ ip helper-address 10.132.2.31
+ no ip redirects
+ no ip proxy-arp
+end

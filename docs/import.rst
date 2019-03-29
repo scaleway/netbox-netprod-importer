@@ -135,6 +135,8 @@ The importer fetch the following type of data:
     * Parent LAG
     * Enabled/Disabled
     * IPv4/IPv6
+    * Vlan
+    * 802.1Q Mode
 
   - Serial number
   - Main IPv4/IPv6

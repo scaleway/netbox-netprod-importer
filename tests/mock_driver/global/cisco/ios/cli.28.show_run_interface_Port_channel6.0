@@ -1,0 +1,13 @@
+
+Building configuration...
+
+Current configuration : 255 bytes
+!
+interface Port-channel6
+ description
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 511,515,518,520,522-524,529,531,533,710,772,776
+ switchport trunk allowed vlan add 786-788,790,794
+ switchport nonegotiate
+end

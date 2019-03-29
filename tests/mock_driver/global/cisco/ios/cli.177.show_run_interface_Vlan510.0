@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 116 bytes
+!
+interface Vlan510
+ description
+ ip address 10.20.2.46 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+end

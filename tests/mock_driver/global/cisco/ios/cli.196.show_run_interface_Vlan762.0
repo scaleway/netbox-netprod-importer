@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 132 bytes
+!
+interface Vlan762
+ description
+ ip address 10.143.37.129 255.255.255.128
+ no ip redirects
+ no ip proxy-arp
+ shutdown
+end

@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 128 bytes
+!
+interface Vlan707
+ description
+ ip address 10.2.1.129 255.255.255.192
+ no ip redirects
+ no ip proxy-arp
+end

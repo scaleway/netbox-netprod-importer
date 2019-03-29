@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 128 bytes
+!
+interface Port-channel22
+ description
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+end

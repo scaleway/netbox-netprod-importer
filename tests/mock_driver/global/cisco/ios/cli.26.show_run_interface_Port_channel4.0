@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 184 bytes
+!
+interface Port-channel4
+ description
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 601-604,606-609,611-613,710,778
+ switchport nonegotiate
+end

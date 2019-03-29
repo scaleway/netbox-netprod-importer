@@ -7,7 +7,7 @@ from netbox_netprod_importer.vendors.constants import NetboxInterfaceTypes
 from .constants import InterfacesRegex
 from .base import CiscoParser
 from napalm.nxos.nxos import NXOSDriver
-
+from collections import defaultdict
 
 logger = logging.getLogger("netbox_importer")
 
@@ -15,6 +15,8 @@ logger = logging.getLogger("netbox_importer")
 class NXOSParser(CiscoParser):
     def get_interface_type(self, interface):
         super().get_interface_type(interface)
+        if re.search(r"^Vlan(\d*)|^Tunnel(\d+)", interface):
+            return "Virtual"
 
         fn_order = (
             self._parse_type_from_transceiver,
@@ -163,3 +165,96 @@ class NXOSParser(CiscoParser):
                 cmd_output = re.sub('^.+\. {', '{', cmd_output, count=1)
             cmd_output = json.loads(cmd_output)
         return cmd_output
+
+    def get_interfaces_lag(self, interfaces):
+        cmd = "show port-channel summary" + self._driver_end_selection()
+        interfaces_lag = defaultdict(list)
+
+        cmd_output = self.device.cli([cmd])[cmd]
+        port_cannels = self._correct_and_convert_to_dict(cmd_output)[
+            "TABLE_channel"]["ROW_channel"]
+
+        if isinstance(port_cannels, dict):
+            port_cannels = [port_cannels]
+
+        for p in port_cannels:
+            if isinstance(p["TABLE_member"]["ROW_member"], dict):
+                member = [p["TABLE_member"]["ROW_member"]]
+            else:
+                member = p["TABLE_member"]["ROW_member"]
+            for interface in member:
+                interfaces_lag[interface["port"]] = p["port-channel"]
+
+        return interfaces_lag
+
+    def get_interface_mode(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[interface].get("oper_mode")
+        except (json.JSONDecodeError, KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+
+    def get_interface_access_valn(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return int(
+                self._get_interfaces_mode()[interface].get("access_vlan")
+            )
+        except (json.JSONDecodeError, KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+
+    def get_interface_netive_valn(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return int(
+                self._get_interfaces_mode()[interface].get("native_vlan")
+            )
+        except (json.JSONDecodeError, KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+
+    def _get_interfaces_mode(self):
+        cmd = "show interface switchport" + self._driver_end_selection()
+
+        if not self.cache.get("mode"):
+            mode_conf_dump = self.device.cli([cmd])[cmd]
+            mode = self._correct_and_convert_to_dict(mode_conf_dump)[
+                "TABLE_interface"]["ROW_interface"]
+
+            self.cache["mode"] = {
+                i["interface"]: i for i in mode
+            }
+
+        return self.cache["mode"]
+
+    def get_vlans(self):
+        """
+        Napalm does not support vlan
+        but there are issues https://github.com/napalm-automation/napalm/issues/927
+
+        :return vlans:
+            vlan_id, {
+                "name": vlan name,
+                "interfaces": list interfaces dict
+            }
+        """
+        cmd = "show vlan brief" + self._driver_end_selection()
+
+        cmd_output = self.device.cli([cmd])[cmd]
+        vlans = self._correct_and_convert_to_dict(cmd_output)[
+            "TABLE_vlanbriefxbrief"]["ROW_vlanbriefxbrief"]
+
+        if isinstance(vlans, dict):
+            vlans = [vlans]
+
+        for v in vlans:
+            yield v["vlanshowbr-vlanid"], {
+                "name": v["vlanshowbr-vlanname"],
+                "interfaces": [x.strip() \
+                               for x in v["vlanshowplist-ifidx"].split(",")]
+            }

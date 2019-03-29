@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 170 bytes
+!
+interface TenGigabitEthernet2/2/6
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 710,760
+ switchport nonegotiate
+ channel-group 100 mode active
+end

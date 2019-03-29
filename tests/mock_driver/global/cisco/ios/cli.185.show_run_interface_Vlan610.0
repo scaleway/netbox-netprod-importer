@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 121 bytes
+!
+interface Vlan610
+ description
+ ip address 10.143.56.225 255.255.255.240
+ no ip redirects
+ no ip proxy-arp
+end

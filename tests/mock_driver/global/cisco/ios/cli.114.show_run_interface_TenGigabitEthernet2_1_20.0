@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 178 bytes
+!
+interface TenGigabitEthernet2/1/20
+ description
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 2,3
+ spanning-tree portfast edge trunk
+end

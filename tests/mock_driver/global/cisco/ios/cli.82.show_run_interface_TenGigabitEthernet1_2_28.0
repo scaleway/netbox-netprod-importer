@@ -1,0 +1,15 @@
+
+Building configuration...
+
+Current configuration : 293 bytes
+!
+interface TenGigabitEthernet1/2/28
+ description
+ no switchport
+ ip address 10.143.249.77 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 1410160D1B5679
+ ip ospf network point-to-point
+end

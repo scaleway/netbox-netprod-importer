@@ -1,0 +1,13 @@
+
+Building configuration...
+
+Current configuration : 181 bytes
+!
+interface Vlan760
+ description
+ ip address 10.143.38.1 255.255.254.0
+ no ip redirects
+ no ip proxy-arp
+ ip flow monitor netflow input
+ ip flow monitor netflow output
+end

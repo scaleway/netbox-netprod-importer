@@ -1,0 +1,9 @@
+
+Building configuration...
+
+Current configuration : 48 bytes
+!
+interface Vlan1
+ no ip address
+ shutdown
+end
