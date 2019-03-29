@@ -3,6 +3,7 @@ import errno
 import logging
 import os
 import yaml
+import urllib3
 
 from netbox_netprod_importer import __appname__
 
@@ -38,6 +39,18 @@ def get_config(custom_path=None):
         with open(config_path, "r") as config_file:
             conf = yaml.safe_load(config_file)
             get_config.cache = conf
+            if conf.get("loglevel", "None"):
+                numeric_level = getattr(logging, conf.get("loglevel").upper())
+                if not isinstance(numeric_level, int):
+                    raise ValueError('Invalid log level: %s' \
+                                     % conf.get("loglevel"))
+            else:
+                numeric_level = logging.ERROR
+            logging.basicConfig(level=numeric_level,
+                                format="%(levelname)s: %(name)s: %(message)s"
+                                )
+            if conf.get("disable_ssl_warnings", False):
+                urllib3.disable_warnings()
             return conf
     except FileNotFoundError as e:
         logger.debug(e)
@@ -58,62 +71,3 @@ def get_config(custom_path=None):
 
 def load_config(custom_path=None):
     get_config(custom_path)
-
-
-class Config(dict):
-    """
-    Works like a dict but can be filled directly from a yaml configuration
-    file. Inspired from the Flask Config class (a part of their code has been
-    copied here).
-    :param defaults: an optional dictionary of default values
-    """
-    def __init__(self, defaults=None):
-        dict.__init__(self, defaults or {})
-        self.refresh_global_logger_lvl()
-
-    def refresh_global_logger_lvl(self):
-        if self.get("debug", None):
-            logging.getLogger("virt_backup").setLevel(logging.DEBUG)
-        else:
-            logging.getLogger("virt_backup").setLevel(logging.INFO)
-
-    def from_dict(self, conf_dict):
-        """
-        Copy values from dict
-        """
-        self.update(conf_dict)
-
-    def from_str(self, conf_str):
-        """
-        Read configuration from string
-        """
-        self.from_dict(yaml.load(conf_str))
-
-    def from_yaml(self, filename, silent=False):
-        """
-        Updates the values in the config from a yaml file.
-        :param filename: filename of the config.
-        :param silent: set to ``True`` if you want silent failure for missing
-                       files.
-        """
-        filename = os.path.join(filename)
-        try:
-            with open(filename) as conf_yaml:
-                self.from_dict(yaml.safe_load(conf_yaml))
-        except IOError as e:
-            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
-                return False
-            e.strerror = 'Unable to load configuration file (%s)' % e.strerror
-            raise
-        return True
-
-    def get_groups(self):
-        """
-        Get backup groups with default values
-        """
-        groups = {}
-        for g, prop in self.get("groups", {}).items():
-            d = self.get("default", {}).copy()
-            d.update(prop)
-            groups[g] = d
-        return groups

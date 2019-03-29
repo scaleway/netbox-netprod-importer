@@ -36,7 +36,13 @@ def parse_args():
     )
     sp_interconnect.set_defaults(func=interconnect)
 
-    for sp in (sp_import, sp_interconnect):
+    sp_inventory = subcommands.add_parser(
+        "inventory", aliases=["inv"],
+        help=("inventory devices (import + interconnect)")
+    )
+    sp_inventory.set_defaults(func=inventory)
+
+    for sp in (sp_import, sp_interconnect, sp_inventory):
         sp.add_argument(
             "devices", metavar="DEVICES", type=str,
             help="Yaml file containing a definition of devices to poll"
@@ -52,6 +58,11 @@ def parse_args():
             dest="ask_password", action="store_true"
         )
         sp.add_argument(
+            "-P", "--Password", metavar="PASSWORD",
+            help="credentials for connections to the devices",
+            dest="password", type=str
+        )
+        sp.add_argument(
             "-t", "--threads", metavar="THREADS",
             help="number of threads to run",
             dest="threads", default=10, type=int
@@ -62,8 +73,9 @@ def parse_args():
             dest="overwrite", action="store_true"
         )
         sp.add_argument(
-            "-d", "--debug", help="enable debug, verbose output",
-            dest="debug", action="store_true"
+            "-v", "--verbose", metavar="LEVEL",
+            help="enable debug or warning, verbose output",
+            dest="verbose"
         )
 
     parser.add_argument(
@@ -80,17 +92,19 @@ def parse_args():
         except FileNotFoundError:
             sys.exit(2)
 
-        if args.debug or get_config().get("debug", False):
-            logging.basicConfig(
-                level=logging.DEBUG,
-                format="%(levelname)s:%(name)s:%(message)s"
-            )
-
+        if args.verbose:
+            numeric_level = getattr(logging, args.verbose.upper(), None)
+            if not isinstance(numeric_level, int):
+                raise ValueError('Invalid log level: %s' % args.verbose)
+            logging.getLogger().setLevel(numeric_level)
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
         sys.exit(1)
 
+def inventory(parsed_args):
+    import_data(parsed_args)
+    interconnect(parsed_args)
 
 def import_data(parsed_args):
     creds = _get_creds(parsed_args)
@@ -112,6 +126,8 @@ def _get_creds(parsed_args):
     creds = ()
     if parsed_args.ask_password:
         creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
+    elif parsed_args.password:
+        creds = (parsed_args.user or getpass.getuser(), parsed_args.password)
 
     return creds
 
