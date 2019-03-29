@@ -41,6 +41,8 @@ An import can be started through the subcommand ``import``::
       --overwrite           overwrite devices already pushed
       -u user, --user user  user to use for connections to the devices
       -p, --password        ask for credentials for connections to the devices
+      -P PASSWORD, --Password PASSWORD
+                            credentials for connections to the devices
       -t THREADS, --threads THREADS
                             number of threads to run
       -v LEVEL, --verbose LEVEL
@@ -50,8 +52,8 @@ An import can be started through the subcommand ``import``::
 By default, connecting to the devices will use the default authentication
 mechanism of the napalm driver, which is normally the current user and no
 password/authentication by key. To change this behavior, the ``-u/--user`` and
-``-p/--password`` options can be used to specify the user to use, and tells the
-importer to ask for the password to use.
+``-p/--password|-P/--Password`` options can be used to specify the user to use, and tells the
+importer to ask|set for the password to use.
 
 The import is multithreaded, and split by device. The default number of threads
 is 10, but can be changed with the ``-t/--threads`` option.
