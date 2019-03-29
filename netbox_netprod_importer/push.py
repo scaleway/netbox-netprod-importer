@@ -368,7 +368,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                 except Exception as e:
                     result["errors"] += 1
                     logger.warning("Switch %s Error with interco %s: %s",
-                                   hostname, interco, e)
+                                   hostname ,interco, e)
                     continue
 
         if overwrite:

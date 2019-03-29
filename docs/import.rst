@@ -31,7 +31,7 @@ Usage
 
 An import can be started through the subcommand ``import``::
 
-    usage: netbox-netprod-importer import [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-d] devices
+    usage: netbox-netprod-importer import [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-v LEVEL] devices
 
     positional arguments:
       devices               Yaml file containing a definition of devices to poll
@@ -41,15 +41,19 @@ An import can be started through the subcommand ``import``::
       --overwrite           overwrite devices already pushed
       -u user, --user user  user to use for connections to the devices
       -p, --password        ask for credentials for connections to the devices
+      -P PASSWORD, --Password PASSWORD
+                            credentials for connections to the devices
       -t THREADS, --threads THREADS
                             number of threads to run
-      -d, --debug           enable debug, verbose output
+      -v LEVEL, --verbose LEVEL
+                            verbose output debug, info, warning, error and
+                            critical, default: error
 
 By default, connecting to the devices will use the default authentication
 mechanism of the napalm driver, which is normally the current user and no
 password/authentication by key. To change this behavior, the ``-u/--user`` and
-``-p/--password`` options can be used to specify the user to use, and tells the
-importer to ask for the password to use.
+``-p/--password|-P/--Password`` options can be used to specify the user to use, and tells the
+importer to ask|set for the password to use.
 
 The import is multithreaded, and split by device. The default number of threads
 is 10, but can be changed with the ``-t/--threads`` option.
@@ -62,8 +66,8 @@ seem to be configured anymore. This behavior can be changed by enabling the
 ``--overwrite`` option, which will clean all interfaces and IP that have not been
 found during the import.
 
-Toggle the debug mode with the ``-d/--debug`` option to get a more verbose
-output.
+Toggle the verbose mode with the ``-v/--verbose  LEVEL`` option to get a more
+verbose output. Default error.
 
 The ``devices`` parameter is a yaml file, representing the devices list to
 import, as detailed :ref:`here <quickstart_device_list>`.
