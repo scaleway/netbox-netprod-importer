@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 170 bytes
+!
+interface Port-channel100
+ description
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 710,760
+ switchport nonegotiate
+end

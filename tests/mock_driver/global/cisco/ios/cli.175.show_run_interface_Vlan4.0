@@ -1,0 +1,13 @@
+
+Building configuration...
+
+Current configuration : 217 bytes
+!
+interface Vlan4
+ description
+ ip address 10.143.248.203 255.255.255.248
+ no ip redirects
+ no ip proxy-arp
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 050C0209361E1D
+end

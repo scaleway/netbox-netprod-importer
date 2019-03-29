@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 139 bytes
+!
+interface TenGigabitEthernet2/1/2
+ description
+ no switchport
+ no ip address
+ no cdp enable
+ dual-active fast-hello
+end

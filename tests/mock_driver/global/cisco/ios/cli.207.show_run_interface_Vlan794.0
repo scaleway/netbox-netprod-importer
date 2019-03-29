@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 214 bytes
+!
+interface Vlan794
+ description
+ ip address 10.143.249.129 255.255.255.252
+ ip ospf message-digest-key 1 md5 7 030E49051C4329414D1B1F1F4645
+ ip ospf network point-to-point
+end

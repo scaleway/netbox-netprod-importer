@@ -26,35 +26,47 @@ class TestNXOSParser():
         self.device.open()
         self.parser = NXOSParser(self.device)
 
-    def test_get_interfaces_lag(self):
-        interfaces = ("Ethernet1/1", )
-        expected_port_channels = {
-            "Ethernet1/1": "port-channel10"
-        }
-
-        port_channels = self.parser.get_interfaces_lag(interfaces)
-
-        assert port_channels == expected_port_channels
-
     def test_get_abrev_if(self):
         assert self.parser.get_abrev_if("Ethernet1/1") == "Eth1/1"
         assert self.parser.get_abrev_if("port-channel10") == "po10"
 
-
-    def test_get_interfaces_lag_multiple_netif(self):
-        interfaces = [
-            "Ethernet1/1", "Ethernet1/2", "Ethernet1/3", "mgmt0",
-            "port-channel10", "port-channel11", "port-channel12", "Vlan200",
-        ]
-
+    def test_get_interfaces_lag(self):
         expected_port_channels = {
-            "Ethernet1/1": "port-channel10",
-            "Ethernet1/2": "port-channel12",
-            "Ethernet1/3": "port-channel10",
+            "Ethernet1/21": "port-channel12",
+            "Ethernet1/22": "port-channel12",
+            "Ethernet1/23": "port-channel12",
+            "Ethernet1/24": "port-channel12",
+            "Ethernet1/37": "port-channel22",
+            "Ethernet1/38": "port-channel23",
+            "Ethernet1/7": "port-channel24",
+            "Ethernet1/8": "port-channel25",
+            "Ethernet1/25": "port-channel26",
+            "Ethernet1/26": "port-channel27",
+            "Ethernet1/27": "port-channel28",
+            "Ethernet1/30": "port-channel29",
+            "Ethernet1/34": "port-channel30",
+            "Ethernet1/1": "port-channel31",
+            "Ethernet1/2": "port-channel32",
+            "Ethernet1/3": "port-channel33",
+            "Ethernet1/31": "port-channel34",
+            "Ethernet1/33": "port-channel35",
+            "Ethernet1/35": "port-channel36",
+            "Ethernet1/36": "port-channel37",
+            "Ethernet1/4": "port-channel38",
+            "Ethernet1/5": "port-channel39",
+            "Ethernet1/6": "port-channel40",
+            "Ethernet1/28": "port-channel41",
+            "Ethernet1/29": "port-channel42",
+            "Ethernet1/12": "port-channel43",
+            "Ethernet1/9": "port-channel44",
+            "Ethernet1/10": "port-channel45",
+            "Ethernet1/11": "port-channel46",
+            "Ethernet1/47": "port-channel100",
+            "Ethernet1/48": "port-channel100",
+            "Ethernet1/43": "port-channel101",
+            "Ethernet1/44": "port-channel101"
         }
-
-        port_channels = self.parser.get_interfaces_lag(interfaces)
-
+        port_channels = self.parser.get_interfaces_lag(["Ethernet1/1"])
         assert port_channels == expected_port_channels
 
     def test_get_interface_type_cfp(self):
@@ -149,4 +161,3 @@ class TestNXOSParser():
         ]
         assert len([x for x in self.parser.get_detailed_lldp_neighbours()
                     if x not in must]) == 0
-

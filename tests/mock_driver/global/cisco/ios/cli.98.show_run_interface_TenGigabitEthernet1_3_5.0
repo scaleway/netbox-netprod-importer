@@ -1,0 +1,13 @@
+
+Building configuration...
+
+Current configuration : 178 bytes
+!
+interface TenGigabitEthernet1/3/5
+ description
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ speed 1000
+ channel-group 5 mode active
+end

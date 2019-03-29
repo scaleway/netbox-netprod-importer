@@ -1,13 +1,7 @@
 import cachetools
-from collections import defaultdict
 import re
-import logging
 
 from netbox_netprod_importer.vendors import _AbstractVendorParser
-from napalm.nxos.nxos import NXOSDriver
-
-
-logger = logging.getLogger("netbox_importer")
 
 
 class CiscoParser(_AbstractVendorParser):
@@ -15,31 +9,6 @@ class CiscoParser(_AbstractVendorParser):
         super().__init__(*args, **kwargs)
 
         self.cache = cachetools.TTLCache(10, 60)
-
-    def get_interfaces_lag(self, interfaces):
-        super().get_interfaces_lag(interfaces)
-
-        interfaces_lag = defaultdict(list)
-        for interface in sorted(interfaces):
-            cmd = "show run interface {}".format(interface)
-            if isinstance(self.device, NXOSDriver):
-                self.device.device.api.cmd_method_raw = "cli_ascii"
-
-            interface_conf_dump = self.device.cli([cmd])[cmd]
-
-            channel_group_match = re.search(
-                r"^\s*channel-group (\S*)", interface_conf_dump, re.MULTILINE
-            )
-            if channel_group_match:
-                port_channel_id = channel_group_match.groups()[0]
-            else:
-                continue
-
-            interfaces_lag[interface] = "port-channel{}".format(
-                port_channel_id
-            )
-
-        return interfaces_lag
 
     @staticmethod
     def get_abrev_if(interface):
@@ -52,3 +21,17 @@ class CiscoParser(_AbstractVendorParser):
             prefix = interface[:2]
 
         return prefix + if_index_re
+
+    def get_interface_vlans(self, interface):
+
+        if not self.cache.get("vlan"):
+            self.cache["ttl"] = 600
+            self.cache["vlan"] = {}
+            for vlan, data in self.get_vlans():
+                for iface in data["interfaces"]:
+                    if not self.cache["vlan"].get(iface):
+                        self.cache["vlan"][iface] = []
+                    self.cache["vlan"][iface].append(vlan)
+        return self.cache["vlan"].get(interface)
+
+

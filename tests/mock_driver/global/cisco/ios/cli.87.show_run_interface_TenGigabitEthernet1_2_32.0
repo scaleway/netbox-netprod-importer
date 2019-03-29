@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 105 bytes
+!
+interface TenGigabitEthernet1/2/32
+ description
+ no switchport
+ no ip address
+ shutdown
+end

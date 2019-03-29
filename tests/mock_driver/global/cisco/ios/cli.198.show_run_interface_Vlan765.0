@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 138 bytes
+!
+interface Vlan765
+ description
+ ip address 10.143.56.49 255.255.255.240
+ no ip redirects
+ no ip proxy-arp
+ shutdown
+end

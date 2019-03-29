@@ -1,8 +1,6 @@
 from collections import defaultdict
 from contextlib import ContextDecorator
-from importlib import import_module
 import logging
-import re
 import socket
 import napalm
 
@@ -149,6 +147,20 @@ class DeviceImporter(ContextDecorator):
             if not is_macaddr(napalm_ifprops["mac_address"]):
                 napalm_ifprops["mac_address"] = None
 
+            _type = self.specific_parser.get_interface_type(ifname)
+            if _type == "Other":
+                logger.info("Switch %s iface type for the port %s not defined.",
+                            self.hostname, ifname)
+            try:
+                mode = {
+                    "access": "Access",
+                    "trunk": "Tagged",
+                    "static access": "Access",
+                    None: None
+                }[self.specific_parser.get_interface_mode(ifname)]
+            except NotImplementedError:
+                mode = None
+
             interfaces[ifname] = {
                 "enabled": napalm_ifprops["is_enabled"],
                 # Netbox max descr size is 100 char
@@ -159,9 +171,27 @@ class DeviceImporter(ContextDecorator):
                 # wait for this pull request
                 # https://github.com/napalm-automation/napalm/pull/531
                 "mtu": napalm_ifprops.get("mtu", None),
-                "type": self.specific_parser.get_interface_type(ifname),
-                "mode": None,
+                "type": _type,
+                "mode": mode,
+                "untagged_vlan": None,
+                "tagged_vlans": [],
             }
+
+            if mode == "Access":
+                interfaces[ifname]["untagged_vlan"] = \
+                    self.specific_parser.get_interface_access_valn(ifname)
+
+            vlans = self.specific_parser.get_interface_vlans(ifname)
+            if vlans:
+                interfaces[ifname]["tagged_vlans"] = vlans
+
+
+        for ifname, data in interfaces.items():
+            if data["mode"] == "Tagged":
+                navive = self.specific_parser.get_interface_netive_valn(ifname)
+                if navive in data["tagged_vlans"]:
+                    interfaces[ifname]["untagged_vlan"] = navive
+                    interfaces[ifname]["tagged_vlans"].pop(navive)
 
         for trunk in trunks:
             if trunk in interfaces:

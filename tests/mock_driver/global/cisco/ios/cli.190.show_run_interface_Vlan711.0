@@ -1,0 +1,14 @@
+
+Building configuration...
+
+Current configuration : 218 bytes
+!
+interface Vlan711
+ description
+ ip address 10.143.51.1 255.255.255.192
+ ip helper-address 10.143.38.120
+ ip helper-address 10.143.38.220
+ ip helper-address 10.132.2.31
+ no ip redirects
+ no ip proxy-arp
+end

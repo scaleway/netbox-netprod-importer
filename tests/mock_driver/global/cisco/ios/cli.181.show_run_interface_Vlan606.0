@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 127 bytes
+!
+interface Vlan606
+ description
+ ip address 10.143.56.17 255.255.255.240
+ no ip redirects
+ no ip proxy-arp
+end

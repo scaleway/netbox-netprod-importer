@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 159 bytes
+!
+interface Port-channel30
+ description
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+end

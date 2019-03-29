@@ -3,6 +3,7 @@ import os
 import socket
 import napalm
 import pytest
+import json
 
 from netbox_netprod_importer.importer import (
     napalm as importer_napalm, DeviceImporter
@@ -77,6 +78,22 @@ class BaseTestImporter():
         )
 
 
+class TestIOSImporter(BaseTestImporter):
+    profile = "ios"
+    path = "mock_driver/global/cisco/ios/"
+
+    def test_get_interfaces(self, monkeypatch):
+        self.stub_get_interface_type(monkeypatch)
+        with self.importer:
+            interfaces = self.importer.get_interfaces()
+        with open(
+                "{}/{}/test_get_interfaces.json".format(BASE_PATH, self.path),
+                "r"
+        ) as myfile:
+            data = myfile.read()
+
+        assert interfaces == json.loads(data)
+
 class TestNXOSImporter(BaseTestImporter):
     profile = "nxos"
     path = "mock_driver/global/cisco/nxos/"
@@ -87,9 +104,30 @@ class TestNXOSImporter(BaseTestImporter):
             interfaces = self.importer.get_interfaces()
 
             if_names = (
-                "mgmt0", "Ethernet1/1", "Ethernet1/2", "port-channel10",
-                "port-channel11", "port-channel12", "Vlan1", "Vlan200",
-                "Ethernet101/1/1", "Ethernet101/1/2",
+                'Ethernet1/1', 'Ethernet1/10', 'Ethernet1/11', 'Ethernet1/12',
+                'Ethernet1/13', 'Ethernet1/14', 'Ethernet1/15', 'Ethernet1/16',
+                'Ethernet1/17', 'Ethernet1/18', 'Ethernet1/19', 'Ethernet1/2',
+                'Ethernet1/20', 'Ethernet1/21', 'Ethernet1/22', 'Ethernet1/23',
+                'Ethernet1/24', 'Ethernet1/25', 'Ethernet1/26', 'Ethernet1/27',
+                'Ethernet1/28', 'Ethernet1/29', 'Ethernet1/3', 'Ethernet1/30',
+                'Ethernet1/31', 'Ethernet1/32', 'Ethernet1/33', 'Ethernet1/34',
+                'Ethernet1/35', 'Ethernet1/36', 'Ethernet1/37', 'Ethernet1/38',
+                'Ethernet1/39', 'Ethernet1/4', 'Ethernet1/40', 'Ethernet1/41',
+                'Ethernet1/42', 'Ethernet1/43', 'Ethernet1/44', 'Ethernet1/45',
+                'Ethernet1/46', 'Ethernet1/47', 'Ethernet1/48', 'Ethernet1/49',
+                'Ethernet1/5', 'Ethernet1/50', 'Ethernet1/51', 'Ethernet1/52',
+                'Ethernet1/53', 'Ethernet1/54', 'Ethernet1/6', 'Ethernet1/7',
+                'Ethernet1/8', 'Ethernet1/9', 'Vlan1', 'Vlan177', 'mgmt0',
+                'port-channel100', 'port-channel101', 'port-channel12',
+                'port-channel22', 'port-channel23', 'port-channel24',
+                'port-channel25', 'port-channel26', 'port-channel27',
+                'port-channel28', 'port-channel29', 'port-channel30',
+                'port-channel31', 'port-channel32', 'port-channel33',
+                'port-channel34', 'port-channel35', 'port-channel36',
+                'port-channel37', 'port-channel38', 'port-channel39',
+                'port-channel40', 'port-channel41', 'port-channel42',
+                'port-channel43', 'port-channel44', 'port-channel45',
+                'port-channel46',
             )
 
             assert sorted(interfaces.keys()) == sorted(if_names)
@@ -100,10 +138,10 @@ class TestNXOSImporter(BaseTestImporter):
             interfaces = self.importer.get_interfaces()
 
         assert interfaces["Ethernet1/2"]["enabled"]
-        assert interfaces["Ethernet1/2"]["description"] == "dummy text"
+        assert interfaces["Ethernet1/2"]["description"] == "is simply"
         assert (
             interfaces["Ethernet1/2"]["mac_address"].upper() ==
-            "CC:46:D6:6E:0F:79"
+            "00:00:00:00:00:69"
         )
 
     def test_fill_interfaces_ip_no_dict(self):
@@ -126,7 +164,7 @@ class TestNXOSImporter(BaseTestImporter):
         with self.importer:
             ip_by_interfaces = self.importer.fill_interfaces_ip()
 
-        expected_if = ("mgmt0", "Vlan1", "Vlan200")
+        expected_if = ("mgmt0", "Vlan1", "Vlan177")
         assert sorted(expected_if) == sorted(ip_by_interfaces.keys())
 
     def test_fill_interfaces_with_dict(self, monkeypatch):
@@ -135,9 +173,8 @@ class TestNXOSImporter(BaseTestImporter):
             interfaces = self.importer.get_interfaces()
             self.importer.fill_interfaces_ip(interfaces)
 
-        for ifname in ("mgmt0", "Vlan1", "Vlan200"):
+        for ifname in ("mgmt0", "Vlan1", "Vlan177"):
             assert interfaces[ifname]["ip"]
-
 
 class TestJunOSImporter(BaseTestImporter):
     profile = "junos"

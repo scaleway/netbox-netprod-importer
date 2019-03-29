@@ -1,0 +1,14 @@
+
+Building configuration...
+
+Current configuration : 223 bytes
+!
+interface TenGigabitEthernet2/1/23
+ description
+ switchport
+ switchport mode access
+ switchport access vlan 607
+ switchport nonegotiate
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
+end

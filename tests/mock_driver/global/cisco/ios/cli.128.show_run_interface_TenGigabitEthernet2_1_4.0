@@ -1,0 +1,13 @@
+
+Building configuration...
+
+Current configuration : 198 bytes
+!
+interface TenGigabitEthernet2/1/4
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+ spanning-tree bpduguard enable
+ channel-group 30 mode passive
+end

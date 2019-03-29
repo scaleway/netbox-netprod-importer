@@ -40,6 +40,8 @@ class _NetboxPusher(ABC):
                 self.netbox_api, app_name="dcim", model="cables"
             ), "ip": NetboxMapper(
                 self.netbox_api, app_name="ipam", model="ip-addresses"
+            ), "vlan": NetboxMapper(
+                self.netbox_api, app_name="ipam", model="vlans"
             )
         }
         self._choices_cache = {}
@@ -73,6 +75,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         self.hostname = hostname
         self.props = props
         self.overwrite = overwrite
+        self.vlan = cachetools.LRUCache(4096)
 
     @generic_netbox_error
     def push(self):
@@ -141,6 +144,20 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                 self._handle_interface_mode(interface, if_prop["mode"])
                 if_prop.pop("mode")
 
+            if if_prop["untagged_vlan"]:
+                vlan_id = self._get_vlan_id(if_prop["untagged_vlan"])
+                if vlan_id != -1:
+                    setattr(interface, "untagged_vlan", vlan_id)
+
+            if_prop.pop("untagged_vlan")
+            if len(if_prop["tagged_vlans"]):
+                setattr(interface, "tagged_vlans", [])
+                for vlan in if_prop["tagged_vlans"]:
+                    vlan_id = self._get_vlan_id(vlan)
+                    if vlan_id != -1:
+                        interface.tagged_vlans.append(vlan_id)
+            if_prop.pop("tagged_vlans")
+
             for k, v in if_prop.items():
                 setattr(interface, k, v)
 
@@ -156,6 +173,33 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                     self._clean_unmatched_ip_addresses(interface, *addrs)
 
         self._update_interfaces_lag(interfaces, interfaces_lag)
+
+    def _get_vlan_id(self, vlan):
+        if not self.vlan.get(self._device.site.id):
+            self.vlan[self._device.site.id] = {}
+
+        if not self.vlan[self._device.site.id].get(vlan):
+            vlans = list(self._mappers["vlan"].get(
+                    site_id=self._device.site.id,
+                    vid=vlan
+                )
+            )
+            if len(vlans) == 0:
+                logger.info("Switch %s, vlan %s not faund on site %s",
+                            self.hostname, vlan, self._device.site.name)
+                # If set to None, then if not None will always trigger.
+                # Searches will occur every time.
+                self.vlan[self._device.site.id][vlan] = -1
+            elif len(vlans) == 1:
+                self.vlan[self._device.site.id][vlan] = vlans[0].id
+            else:
+                logger.info(
+                    "Number of found Vlans %s on the site %s is more than one",
+                    vlan, self._device.site.name
+                )
+                self.vlan[self._device.site.id][vlan] = -1
+        return self.vlan[self._device.site.id][vlan]
+
 
     def _handle_interface_mode(self, netbox_if, mode):
         netbox_mode = self.search_value_in_choices(
@@ -323,7 +367,8 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
                     logger.debug("True with interco %s:", interco)
                 except Exception as e:
                     result["errors"] += 1
-                    logger.warning("Switch %s Error with interco %s: %s",hostname ,interco, e)
+                    logger.warning("Switch %s Error with interco %s: %s",
+                                   hostname, interco, e)
                     continue
 
         if overwrite:

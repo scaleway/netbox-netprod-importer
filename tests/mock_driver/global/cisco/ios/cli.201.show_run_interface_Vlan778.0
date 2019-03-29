@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 123 bytes
+!
+interface Vlan778
+ description
+ ip address 10.143.56.65 255.255.255.240
+ no ip redirects
+ no ip proxy-arp
+end
