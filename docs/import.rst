@@ -135,8 +135,8 @@ The importer fetch the following type of data:
     * Parent LAG
     * Enabled/Disabled
     * IPv4/IPv6
-    * Vlan
-    * 802.1Q Mode
+    * Vlan (only cisco equipment)
+    * 802.1Q Mode (only cisco equipment)
 
   - Serial number
   - Main IPv4/IPv6
