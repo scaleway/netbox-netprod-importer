@@ -184,7 +184,9 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                     vid=vlan
                 )
             )
-            if len(vlans) == 0:
+            # Ignore vlan 1 because it is usually not used.
+            # But if he is assign.
+            if len(vlans) == 0 and vlan != 1:
                 logger.info("Switch %s, vlan %s not faund on site %s",
                             self.hostname, vlan, self._device.site.name)
                 # If set to None, then if not None will always trigger.
