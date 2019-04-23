@@ -179,7 +179,7 @@ class DeviceImporter(ContextDecorator):
 
             if mode == "Access":
                 interfaces[ifname]["untagged_vlan"] = \
-                    self.specific_parser.get_interface_access_valn(ifname)
+                    self.specific_parser.get_interface_access_vlan(ifname)
 
             vlans = self.specific_parser.get_interface_vlans(ifname)
             if vlans:
@@ -188,7 +188,7 @@ class DeviceImporter(ContextDecorator):
 
         for ifname, data in interfaces.items():
             if data["mode"] == "Tagged":
-                navive = self.specific_parser.get_interface_netive_valn(ifname)
+                navive = self.specific_parser.get_interface_netive_vlan(ifname)
                 if navive in data["tagged_vlans"]:
                     interfaces[ifname]["untagged_vlan"] = navive
                     interfaces[ifname]["tagged_vlans"].pop(navive)

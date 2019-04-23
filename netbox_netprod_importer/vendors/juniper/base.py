@@ -175,18 +175,18 @@ class JunOSParser(JuniperParser):
     # The following features are stubs. Since I can not test.
     def get_interface_mode(self, interface):
         logger.info("get_interface_mode function not implemented for junos")
-        return None
+        raise NotImplementedError
 
-    def get_interface_access_valn(self, interface):
-        logger.info("get_interface_access_valn function not implemented for "
+    def get_interface_access_vlan(self, interface):
+        logger.info("get_interface_access_vlan function not implemented for "
                     "junos")
-        return None
+        raise NotImplementedError
 
-    def get_interface_netive_valn(self, interface):
-        logger.info("get_interface_netive_valn function not implemented for "
+    def get_interface_netive_vlan(self, interface):
+        logger.info("get_interface_netive_vlan function not implemented for "
                     "junos")
-        return None
+        raise NotImplementedError
 
     def get_interface_vlans(self, interface):
         logger.info("get_interface_vlans function not implemented for junos")
-        return None
+        raise NotImplementedError
