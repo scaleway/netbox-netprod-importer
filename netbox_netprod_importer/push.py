@@ -75,7 +75,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         self.hostname = hostname
         self.props = props
         self.overwrite = overwrite
-        self.vlan = cachetools.LRUCache(4096)
+        self.vlans_cache = cachetools.LRUCache(4096)
 
     @generic_netbox_error
     def push(self):
@@ -175,10 +175,10 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         self._update_interfaces_lag(interfaces, interfaces_lag)
 
     def _get_vlan_id(self, vlan):
-        if not self.vlan.get(self._device.site.id):
-            self.vlan[self._device.site.id] = {}
+        if not self.vlans_cache.get(self._device.site.id):
+            self.vlans_cache[self._device.site.id] = {}
 
-        if not self.vlan[self._device.site.id].get(vlan):
+        if not self.vlans_cache[self._device.site.id].get(vlan):
             vlans = list(self._mappers["vlan"].get(
                     site_id=self._device.site.id,
                     vid=vlan
@@ -191,16 +191,16 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                             self.hostname, vlan, self._device.site.name)
                 # If set to None, then if not None will always trigger.
                 # Searches will occur every time.
-                self.vlan[self._device.site.id][vlan] = -1
+                self.vlans_cache[self._device.site.id][vlan] = -1
             elif len(vlans) == 1:
-                self.vlan[self._device.site.id][vlan] = vlans[0].id
+                self.vlans_cache[self._device.site.id][vlan] = vlans[0].id
             else:
                 logger.info(
                     "Number of found Vlans %s on the site %s is more than one",
                     vlan, self._device.site.name
                 )
-                self.vlan[self._device.site.id][vlan] = -1
-        return self.vlan[self._device.site.id][vlan]
+                self.vlans_cache[self._device.site.id][vlan] = -1
+        return self.vlans_cache[self._device.site.id][vlan]
 
 
     def _handle_interface_mode(self, netbox_if, mode):

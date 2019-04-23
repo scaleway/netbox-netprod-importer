@@ -196,7 +196,7 @@ class NXOSParser(CiscoParser):
                          self.device.hostname)
         return None
 
-    def get_interface_access_valn(self, interface):
+    def get_interface_access_vlan(self, interface):
         from pynxos.errors import CLIError
         try:
             return int(
@@ -207,7 +207,7 @@ class NXOSParser(CiscoParser):
                          self.device.hostname)
         return None
 
-    def get_interface_netive_valn(self, interface):
+    def get_interface_netive_vlan(self, interface):
         from pynxos.errors import CLIError
         try:
             return int(
