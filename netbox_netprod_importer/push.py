@@ -92,8 +92,15 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         self._push_main_data()
 
     def _clean_unmatched_interfaces(self):
+        """
+        The limit is set to 0, since when deleting, an offset occurs and when
+        the next request of the new interface bundle arrives, the offset
+        interfaces fall into the previous query.
+        This is clearly seen if you create 100 incorrect interfaces on an
+        empty switch, after the first pass 50 interfaces will remain.
+        """
         pushed_interfaces = self._mappers["interfaces"].get(
-            device_id=self._device
+            device_id=self._device, limit=0
         )
 
         for netbox_if in pushed_interfaces:
