@@ -160,6 +160,10 @@ class DeviceImporter(ContextDecorator):
                 }[self.specific_parser.get_interface_mode(ifname)]
             except NotImplementedError:
                 mode = None
+            except KeyError as ex:
+                logger.debug("Switch %s Interface %s unknown mode: %s.",
+                             self.hostname, ifname, ex)
+                mode = None
 
             interfaces[ifname] = {
                 "enabled": napalm_ifprops["is_enabled"],
