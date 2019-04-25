@@ -92,8 +92,11 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         self._push_main_data()
 
     def _clean_unmatched_interfaces(self):
-        pushed_interfaces = self._mappers["interfaces"].get(
-            device_id=self._device
+        # Interfaces are all forced to be fetched, as some of them will them
+        # be deleting, messing with the offset used by the query to fetch the
+        # next pool.
+        pushed_interfaces = tuple(
+            self._mappers["interfaces"].get(device_id=self._device)
         )
 
         for netbox_if in pushed_interfaces:
