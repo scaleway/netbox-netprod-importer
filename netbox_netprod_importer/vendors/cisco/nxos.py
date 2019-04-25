@@ -178,6 +178,10 @@ class NXOSParser(CiscoParser):
             port_cannels = [port_cannels]
 
         for p in port_cannels:
+            if not p.get("TABLE_member"):
+                continue
+            if not p["TABLE_member"].get("ROW_member"):
+                continue
             if isinstance(p["TABLE_member"]["ROW_member"], dict):
                 member = [p["TABLE_member"]["ROW_member"]]
             else:
@@ -255,6 +259,25 @@ class NXOSParser(CiscoParser):
         for v in vlans:
             yield v["vlanshowbr-vlanid"], {
                 "name": v["vlanshowbr-vlanname"],
-                "interfaces": [x.strip() \
-                               for x in v["vlanshowplist-ifidx"].split(",")]
+                "interfaces": self._parse_ports(v["vlanshowplist-ifidx"])
             }
+
+    def _parse_ports(self, vlan_s) -> list:
+        vlans = []
+        find_regexp = r"^([A-Za-z\/-]+|.*\/)(\d+)-(\d+)$"
+        vlan_str = ""
+
+        if isinstance(vlan_s, list):
+            for v in vlan_s:
+                vlan_str += f",{v}"
+        else:
+            vlan_str = vlan_s
+
+        for vls in vlan_str.split(","):
+            find = re.findall(find_regexp, vls.strip())
+            if find:
+                for i in range(int(find[0][1]), int(find[0][2]) + 1):
+                    vlans.append(f"{find[0][0]}{str(i)}")
+            else:
+                vlans.append(vls.strip())
+        return vlans
