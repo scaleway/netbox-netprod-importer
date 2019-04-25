@@ -90,6 +90,25 @@
         "vlanshowplist-ifidx": "port-channel12,port-channel34,port-channel35,port-channel37,port-channel40,port-channel100,Ethernet1/6,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/31,Ethernet1/33,Ethernet1/36,Ethernet1/47,Ethernet1/48"
       },
       {
+        "vlanshowbr-vlanid": 230,
+        "vlanshowbr-vlanid-utf": 230,
+        "vlanshowbr-vlanname": "database",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel1-2,port-channel10-13,port-channel99,Ethernet1/3,Ethernet1/6-10,Ethernet1/20-24,Ethernet1/29-44,Ethernet2/1-2"
+      },
+      {
+        "vlanshowbr-vlanid": 231,
+        "vlanshowbr-vlanid-utf": 231,
+        "vlanshowbr-vlanname": "APPLICATION",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": [
+          "port-channel1-2,port-channel10-13,port-channel99,Ethernet1/3,Ethernet1/6-10,Ethernet1/18-20,Ethernet1/29-44,Ethernet2/1-2,Ethernet101/1/2,Ethernet101/1/4-14,Ethernet102/1/2,Ethernet102/1/4-6,Ethernet102/1/9-13,Ethernet103/1/2,Ethernet103/1/4-8,Ethernet103/1/11-13",
+          "Ethernet103/1/14,Ethernet104/1/1-4,Ethernet104/1/7,Ethernet104/1/9-14,Ethernet105/1/1-14,Ethernet107/1/1-16,Ethernet111/1/5,Ethernet111/1/7,Ethernet111/1/29-30,Ethernet111/1/33-35"
+        ]
+      },
+      {
         "vlanshowbr-vlanid": "331",
         "vlanshowbr-vlanid-utf": "331",
         "vlanshowbr-vlanname": "Vlan331",
