@@ -20,6 +20,17 @@ Used by `Online.net <https://www.online.net>`_ on more than 5000 network
 devices.
 
 
+Looking for a new maintainer
+----------------------------
+
+This project has be done initially for `Online.net <https://www.online.net>`_,
+a company I (@Anthony25) am not working for anymore. Therefore, I have now no
+need for this project, and will not be able to test any pull request.
+
+If anyone is interested to maintain it, please contact me by email (my address
+can be found in `my github profile <https://github.com/Anthony25>`_).
+
+
 Documentation
 -------------
 
