@@ -137,7 +137,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
             if_type = if_prop.pop("type")
             if_prop["form_factor"] = self.search_value_in_choices(
-                "dcim_choices", "interface:form_factor",
+                "dcim_choices", "interface:type",
                 if_type
             )
             if if_prop.get("lag"):
