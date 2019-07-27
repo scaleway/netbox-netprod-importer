@@ -171,3 +171,22 @@ class JunOSParser(JuniperParser):
         xml_tree = get_lldp_neighbours_el.getroottree()
 
         return lxml.etree.tostring(xml_tree).decode()
+
+    # The following features are stubs. Since I can not test.
+    def get_interface_mode(self, interface):
+        logger.info("get_interface_mode function not implemented for junos")
+        raise NotImplementedError
+
+    def get_interface_access_vlan(self, interface):
+        logger.info("get_interface_access_vlan function not implemented for "
+                    "junos")
+        raise NotImplementedError
+
+    def get_interface_netive_vlan(self, interface):
+        logger.info("get_interface_netive_vlan function not implemented for "
+                    "junos")
+        raise NotImplementedError
+
+    def get_interface_vlans(self, interface):
+        logger.info("get_interface_vlans function not implemented for junos")
+        raise NotImplementedError

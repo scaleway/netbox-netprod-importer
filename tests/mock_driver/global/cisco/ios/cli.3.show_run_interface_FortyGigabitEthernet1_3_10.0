@@ -1,0 +1,10 @@
+
+Building configuration...
+
+Current configuration : 84 bytes
+!
+interface FortyGigabitEthernet1/3/10
+ no switchport
+ no ip address
+ shutdown
+end

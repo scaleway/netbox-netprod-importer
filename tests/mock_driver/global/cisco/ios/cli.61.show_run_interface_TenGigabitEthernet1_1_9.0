@@ -1,0 +1,10 @@
+
+Building configuration...
+
+Current configuration : 105 bytes
+!
+interface TenGigabitEthernet1/1/9
+ switchport
+ switchport mode access
+ switchport access vlan 710
+end

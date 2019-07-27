@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 124 bytes
+!
+interface Port-channel5
+ description
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+end

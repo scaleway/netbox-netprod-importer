@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 119 bytes
+!
+interface Vlan746
+ description
+ ip address 10.143.40.1 255.255.252.0
+ no ip redirects
+ no ip proxy-arp
+end

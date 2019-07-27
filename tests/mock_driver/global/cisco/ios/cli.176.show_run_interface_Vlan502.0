@@ -1,0 +1,14 @@
+
+Building configuration...
+
+Current configuration : 238 bytes
+!
+interface Vlan502
+ description
+ ip address 10.143.251.21 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf message-digest-key 1 md5 7 025357020D00177555
+ ip ospf network point-to-point
+ ip ospf cost 100
+end

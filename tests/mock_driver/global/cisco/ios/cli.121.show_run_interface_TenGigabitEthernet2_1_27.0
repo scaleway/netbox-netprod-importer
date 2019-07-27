@@ -1,0 +1,14 @@
+
+Building configuration...
+
+Current configuration : 225 bytes
+!
+interface TenGigabitEthernet2/1/27
+ description
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 710,754
+ switchport nonegotiate
+ udld port aggressive
+ channel-group 29 mode active
+end

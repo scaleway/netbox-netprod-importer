@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 136 bytes
+!
+interface TenGigabitEthernet1/3/1
+ description
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 10 mode on
+end

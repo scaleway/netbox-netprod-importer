@@ -1,0 +1,12 @@
+
+Building configuration...
+
+Current configuration : 185 bytes
+!
+interface TenGigabitEthernet2/3/4
+ description
+ switchport
+ switchport mode access
+ switchport access vlan 710
+ spanning-tree portfast edge
+end

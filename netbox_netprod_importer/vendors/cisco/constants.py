@@ -5,7 +5,7 @@ class InterfacesRegex(Enum):
     cfp = r"^CFP-.*"
     cfp2 = r"^CFP2-.*"
     eth100 = r".*(i?)100Base(-T|TX)"
-    eth1000 = r".*(i?)1000(BASE|Base)?(-T|TX)"
+    eth1000 = r".*(i?)1000(BASE|Base)?(-T|TX|X|T)"
     sfp = r"^1000B(ASE|ase)(-.|.)X"
     sfp_plus = r"(^(.?WDM-)?SFP-.?10G.*-.*|^10Gbase-(.R|.?CU.*M))"
     sfp28 = r"^SFP-.?25G-.*"

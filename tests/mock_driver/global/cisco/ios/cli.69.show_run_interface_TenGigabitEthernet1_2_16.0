@@ -1,0 +1,11 @@
+
+Building configuration...
+
+Current configuration : 131 bytes
+!
+interface TenGigabitEthernet1/2/16
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 22 mode active
+end

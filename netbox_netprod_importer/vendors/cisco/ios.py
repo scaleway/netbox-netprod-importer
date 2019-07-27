@@ -1,4 +1,6 @@
 import re
+import logging
+from collections import defaultdict
 
 from netbox_netprod_importer.exceptions import TypeCouldNotBeParsedError
 from netbox_netprod_importer.vendors.constants import NetboxInterfaceTypes
@@ -6,9 +8,36 @@ from .constants import InterfacesRegex
 from .base import CiscoParser
 
 
+logger = logging.getLogger("netbox_importer")
+
+
 class IOSParser(CiscoParser):
+    def get_interfaces_lag(self, interfaces):
+        super().get_interfaces_lag(interfaces)
+
+        interfaces_lag = defaultdict(list)
+        for interface in sorted(interfaces):
+            cmd = "show run interface {}".format(interface)
+            interface_conf_dump = self.device.cli([cmd])[cmd]
+
+            channel_group_match = re.search(
+                r"^\s*channel-group (\S*)", interface_conf_dump, re.MULTILINE
+            )
+            if channel_group_match:
+                port_channel_id = channel_group_match.groups()[0]
+            else:
+                continue
+
+            interfaces_lag[interface] = "port-channel{}".format(
+                port_channel_id
+            )
+
+        return interfaces_lag
+
     def get_interface_type(self, interface):
         super().get_interface_type(interface)
+        if re.search(r"^Vlan(\d*)|^Tunnel(\d+)", interface):
+            return "Virtual"
 
         interface_type = "Other"
         try:
@@ -78,3 +107,138 @@ class IOSParser(CiscoParser):
                 )
         for n in neighbours:
             yield n
+
+    def get_interface_mode(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[
+                self.get_abrev_if(interface)].get("oper_mode")
+        except (KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+
+    def get_interface_access_vlan(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[
+                self.get_abrev_if(interface)].get("access_vlan")
+        except (KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+
+    def get_interface_netive_vlan(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[
+                self.get_abrev_if(interface)].get("native_vlan")
+        except (KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+
+    def _get_interfaces_mode(self):
+        cmd = "show interface switchport"
+
+        if not self.cache.get("mode"):
+            mode_conf_dump = self.device.cli([cmd])[cmd]
+            mode_conf_lines = re.split(r"(^Name: \S+$)", mode_conf_dump, flags=re.M)
+            mode_conf_lines.pop(0)
+            if len(mode_conf_lines) % 2 != 0:
+                raise ValueError("Unexpected output data in '{}':\n\n{}".format(
+                    cmd, mode_conf_lines
+                ))
+            mode_conf_iter = iter(mode_conf_lines)
+            try:
+                new_mode = [line + next(mode_conf_iter, "") for line in mode_conf_iter]
+            except TypeError:
+                raise ValueError()
+
+            interfaces_mode = {}
+            for entry in new_mode:
+                grp = [
+                    r"^Name:\s+(?P<interface>\S+)",
+                    r"^Administrative Mode:\s+(?P<oper_mode>static access|trunk|access)",
+                    r"^Access Mode VLAN:\s+(?P<access_vlan>\d+)",
+                    r"^Trunking Native Mode VLAN:\s+(?P<native_valn>\d+)"
+                ]
+                inf_mode = {}
+                for g in grp:
+                    find = re.search(g, entry, re.MULTILINE)
+                    if find:
+                        inf_mode[find.lastgroup] = find.group(find.lastgroup)
+                if inf_mode.get("interface"):
+                    interfaces_mode[inf_mode["interface"]] = inf_mode
+
+            self.cache["mode"] = interfaces_mode
+
+        return self.cache["mode"]
+
+    def get_vlans(self):
+        """
+        Napalm does not support vlan
+        but there are issues https://github.com/napalm-automation/napalm/issues/927
+        PR: https://github.com/napalm-automation/napalm/pull/948
+
+        :return vlans:
+            vlan_id, {
+                "name": vlan name,
+                "interfaces": list interfaces dict
+            }
+        """
+        interfaces = self.device.get_interfaces()
+        interface_dict = {}
+        for interface, data in interfaces.items():
+            interface_dict[self.get_abrev_if(interface)] = interface
+
+        command = "show vlan all-ports"
+        output = self.device.cli([command])[command]
+        if output.find("Invalid input detected") >= 0:
+            yield from self._get_vlan_from_id(interface_dict)
+        else:
+            yield from self._get_vlan_all_ports(interface_dict, output)
+
+    def _get_vlan_all_ports(self, interface_dict, output):
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+\s+([A-Z][a-z].*)$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        for v in find:
+            yield v[0], {
+                "name": v[1],
+                "interfaces": [
+                    interface_dict[x.strip()] for x in v[2].split(",")
+                ],
+            }
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        for v in find:
+            yield v[0], {"name": v[1], "interfaces": []}
+
+    def _get_vlan_from_id(self, interface_dict):
+        command = "show vlan brief"
+        output = self.device.cli([command])[command]
+        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
+        for vlan in find_vlan:
+            command = "show vlan id {}".format(vlan[0])
+            output = self.device.cli([command])[command]
+            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
+                vlan[0], vlan[1]
+            )
+            interfaces = re.findall(interface_regex, output, re.MULTILINE)
+            if len(interfaces) == 1:
+                yield vlan[0], {
+                    "name": vlan[1],
+                    "interfaces": [
+                        interface_dict[x.strip()] for x in interfaces[0].split(",")
+                    ],
+                }
+            elif len(interfaces) == 0:
+                yield vlan[0], {"name": vlan[1], "interfaces": []}
+            else:
+                logger.error(
+                    "Switch %s Error parsing for vlan id %s, "
+                    "found more values than can be.",
+                    self.device.hostname, vlan[0]
+                )
+                yield None, None

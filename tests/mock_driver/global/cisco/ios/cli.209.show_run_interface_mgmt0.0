@@ -1,0 +1,9 @@
+
+Building configuration...
+
+Current configuration : 48 bytes
+!
+interface mgmt0
+ no ip address
+ shutdown
+end

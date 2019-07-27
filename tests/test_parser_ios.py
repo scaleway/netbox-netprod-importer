@@ -1,6 +1,7 @@
 import os
 import napalm
 import pytest
+import json
 
 from netbox_netprod_importer.vendors.cisco import IOSParser
 
@@ -41,3 +42,17 @@ class TestIOSParser():
             "TenGigabitEthernet1/2/6"
         )
         assert 'Other' == self.parser.get_interface_type('Po1')
+
+    def test_get_vlan(self):
+        vlan = self.parser.get_vlans()
+        vlans = {}
+        for vlan_id, data in vlan:
+            vlans[vlan_id] = data
+        with open(
+                "{}/mock_driver/specific/cisco/ios/test_get_vlan.json".format(
+                    BASE_PATH
+                ), "r"
+        ) as myfile:
+            data = myfile.read()
+
+        assert vlans == json.loads(data)

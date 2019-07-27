@@ -1,0 +1,13 @@
+
+Building configuration...
+
+Current configuration : 185 bytes
+!
+interface Port-channel31
+ description
+ switchport
+ switchport mode access
+ switchport access vlan 5
+ switchport nonegotiate
+ spanning-tree portfast edge
+end
