@@ -7,8 +7,8 @@ Netbox network production importer
 
 netbox-netprod-importer is a tool dedicated to help moving your current
 knowledge base to `Netbox <https://netbox.readthedocs.io/en/latest/>`_ as an
-IPAM/DCIM, independently of your the current information system. It connects to
-a given list of network devices and parse their status and configuration to
+IPAM/DCIM, independently of your current information system. It connects to
+a given list of network devices, parse their status and configuration to
 import them into Netbox like they are currently configured.
 
 It is thought to be generic and infrastructure agnostic. It means that imported
@@ -24,7 +24,7 @@ Looking for a new maintainer
 ----------------------------
 
 This project has be done initially for `Online.net <https://www.online.net>`_,
-a company I (@Anthony25) am not working for anymore. Therefore, I have now no
+a company I (@aruhier) am not working for anymore. Therefore, I have now no
 need for this project, and will not be able to test any pull request.
 
 If anyone is interested to maintain it, please contact me by email (my address
