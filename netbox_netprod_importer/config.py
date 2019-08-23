@@ -39,7 +39,7 @@ def get_config(custom_path=None):
         with open(config_path, "r") as config_file:
             conf = yaml.safe_load(config_file)
             get_config.cache = conf
-            if conf.get("loglevel", "None"):
+            if conf.get("loglevel", None):
                 numeric_level = getattr(logging, conf.get("loglevel").upper())
                 if not isinstance(numeric_level, int):
                     raise ValueError('Invalid log level: %s' \
