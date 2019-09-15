@@ -41,7 +41,7 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://gitlab.infra.online.net/network/netbox_netprod_importer",
-    version="0.2.0",
+    version="0.2.1",
     zip_safe=False,
     entry_points={
         'console_scripts': [
