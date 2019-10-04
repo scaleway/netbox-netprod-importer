@@ -31,10 +31,14 @@ Usage
 
 An import can be started through the subcommand ``import``::
 
-    usage: netbox-netprod-importer import [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-v LEVEL] devices
+    usage: netbox-netprod-importer import [-h] [-u user] [-p] [-t THREADS] [--overwrite] [-v LEVEL] [ -f DEVICES | -F FILTER ]
 
-    positional arguments:
-      devices               Yaml file containing a definition of devices to poll
+    arguments:
+      -f devices, --file devices
+                            Yaml file containing a definition of devices to poll
+      or
+      -F FILTER, --filter FILTER
+                            Yaml file containing the device definition filter for polling from NetBox
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -87,22 +91,64 @@ Considering a yaml file ``~/importer/devices.yml`` containing these devices::
 
 To simply apply the import on these devices, do::
 
-    $ netbox-netprod-importer import ~/importer/devices.yml
+    $ netbox-netprod-importer import -f ~/importer/devices.yml
 
 Considering that the current user is named ``foo``, if a password is needed for
 this user to connect to these devices, do::
 
-    $ netbox-netprod-importer import -p ~/importer/devices.yml
+    $ netbox-netprod-importer import -p -f ~/importer/devices.yml
 
 To use a different user, for example `bar` do::
 
-    $ netbox-netprod-importer import -u bar -p ~/importer/devices.yml
+    $ netbox-netprod-importer import -u bar -p -f ~/importer/devices.yml
 
 And to use more threads and enable the overwrite mode to get a clean clone of a
 device state::
 
-    $ netbox-netprod-importer import -u bar -p -t 30 --overwrite ~/importer/devices.yml
+    $ netbox-netprod-importer import -u bar -p -t 30 --overwrite -f ~/importer/devices.yml
 
+Considering a yaml file ``~/importer/filter.yml`` containing this filter::
+
+    discovery_protocol:
+        ios: cdp
+        nxos: multiple
+        nxos_ssh: multiple
+        junos: lldp
+
+    filter:
+        q:
+        region:
+            - england
+        site:
+            - london
+            - birmingham
+        rack:
+        status: 1
+        role:
+        tenant_group:
+        tenant:
+            - it
+        manufacturer:
+            - cisco
+        device_type:
+        mac_address:
+        has_primary_ip: True
+        platform:
+        virtual_chassis_member:
+        console_ports:
+        console_server_ports:
+        power_ports:
+        power_outlets:
+        interfaces:
+        pass_through_ports:
+
+Full online documentation on filter keys is available on a running NetBox instance
+in /api/docs/, section GET /dcim/devices/
+
+We will choose London and birmingham sites in England, the equipment is active,
+the owner is it, the manufacturer is cisco and has a primary ip::
+
+    $ netbox-netprod-importer import -u bar -p -t 30 --overwrite -F ~/importer/filter.yml
 
 Configuration
 -------------

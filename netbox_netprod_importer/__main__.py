@@ -12,6 +12,7 @@ from tqdm import tqdm
 from . import __appname__, __version__
 from netbox_netprod_importer.config import get_config, load_config
 from netbox_netprod_importer.devices_list import parse_devices_yaml_def
+from netbox_netprod_importer.devices_list import parse_filter_yaml_def
 from netbox_netprod_importer.push import (
     NetboxDevicePropsPusher, NetboxInterconnectionsPusher
 )
@@ -44,8 +45,14 @@ def parse_args():
 
     for sp in (sp_import, sp_interconnect, sp_inventory):
         sp.add_argument(
-            "devices", metavar="DEVICES", type=str,
-            help="Yaml file containing a definition of devices to poll"
+            "-f", "--file", metavar="DEVICES",
+            help="Yaml file containing a definition of devices to poll",
+            dest="devices", type=str
+        )
+        sp.add_argument(
+            "-F", "--filter", metavar="FILTER",
+            help="Yaml file containing filter selection from netbox devices for polling",
+            dest="filter", type=str
         )
         sp.add_argument(
             "-u", "--user", metavar="USER",
@@ -97,6 +104,23 @@ def parse_args():
             if not isinstance(numeric_level, int):
                 raise ValueError('Invalid log level: %s' % args.verbose)
             logging.getLogger().setLevel(numeric_level)
+
+        args_h = vars(args)
+        args_h["creds"] = _get_creds(args)
+        print("Initializing importers…")
+        if args_h.get("devices"):
+            args_h["importers"] = parse_devices_yaml_def(
+                args.devices, args.creds
+            )
+        elif args_h.get("filter"):
+            args_h["importers"] = parse_filter_yaml_def(
+                args.filter, args.creds
+            )
+            # sys.exit(0)
+        else:
+            logger.error("Device file or filter file required")
+            sys.exit(3)
+
         args.func(parsed_args=args)
     else:
         arg_parser.print_help()
@@ -107,16 +131,10 @@ def inventory(parsed_args):
     interconnect(parsed_args)
 
 def import_data(parsed_args):
-    creds = _get_creds(parsed_args)
-    threads = parsed_args.threads
-
-    print("Initializing importers…")
-    importers = parse_devices_yaml_def(parsed_args.devices, creds)
-    print()
-
     print("Fetching and pushing data…")
     for host, props in _multithreaded_devices_polling(
-            importers=importers, threads=threads,
+            importers=parsed_args.importers,
+            threads=parsed_args.threads,
             overwrite=parsed_args.overwrite
     ):
         continue
@@ -169,8 +187,6 @@ def _poll_and_push(netbox_api, host, importer, overwrite):
 
 
 def interconnect(parsed_args):
-    creds = _get_creds(parsed_args)
-    threads = parsed_args.threads
     netbox_api = NetboxAPI(**get_config()["netbox"])
     remove_domains = get_config().get("remove_domains")
 
@@ -178,13 +194,11 @@ def interconnect(parsed_args):
         netbox_api, remove_domains=remove_domains
     )
 
-    print("Initializing importers…")
-    importers = parse_devices_yaml_def(parsed_args.devices, creds)
-    print()
-
     print("Finding neighbours and interconnecting…")
     interco_result = interco_pusher.push(
-        importers=importers, threads=threads, overwrite=parsed_args.overwrite
+        importers=parsed_args.importers,
+        threads=parsed_args.threads,
+        overwrite=parsed_args.overwrite
     )
     print("{} interconnection(s) applied".format(interco_result["done"]))
     if interco_result["errors_device"]:
