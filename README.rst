@@ -1,6 +1,6 @@
-==================================
-Netbox network production importer
-==================================
+================================================
+Netbox network production importer and inventory
+================================================
 
 .. image:: https://travis-ci.org/aruhier/netbox-netprod-importer.svg?branch=master
     :target: https://travis-ci.org/aruhier/netbox-netprod-importer
