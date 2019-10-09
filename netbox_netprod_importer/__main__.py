@@ -105,18 +105,15 @@ def parse_args():
                 raise ValueError('Invalid log level: %s' % args.verbose)
             logging.getLogger().setLevel(numeric_level)
 
-        args_h = vars(args)
-        args_h["creds"] = _get_creds(args)
         print("Initializing importers…")
-        if args_h.get("devices"):
-            args_h["importers"] = parse_devices_yaml_def(
+        if args.devices:
+            args.importers = parse_devices_yaml_def(
                 args.devices, args.creds
             )
-        elif args_h.get("filter"):
-            args_h["importers"] = parse_filter_yaml_def(
+        elif args.filter:
+            args.importers = parse_filter_yaml_def(
                 args.filter, args.creds
             )
-            # sys.exit(0)
         else:
             logger.error("Device file or filter file required")
             sys.exit(3)
