@@ -40,11 +40,13 @@ def parse_filter_yaml_def(filter_yaml, creds=None):
         yml = yaml.safe_load(filter_yaml_str)
         platforms_js = netbox_api.get("dcim/platforms")
         platforms = {}
-        platforms_args = {}
         for platform in platforms_js["results"]:
             if platform["napalm_driver"]:
-                platforms[platform["id"]] = platform["napalm_driver"]
-                platforms_args[platform["id"]] = platform["napalm_args"]
+                if platform["napalm_driver"]:
+                    platforms[platform["id"]] = {
+                        "napalm_driver": platform["napalm_driver"],
+                        "napalm_args": platform["napalm_args"]
+                    }
         if not platforms:
             raise Exception("Not for one platform napalm_driver is not "
                             "defined")
@@ -60,17 +62,18 @@ def parse_filter_yaml_def(filter_yaml, creds=None):
                 if device["primary_ip"].get("address"):
                     dev = device["primary_ip"].get("address").split("/")[0]
                 else:
-                    dev =  device["name"]
+                    dev = device["name"]
                 devices[device["name"]] = DeviceImporter(
                     dev,
-                    napalm_driver_name=platforms[device["platform"]["id"]],
-                    napalm_optional_args=platforms_args[
+                    napalm_driver_name=platforms[
+                         device["platform"]["id"]
+                    ]["napalm_driver"],
+                    napalm_optional_args=platforms[
                         device["platform"]["id"]
-                    ],
+                    ]["napalm_args"],
                     creds=creds,
                     discovery_protocol=yml["discovery_protocol"].get(
                         platforms[device["platform"]["id"]]
-
                     )
                 )
             except Exception as e:
