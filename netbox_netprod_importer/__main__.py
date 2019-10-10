@@ -105,6 +105,7 @@ def parse_args():
                 raise ValueError('Invalid log level: %s' % args.verbose)
             logging.getLogger().setLevel(numeric_level)
 
+        args.creds = _get_creds(args)
         print("Initializing importers…")
         if args.devices:
             args.importers = parse_devices_yaml_def(

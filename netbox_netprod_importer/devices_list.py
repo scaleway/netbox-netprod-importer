@@ -53,9 +53,8 @@ def parse_filter_yaml_def(filter_yaml, creds=None):
 
         devlist = netbox_api.get("dcim/devices/", params=yml["filter"].items())
         for device in devlist["results"]:
-            if not device["platform"]:
-                continue
-            if not platforms.get(device["platform"]["id"]):
+            if not device.get("platform") or \
+                    not platforms.get(device["platform"]["id"]):
                 continue
 
             try:
