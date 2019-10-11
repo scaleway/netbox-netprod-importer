@@ -4,7 +4,6 @@ import logging
 import napalm
 from tqdm import tqdm
 import yaml
-import sys
 
 from netbox_netprod_importer.importer import DeviceImporter
 
