@@ -117,14 +117,65 @@ lists which hosts to target. One device is declared like the following::
       # optional. Will be used instead of the switch fqdn to init the connection
       target: some_ip
       # optional. Only needed for interconnect
-      discovery_protocol: lldp or cdp
+      discovery_protocol: lldp, cdp or multiple
 
 
 Read the documentation of each subparser to use it in netbox-netprod-importer.
 
-discovery_protocol can take the values "lldp" and "cdp". Since the CDP protocol
+discovery_protocol can take the values "lldp", "cdp" or "multiple". Since the CDP protocol
 is proprietary, it is only supported by CISSCO equipment. CDP detection only
 works with nxos, nxos_ssh and ios drivers.
+
+Filter
+------
+
+.. _quickstart_filter:
+
+To import the status of some devices, netbox-netprod-importer accepts yaml,
+which lists the criteria for selecting devices to target. It looks like this::
+
+    #Mandatory section, but may be empty.
+    #Used with interconnect and inventory.
+    discovery_protocol:
+        #[driver]: [discovery protocol]
+        ios: cdp
+        nxos: multiple
+        nxos_ssh: multiple
+        junos: lldp
+
+    #Filter section, device selection criteria are prescribed.
+    filter:
+        q:
+        region:
+            - england
+        site:
+            - london
+            - birmingham
+        rack:
+        status: 1
+        role:
+        tenant_group:
+        tenant:
+            - it
+        manufacturer:
+            - cisco
+        device_type:
+        mac_address:
+        has_primary_ip: True
+        platform:
+        virtual_chassis_member:
+        console_ports:
+        console_server_ports:
+        power_ports:
+        power_outlets:
+        interfaces:
+        pass_through_ports:
+
+Full online documentation on filter keys is available on a running NetBox instance
+in /api/docs/, section GET /dcim/devices/
+Most filter keys accept slug input
+
+Mandatory in the platform you need to specify the NAPALM driver
 
 Example
 ~~~~~~~
@@ -140,9 +191,9 @@ Example
     interconnect via cdp. The cdp protocol works so far with nxos,
     nxos_ssh and ios
   - `switch-4.foo.tld`, which is a Cisco Nexus. The IP to target will be
-     deduced by resolving the fqdn/hostname. And also determine the
-     interconnect via cdp and lldp. The `multiple` option only works for
-     nxos, nxos_ssh and ios.
+    deduced by resolving the fqdn/hostname. And also determine the
+    interconnect via cdp and lldp. The `multiple` option only works for
+    nxos, nxos_ssh and ios.
 
 
 To declare 2 switches, define a yaml named `devices.yaml`::
@@ -164,7 +215,7 @@ To declare 2 switches, define a yaml named `devices.yaml`::
 
 Then to use it::
 
-    $ netbox-netprod-importer import devices.yaml
+    $ netbox-netprod-importer import -f devices.yaml
 
 
 Import and interconnect
@@ -176,17 +227,17 @@ feature can be found :ref:`here <import>`.
 
 Import a list of devices::
 
-    $ netbox-netprod-importer import devices.yaml
+    $ netbox-netprod-importer import -f devices.yaml
 
 Once all devices interfaces are created, with the previous command, neighbours
 can be discovered and interconnected between each other::
 
-    $ netbox-netprod-importer interconnect devices.yaml
+    $ netbox-netprod-importer interconnect -f devices.yaml
 
 Full documentation for the interconnect feature can be found
 :ref:`here <interconnect>`.
 
 You can also run an inventory, which first starts the import and then the interconnect::
 
-    $ netbox-netprod-importer inventory devices.yaml
+    $ netbox-netprod-importer inventory -F filter.yaml
 

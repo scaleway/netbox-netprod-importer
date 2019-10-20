@@ -8,7 +8,7 @@ class CiscoParser(_AbstractVendorParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.cache = cachetools.TTLCache(10, 60)
+        self.cache = cachetools.TTLCache(128, 600)
 
     @staticmethod
     def get_abrev_if(interface):
