@@ -116,6 +116,9 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
         for if_name, if_prop in interfaces_props.items():
             if_prop = if_prop.copy()
+            if_prop["type"] = self.search_value_in_choices(
+                "dcim_choices", "interface:type", if_prop["type"]
+            )
             interface_query = self._mappers["interfaces"].get(
                 device_id=self._device, name=if_name
             )
@@ -124,18 +127,12 @@ class NetboxDevicePropsPusher(_NetboxPusher):
             except StopIteration:
                 try:
                     interface = self._mappers["interfaces"].post(
-                        device=self._device, name=if_name
+                        device=self._device, name=if_name, type=if_prop["type"]
                     )
                 except HTTPError as e:
                     raise NetIfPushingError(if_name, e)
 
             interfaces[if_name] = interface
-
-            if_type = if_prop.pop("type")
-            if_prop["form_factor"] = self.search_value_in_choices(
-                "dcim_choices", "interface:type",
-                if_type
-            )
             if if_prop.get("lag"):
                 interfaces_lag[if_name] = if_prop.pop("lag")
 
