@@ -13,7 +13,7 @@ setup_requirements = [
     "pytest-runner",
 ]
 test_requirements = [
-    "pytest", "pytest-cov", "pytest-mock",
+    "pytest", "pytest-cov", "pytest-mock", "pynxos"
 ]
 
 setup(
