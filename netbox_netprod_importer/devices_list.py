@@ -57,8 +57,7 @@ def parse_filter_yaml_def(filter_yaml, creds=None):
                 continue
 
             try:
-                if device.get("primary_ip") and \
-                        device["primary_ip"].get("address"):
+                if device.get("primary_ip", {}).get("address"):
                     dev = device["primary_ip"]["address"].split("/")[0]
                 else:
                     dev = device["name"]
