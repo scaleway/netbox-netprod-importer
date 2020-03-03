@@ -4,7 +4,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -14,7 +14,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -24,7 +24,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -34,7 +34,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -44,7 +44,7 @@
         "enabled": true,
         "mac_address": null,
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -54,7 +54,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:79",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -132,7 +132,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": "Link Aggregation Group (LAG)",
         "untagged_vlan": null
@@ -142,7 +142,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:7C",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710",
             "760"
@@ -155,7 +155,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:8F",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "500",
             "792"
@@ -168,7 +168,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": "Link Aggregation Group (LAG)",
         "untagged_vlan": null
@@ -178,7 +178,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:5D",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -256,7 +256,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:5E",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -334,7 +334,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:5F",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -412,7 +412,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:60",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -490,7 +490,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:61",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -568,7 +568,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:62",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -646,7 +646,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:76",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -724,7 +724,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:77",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -802,7 +802,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:91",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710",
             "754"
@@ -815,7 +815,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:7B",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "601",
             "602",
@@ -837,7 +837,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:65",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -915,7 +915,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:7D",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "5"
         ],
@@ -927,7 +927,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:B2",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "5"
         ],
@@ -939,7 +939,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:53",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "601",
             "602",
@@ -961,7 +961,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:3D",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1",
             "3",
@@ -1039,7 +1039,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:8E",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "511",
             "515",
@@ -1068,7 +1068,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:B4",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "507",
             "610",
@@ -1090,7 +1090,7 @@
         "lag": "Port-channel10",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1100,7 +1100,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1110,7 +1110,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:81",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710"
         ],
@@ -1122,7 +1122,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1132,7 +1132,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1142,7 +1142,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1152,7 +1152,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1162,7 +1162,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1172,7 +1172,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1182,7 +1182,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1192,7 +1192,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1202,7 +1202,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1212,7 +1212,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1222,7 +1222,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1232,7 +1232,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1242,7 +1242,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1253,7 +1253,7 @@
         "lag": "Port-channel6",
         "mac_address": "00:00:00:00:00:8E",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1264,7 +1264,7 @@
         "lag": "Port-channel2",
         "mac_address": "00:00:00:00:00:8F",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1274,7 +1274,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1285,7 +1285,7 @@
         "lag": "Port-channel29",
         "mac_address": "00:00:00:00:00:91",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1295,7 +1295,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1305,7 +1305,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1316,7 +1316,7 @@
         "lag": "Port-channel1",
         "mac_address": "00:00:00:00:00:79",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1326,7 +1326,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1336,7 +1336,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1346,7 +1346,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1357,7 +1357,7 @@
         "lag": "Port-channel1",
         "mac_address": "00:00:00:00:00:7A",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1368,7 +1368,7 @@
         "lag": "Port-channel3",
         "mac_address": "00:00:00:00:00:7B",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1379,7 +1379,7 @@
         "lag": "Port-channel100",
         "mac_address": "00:00:00:00:00:7C",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1390,7 +1390,7 @@
         "lag": "Port-channel31",
         "mac_address": "00:00:00:00:00:7D",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": "5"
@@ -1400,7 +1400,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1410,7 +1410,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:7F",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710"
         ],
@@ -1423,7 +1423,7 @@
         "lag": "Port-channel10",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1433,7 +1433,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1443,7 +1443,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1453,7 +1453,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1463,7 +1463,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1473,7 +1473,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1484,7 +1484,7 @@
         "lag": "Port-channel21",
         "mac_address": "00:00:00:00:00:5D",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1497,7 +1497,7 @@
         "lag": "Port-channel22",
         "mac_address": "00:00:00:00:00:5E",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1510,7 +1510,7 @@
         "lag": "Port-channel23",
         "mac_address": "00:00:00:00:00:5F",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1523,7 +1523,7 @@
         "lag": "Port-channel24",
         "mac_address": "00:00:00:00:00:60",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1536,7 +1536,7 @@
         "lag": "Port-channel25",
         "mac_address": "00:00:00:00:00:61",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1548,7 +1548,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1559,7 +1559,7 @@
         "lag": "Port-channel26",
         "mac_address": "00:00:00:00:00:62",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1572,7 +1572,7 @@
         "lag": "Port-channel27",
         "mac_address": "00:00:00:00:00:63",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1585,7 +1585,7 @@
         "lag": "Port-channel28",
         "mac_address": "00:00:00:00:00:64",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "1"
         ],
@@ -1597,7 +1597,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1607,7 +1607,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1617,7 +1617,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1627,7 +1627,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1637,7 +1637,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1647,7 +1647,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1657,7 +1657,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1668,7 +1668,7 @@
         "lag": "Port-channel1",
         "mac_address": "00:00:00:00:00:51",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1678,7 +1678,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1688,7 +1688,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1698,7 +1698,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1709,7 +1709,7 @@
         "lag": "Port-channel1",
         "mac_address": "00:00:00:00:00:52",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1720,7 +1720,7 @@
         "lag": "Port-channel4",
         "mac_address": "00:00:00:00:00:53",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1731,7 +1731,7 @@
         "lag": "Port-channel100",
         "mac_address": "00:00:00:00:00:54",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1742,7 +1742,7 @@
         "lag": "Port-channel31",
         "mac_address": "00:00:00:00:00:55",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": "5"
@@ -1752,7 +1752,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1762,7 +1762,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1773,7 +1773,7 @@
         "lag": "Port-channel10",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1784,7 +1784,7 @@
         "lag": "Port-channel10",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1795,7 +1795,7 @@
         "lag": "Port-channel5",
         "mac_address": "00:00:00:00:00:3D",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1805,7 +1805,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:3E",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710"
         ],
@@ -1818,7 +1818,7 @@
         "lag": "Port-channel5",
         "mac_address": "00:00:00:00:00:3F",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1828,7 +1828,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1838,7 +1838,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:41",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "3",
             "2"
@@ -1851,7 +1851,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:42",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "4",
             "506",
@@ -1867,7 +1867,7 @@
         "lag": "Port-channel20",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1878,7 +1878,7 @@
         "lag": "Port-channel7",
         "mac_address": "00:00:00:00:00:B5",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1889,7 +1889,7 @@
         "lag": "Port-channel7",
         "mac_address": "00:00:00:00:00:B6",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1900,7 +1900,7 @@
         "lag": "Port-channel7",
         "mac_address": "00:00:00:00:00:B7",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1910,7 +1910,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1920,7 +1920,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1930,7 +1930,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:BA",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "507",
             "508"
@@ -1943,7 +1943,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1953,7 +1953,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1963,7 +1963,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1973,7 +1973,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1983,7 +1983,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -1993,7 +1993,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:BF",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "3",
             "2"
@@ -2006,7 +2006,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:C0",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "4",
             "506",
@@ -2021,7 +2021,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2031,7 +2031,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:C2",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "607"
         ],
@@ -2044,7 +2044,7 @@
         "lag": "Port-channel6",
         "mac_address": "00:00:00:00:00:C3",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2055,7 +2055,7 @@
         "lag": "Port-channel2",
         "mac_address": "00:00:00:00:00:C4",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2065,7 +2065,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2076,7 +2076,7 @@
         "lag": "Port-channel29",
         "mac_address": "00:00:00:00:00:C6",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2086,7 +2086,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2096,7 +2096,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2107,7 +2107,7 @@
         "lag": "Port-channel30",
         "mac_address": "00:00:00:00:00:AE",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2117,7 +2117,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2127,7 +2127,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2137,7 +2137,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2148,7 +2148,7 @@
         "lag": "Port-channel30",
         "mac_address": "00:00:00:00:00:AF",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2159,7 +2159,7 @@
         "lag": "Port-channel3",
         "mac_address": "00:00:00:00:00:B0",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2170,7 +2170,7 @@
         "lag": "Port-channel100",
         "mac_address": "00:00:00:00:00:B1",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2181,7 +2181,7 @@
         "lag": "Port-channel32",
         "mac_address": "00:00:00:00:00:B2",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": "5"
@@ -2191,7 +2191,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2202,7 +2202,7 @@
         "lag": "Port-channel7",
         "mac_address": "00:00:00:00:00:B4",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2213,7 +2213,7 @@
         "lag": "Port-channel20",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2223,7 +2223,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2233,7 +2233,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2243,7 +2243,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2253,7 +2253,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2263,7 +2263,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2274,7 +2274,7 @@
         "lag": "Port-channel21",
         "mac_address": "00:00:00:00:00:70",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2285,7 +2285,7 @@
         "lag": "Port-channel22",
         "mac_address": "00:00:00:00:00:71",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2296,7 +2296,7 @@
         "lag": "Port-channel23",
         "mac_address": "00:00:00:00:00:72",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2307,7 +2307,7 @@
         "lag": "Port-channel24",
         "mac_address": "00:00:00:00:00:73",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2318,7 +2318,7 @@
         "lag": "Port-channel25",
         "mac_address": "00:00:00:00:00:74",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2328,7 +2328,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2339,7 +2339,7 @@
         "lag": "Port-channel26",
         "mac_address": "00:00:00:00:00:75",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2350,7 +2350,7 @@
         "lag": "Port-channel27",
         "mac_address": "00:00:00:00:00:76",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2361,7 +2361,7 @@
         "lag": "Port-channel28",
         "mac_address": "00:00:00:00:00:77",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2371,7 +2371,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:78",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "607"
         ],
@@ -2383,7 +2383,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2393,7 +2393,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2403,7 +2403,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2413,7 +2413,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2423,7 +2423,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2433,7 +2433,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2444,7 +2444,7 @@
         "lag": "Port-channel30",
         "mac_address": "00:00:00:00:00:64",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2454,7 +2454,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:7F",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "448",
             "500",
@@ -2486,7 +2486,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:80",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "507",
             "710",
@@ -2501,7 +2501,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:81",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "507",
             "508",
@@ -2517,7 +2517,7 @@
         "lag": "Port-channel30",
         "mac_address": "00:00:00:00:00:65",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2528,7 +2528,7 @@
         "lag": "Port-channel4",
         "mac_address": "00:00:00:00:00:66",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2539,7 +2539,7 @@
         "lag": "Port-channel100",
         "mac_address": "00:00:00:00:00:67",
         "mode": "Tagged",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2550,7 +2550,7 @@
         "lag": "Port-channel32",
         "mac_address": "00:00:00:00:00:68",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": "5"
@@ -2560,7 +2560,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2570,7 +2570,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2581,7 +2581,7 @@
         "lag": "Port-channel20",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2592,7 +2592,7 @@
         "lag": "Port-channel20",
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2602,7 +2602,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2612,7 +2612,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:E1",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710"
         ],
@@ -2624,7 +2624,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2634,7 +2634,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:E3",
         "mode": "Access",
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [
             "710"
         ],
@@ -2646,7 +2646,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2656,7 +2656,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2666,7 +2666,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2676,7 +2676,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2686,7 +2686,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2696,7 +2696,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2706,7 +2706,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2716,7 +2716,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2726,7 +2726,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2736,7 +2736,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2746,7 +2746,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2756,7 +2756,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2766,7 +2766,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2776,7 +2776,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2786,7 +2786,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2796,7 +2796,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2806,7 +2806,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2816,7 +2816,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2826,7 +2826,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2836,7 +2836,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2846,7 +2846,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2856,7 +2856,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2866,7 +2866,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2876,7 +2876,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2886,7 +2886,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2896,7 +2896,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2906,7 +2906,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2916,7 +2916,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2926,7 +2926,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2936,7 +2936,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2946,7 +2946,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2956,7 +2956,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2966,7 +2966,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2976,7 +2976,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2986,7 +2986,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -2996,7 +2996,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -3006,7 +3006,7 @@
         "enabled": true,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
@@ -3016,7 +3016,7 @@
         "enabled": false,
         "mac_address": "00:00:00:00:00:40",
         "mode": null,
-        "mtu": null,
+        "mtu": 1500,
         "tagged_vlans": [],
         "type": null,
         "untagged_vlan": null
