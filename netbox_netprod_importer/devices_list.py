@@ -57,8 +57,8 @@ def parse_filter_yaml_def(filter_yaml, creds=None):
                 continue
 
             try:
-                if device["primary_ip"].get("address"):
-                    dev = device["primary_ip"].get("address").split("/")[0]
+                if device.get("primary_ip", {}).get("address"):
+                    dev = device["primary_ip"]["address"].split("/")[0]
                 else:
                     dev = device["name"]
                 devices[device["name"]] = DeviceImporter(
@@ -71,7 +71,7 @@ def parse_filter_yaml_def(filter_yaml, creds=None):
                     ]["napalm_args"],
                     creds=creds,
                     discovery_protocol=yml["discovery_protocol"].get(
-                        platforms[device["platform"]["id"]]
+                        platforms[device["platform"]["id"]]["napalm_driver"]
                     )
                 )
             except Exception as e:
