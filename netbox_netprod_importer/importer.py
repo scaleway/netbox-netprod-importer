@@ -172,7 +172,7 @@ class DeviceImporter(ContextDecorator):
                     napalm_ifprops["description"] or ""
                 )[:100],
                 "mac_address": napalm_ifprops["mac_address"] or None,
-                "mtu": napalm_ifprops["mtu"] if napalm_ifprops["mtu"] else None,
+                "mtu": napalm_ifprops["mtu"] or None,
                 "type": _type,
                 "mode": mode,
                 "untagged_vlan": None,
