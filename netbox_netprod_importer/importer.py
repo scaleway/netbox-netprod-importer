@@ -172,12 +172,18 @@ class DeviceImporter(ContextDecorator):
                     napalm_ifprops["description"] or ""
                 )[:100],
                 "mac_address": napalm_ifprops["mac_address"] or None,
-                "mtu": napalm_ifprops["mtu"] or None,
                 "type": _type,
                 "mode": mode,
                 "untagged_vlan": None,
                 "tagged_vlans": [],
             }
+
+            try:
+                interfaces[ifname]["mtu"] = int(napalm_ifprops.get("mtu"))
+                if interfaces[ifname]["mtu"] < 1:
+                    interfaces[ifname]["mtu"] = None
+            except (ValueError, TypeError):
+                interfaces[ifname]["mtu"] = None
 
             if mode == "Access":
                 try:
@@ -193,7 +199,6 @@ class DeviceImporter(ContextDecorator):
 
             if vlans:
                 interfaces[ifname]["tagged_vlans"] = vlans
-
 
         for ifname, data in interfaces.items():
             if data["mode"] == "Tagged":
