@@ -16,7 +16,7 @@ data will probably need to be adapted by some custom scripts, like the
 specification of roles, tennant and other properties on objects.
 
 
-Used by `Online.net <https://www.online.net>`_ on more than 5000 network
+Used by `Scaleway <https://www.scaleway.com>`_ on more than 5000 network
 devices.
 
 
@@ -73,7 +73,7 @@ netbox-netprod-importer is tested under python 3.5 to 3.7
 Contributors
 ------------
 
-Tool initially developed by `Online.net  <https://www.online.net>`_ .
+Tool initially developed by `Scaleway  <https://www.scaleway.com>`_ .
 
 * Anthony Ruhier <anthony.ruhier@gmail.com>
 
