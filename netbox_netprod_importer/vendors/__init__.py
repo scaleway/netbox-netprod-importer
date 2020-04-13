@@ -22,3 +22,6 @@ class StubParser(_AbstractVendorParser):
 
     def get_interface_type(self, *args, **kwargs):
         return "Other"
+
+    def get_interface_mode(self, interface):
+        raise NotImplementedError

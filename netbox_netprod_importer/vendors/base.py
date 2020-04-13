@@ -22,6 +22,10 @@ class _AbstractVendorParser(ABC):
             interface, self.device.hostname
         )
 
+    @abstractmethod
+    def get_interface_mode(self, interface):
+        pass
+
     def get_all_derivatives_for_netif(self, interface):
         """
         Get all possible derivatives for an interface name
