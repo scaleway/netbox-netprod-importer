@@ -211,7 +211,7 @@ class NXOSParser(CiscoParser):
                          self.device.hostname)
         return None
 
-    def get_interface_netive_vlan(self, interface):
+    def get_interface_native_vlan(self, interface):
         from pynxos.errors import CLIError
         try:
             return int(

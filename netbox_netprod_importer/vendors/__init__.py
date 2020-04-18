@@ -25,3 +25,9 @@ class StubParser(_AbstractVendorParser):
 
     def get_interface_mode(self, interface):
         raise NotImplementedError
+
+    def get_interface_vlans(self, interface):
+        raise NotImplementedError
+
+    def get_interface_native_vlan(self, interface):
+        raise NotImplementedError

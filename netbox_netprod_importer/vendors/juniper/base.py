@@ -182,8 +182,8 @@ class JunOSParser(JuniperParser):
                     "junos")
         raise NotImplementedError
 
-    def get_interface_netive_vlan(self, interface):
-        logger.info("get_interface_netive_vlan function not implemented for "
+    def get_interface_native_vlan(self, interface):
+        logger.info("get_interface_native_vlan function not implemented for "
                     "junos")
         raise NotImplementedError
 
