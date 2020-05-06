@@ -106,7 +106,7 @@ def parse_args():
             logging.getLogger().setLevel(numeric_level)
 
         args.creds = _get_creds(args)
-        print("Initializing importers…")
+        print("Initializing importers...")
         if args.devices:
             args.importers = parse_devices_yaml_def(
                 args.devices, args.creds
@@ -128,7 +128,7 @@ def inventory(parsed_args):
     interconnect(parsed_args)
 
 def import_data(parsed_args):
-    print("Fetching and pushing data…")
+    print("Fetching and pushing data...")
     for host, props in _multithreaded_devices_polling(
             importers=parsed_args.importers,
             threads=parsed_args.threads,
