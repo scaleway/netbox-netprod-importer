@@ -249,7 +249,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
     def _update_interfaces_lag(self, interfaces, interfaces_lag):
         """
-        :param interfaces: {interface_name: netbox_interface_obj, …}
+        :param interfaces: {interface_name: netbox_interface_obj, ...}
         """
         for if_name, lag in interfaces_lag.items():
             interface = interfaces[if_name]
