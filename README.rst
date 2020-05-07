@@ -67,7 +67,7 @@ Run::
 
   pip3 install netbox-netprod-importer
 
-netbox-netprod-importer is tested under python 3.5 to 3.7
+netbox-netprod-importer requires at least Python 3.6. It is tested on Python 3.6 to 3.8.
 
 
 Contributors
