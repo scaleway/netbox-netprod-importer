@@ -31,6 +31,25 @@ def parse_devices_yaml_def(devices_yaml, creds=None):
                 )
     return devices
 
+def parse_devices_dict(devices_dict,creds=None):
+    devices = {}
+    for hostname, props in devices_dict.items():
+        try:
+            devices[hostname] = DeviceImporter(
+                props.get("target") or hostname,
+                napalm_driver_name=props["driver"],
+                napalm_optional_args=props.get("optional_args"),
+                creds=creds,
+                discovery_protocol=props.get("discovery_protocol")
+            )
+        except Exception as e:
+            logger.error(
+                "Cannot connect to device %s: %s", hostname, e
+            )
+    return devices
+
+
+
 
 def parse_filter_yaml_def(filter_yaml, creds=None):
     netbox_api = NetboxAPI(**get_config()["netbox"])

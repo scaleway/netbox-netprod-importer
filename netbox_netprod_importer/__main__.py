@@ -10,8 +10,8 @@ from netboxapi import NetboxAPI
 from tqdm import tqdm
 
 from . import __appname__, __version__
-from netbox_netprod_importer.config import get_config, load_config
-from netbox_netprod_importer.devices_list import parse_devices_yaml_def
+from netbox_netprod_importer.config import get_config, load_config, load_config_from_args
+from netbox_netprod_importer.devices_list import parse_devices_yaml_def, parse_devices_dict
 from netbox_netprod_importer.devices_list import parse_filter_yaml_def
 from netbox_netprod_importer.push import (
     NetboxDevicePropsPusher, NetboxInterconnectionsPusher
@@ -122,6 +122,24 @@ def parse_args():
     else:
         arg_parser.print_help()
         sys.exit(1)
+
+def init_importer(device_dict,user,password,verbose=None):
+    # Create a parser so we can fill it exactly like the CLI one
+    parser = argparse.ArgumentParser()
+    arg_parser = parser
+    args = arg_parser.parse_args()
+
+    # Add the config from the args
+    args.creds = (user,password)
+    args.ask_password = False
+    args.filter=None
+    args.overwrite=False
+    args.threads=10
+    args.importers = parse_devices_dict(device_dict,args.creds)
+    args.verbose = verbose
+
+    return args
+
 
 def inventory(parsed_args):
     import_data(parsed_args)
