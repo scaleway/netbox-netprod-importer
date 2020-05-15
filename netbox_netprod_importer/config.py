@@ -69,5 +69,23 @@ def get_config(custom_path=None):
         raise FileNotFoundError
 
 
+def load_config_from_args(verbose=None, disable_ssl_warnings=True, netbox_url="", netbox_token="", remove_domains=['foo.tld'], loglevel=None):
+    if disable_ssl_warnings == False:
+        urllib3.disable_warnings()
+    if loglevel is not None:
+        numeric_level = getattr(logging, loglevel.upper())
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        else:
+            numeric_level = logging.ERROR
+            logging.basicConfig(level=numeric_level,
+                                format="%(levelname)s: %(name)s: %(message)s")
+     
+    return {'verbose': verbose, 'disable_ssl_warnings': disable_ssl_warnings,
+            'netbox': {'url': netbox_url, 'token': netbox_token, 'remove_domains': remove_domains}}
+
+
+
+
 def load_config(custom_path=None):
     get_config(custom_path)
