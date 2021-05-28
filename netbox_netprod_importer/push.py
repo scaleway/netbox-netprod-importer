@@ -20,6 +20,8 @@ from netbox_netprod_importer.tools import (
     generic_netbox_error, is_macaddr, macaddr_to_int
 )
 
+from ipaddress import ip_network, ip_interface
+
 
 logger = logging.getLogger("netbox_importer")
 
@@ -30,9 +32,7 @@ class _NetboxPusher(ABC):
         self.netbox_api = netbox_api
 
         self._mappers = {
-            "dcim_choices": NetboxMapper(
-                self.netbox_api, app_name="dcim", model="_choices"
-            ), "devices": NetboxMapper(
+            "devices": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="devices"
             ), "interfaces": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="interfaces"
@@ -52,14 +52,11 @@ class _NetboxPusher(ABC):
 
     def search_value_in_choices(self, mapper_name, id, label):
         if mapper_name not in self._choices_cache:
-            try:
-                mapper = self._mappers[mapper_name]
-                self._choices_cache[mapper_name] = next(mapper.get())
-            except StopIteration:
-                pass
+            mapper = self._mappers[mapper_name]
+            self._choices_cache[mapper_name] = mapper.options()
 
-        for choice in self._choices_cache[mapper_name][id]:
-            if choice["label"] == label:
+        for choice in self._choices_cache[mapper_name]["actions"]["POST"][id]["choices"]:
+            if choice["display_name"] == label:
                 return choice["value"]
 
         raise KeyError("Label {} not in choices".format(label))
@@ -111,58 +108,108 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
     def _push_interfaces(self):
         interfaces_props = self.props["interfaces"]
+        device_interfaces_lookup = {}
         interfaces_lag = {}
         interfaces = {}
 
+        # Get all interfaces and create a lookup
+        # This avoids separate API calls to NetBox for every interface
+        all_interfaces = self._mappers["interfaces"].get(device_id=self._device)
+        for device_interface in all_interfaces:
+            device_interfaces_lookup[device_interface.name] = device_interface
+
         for if_name, if_prop in interfaces_props.items():
+            # Track if anything in the NetBox interface data needs an update
+            changed = False
+
             if_prop = if_prop.copy()
             if_prop["type"] = self.search_value_in_choices(
-                "dcim_choices", "interface:type", if_prop["type"]
+                "interfaces", "type", if_prop["type"]
             )
-            interface_query = self._mappers["interfaces"].get(
-                device_id=self._device, name=if_name
-            )
-            try:
-                interface = next(interface_query)
-            except StopIteration:
+
+            if if_name in device_interfaces_lookup:
+                interface = device_interfaces_lookup[if_name]
+            else:
                 try:
                     interface = self._mappers["interfaces"].post(
                         device=self._device, name=if_name, type=if_prop["type"]
                     )
                 except HTTPError as e:
                     raise NetIfPushingError(if_name, e)
-
             interfaces[if_name] = interface
+            
             if if_prop.get("lag"):
                 interfaces_lag[if_name] = if_prop.pop("lag")
 
-            if not self.overwrite and "mode" in if_prop:
-                if_prop.pop("mode")
-            elif if_prop.get("mode"):
-                # cannot really guess (yet) the interface mode, so only set it
-                # if overwrite
-                self._handle_interface_mode(interface, if_prop["mode"])
+            if (
+                if_prop["type"] == "other"
+                and interface.type["value"] != "other"
+                and not self.overwrite
+            ):
+                # Don't overwrite interface type when discovered type is
+                # "other" and the type in netbox is already set to
+                # something else.
+                if_prop.pop("type")
+
+            if if_prop.get("mode"):
+                changed = self._handle_interface_mode(interface, if_prop["mode"])
+                if changed:
+                    logger.debug(
+                        "CHANGED: Switch {} Interface {} MODE {}".format(
+                            self.hostname, if_name, if_prop["mode"]
+                        )
+                    )
                 if_prop.pop("mode")
 
             if if_prop["untagged_vlan"]:
                 vlan_id = self._get_vlan_id(if_prop["untagged_vlan"])
                 if vlan_id != -1:
                     setattr(interface, "untagged_vlan", vlan_id)
+                    if interface.untagged_vlan != vlan_id:
+                        logger.debug(
+                            "CHANGED: Switch {} Interface {} Untagged VLAN {} to {}".format(
+                                self.hostname, if_name, interface.untagged_vlan, vlan_id
+                            )
+                        )
+                        changed = True
 
             if_prop.pop("untagged_vlan")
             if len(if_prop["tagged_vlans"]):
+                current_tagged = [x["id"] for x in interface.tagged_vlans]
                 setattr(interface, "tagged_vlans", [])
                 for vlan in if_prop["tagged_vlans"]:
                     vlan_id = self._get_vlan_id(vlan)
                     if vlan_id != -1:
                         interface.tagged_vlans.append(vlan_id)
+
+                if current_tagged != interface.tagged_vlans:
+                    logger.debug(
+                        "CHANGED: Switch {} Interface {} tagged VLANS {} to {}".format(
+                            self.hostname,
+                            if_name,
+                            current_tagged,
+                            interface.tagged_vlans
+                        )
+                    )
+                    changed = True
             if_prop.pop("tagged_vlans")
 
             for k, v in if_prop.items():
                 setattr(interface, k, v)
+                if v != getattr(interface, k, None):
+                    logger.debug(
+                        "CHANGED: Switch {} Interface {} {} {} to {}".format(
+                            self.hostname, if_name, k, getattr(interface, k, None), v
+                        )
+                    )
+                    changed = True
 
             try:
-                interface.put()
+                if changed:
+                    # Tags should be a list of IDs
+                    interface.tags = [x["id"] for x in interface.tags]
+
+                    interface.put()
             except HTTPError as e:
                 raise NetIfPushingError(interface.name, e)
             if if_prop.get("ip"):
@@ -205,17 +252,29 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
     def _handle_interface_mode(self, netbox_if, mode):
         netbox_mode = self.search_value_in_choices(
-            "dcim_choices", "interface:mode",
-            mode
+            "interfaces", "mode", mode
         )
 
+        changed = False
+        if not netbox_if.mode or netbox_if.mode["value"].lower() != netbox_mode.lower():
+            changed = True
+
         netbox_if.mode = netbox_mode
+
+        return changed
 
     def _attach_interface_to_ip_addresses(self, netbox_if, *ip_addresses):
         mapper = self._mappers["ip"]
 
         addresses = []
+
+        link_local_v6 = ip_network("fe80::/10")
+
         for ip in ip_addresses:
+            if ip_interface(ip).ip in link_local_v6:
+                # Skip IPv6 link local addresses
+                continue
+
             # check if ip attached isn't already correct
             try:
                 ip_netbox_obj = next(mapper.get(q=ip, interface_id=netbox_if))
@@ -229,18 +288,28 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                         raise IPPushingError(ip, e)
 
                 # XXX: handle anycast
-                ip_netbox_obj.interface = netbox_if
-                try:
-                    ip_netbox_obj.put()
-                except HTTPError as e:
-                    raise IPPushingError(ip_netbox_obj.address, e)
+                if ip_netbox_obj.assigned_object_id != netbox_if.id:
+                    logger.debug(
+                        "CHANGED: Switch {} Interface {} IP {} to {}".format(
+                            self.hostname,
+                            netbox_if.name,
+                            ip_netbox_obj.assigned_object_id,
+                            netbox_if.id
+                        )
+                    )
+                    ip_netbox_obj.assigned_object_id = netbox_if
+                    ip_netbox_obj.assigned_object_type = "dcim.interface"
+                    try:
+                        ip_netbox_obj.put()
+                    except HTTPError as e:
+                        raise IPPushingError(ip_netbox_obj.address, e)
 
             addresses.append(ip_netbox_obj)
 
         return addresses
 
     def _clean_unmatched_ip_addresses(self, netbox_if, *netbox_ip):
-        attached_addrs = self._mappers["ip"].get(interface_id=netbox_if)
+        attached_addrs = self._mappers["ip"].get(assigned_object_id=netbox_if)
         netbox_ip_ids = set(obj.id for obj in netbox_ip)
 
         for addr in attached_addrs:
@@ -253,22 +322,56 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         """
         for if_name, lag in interfaces_lag.items():
             interface = interfaces[if_name]
-            interface.lag = interfaces[lag]
-            try:
-                interface.put()
-            except HTTPError as e:
-                raise NetIfPushingError(interface.name, e)
+            if getattr(interface.lag, "id", None) != interfaces[lag].id:
+                logger.debug(
+                    "CHANGED: Switch {} Interface {} LAG {} to {}".format(
+                        self.hostname,
+                        if_name,
+                        getattr(interface.lag, "id", None),
+                        interfaces[lag].id
+                    )
+                )
+                interface.lag = interfaces[lag]
+                try:
+                    interface.put()
+                except HTTPError as e:
+                    raise NetIfPushingError(interface.name, e)
 
     def _push_main_data(self):
         mapper = self._mappers["ip"]
+        changed = False
         if self.props.get("serial"):
+            if self._device.serial != self.props["serial"]:
+                logger.debug("CHANGED: Switch {} serial {} to {}".format(
+                                self.hostname,
+                                self._device.serial,
+                                self.props["serial"]
+                            )
+                        )
+                changed = True
             self._device.serial = self.props["serial"]
+
 
         for ip_key in ("primary_ip4", "primary_ip6"):
             ip = self.props.get(ip_key)
             if ip:
                 try:
                     ip_netbox_obj = next(mapper.get(q=ip))
+                    try:
+                        current_primary_ip_id = getattr(self._device, ip_key).id
+                    except AttributeError:
+                        current_primary_ip_id = None
+
+                    if ip_netbox_obj.id != current_primary_ip_id:
+                        logger.debug(
+                            "CHANGED: Switch {} {} {} to {}".format(
+                                self.hostname,
+                                ip_key,
+                                current_primary_ip_id,
+                                ip_netbox_obj.id
+                            )
+                        )
+                        changed = True
                     setattr(self._device, ip_key, ip_netbox_obj)
                 except StopIteration:
                     logger.error(
@@ -276,7 +379,8 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                         "netbox", ip
                     )
 
-        self._device.put()
+        if changed:
+            self._device.put()
 
 
 class NetboxInterconnectionsPusher(_NetboxPusher):
@@ -534,7 +638,7 @@ class NetboxInterconnectionsPusher(_NetboxPusher):
             return interfaces
 
         try:
-            device = next(self._mappers["devices"].get(name=hostname))
+            device = next(self._mappers["devices"].get(name__ie=hostname))
         except StopIteration:
             raise DeviceNotFoundError(hostname)
 

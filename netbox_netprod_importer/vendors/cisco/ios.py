@@ -36,7 +36,7 @@ class IOSParser(CiscoParser):
 
     def get_interface_type(self, interface):
         super().get_interface_type(interface)
-        if re.search(r"^Vlan(\d*)|^Tunnel(\d+)", interface):
+        if re.search(r"^Vlan(\d*)|^Tunnel(\d+)|^Loopback(\d+)", interface):
             return "Virtual"
 
         interface_type = "Other"
@@ -108,6 +108,38 @@ class IOSParser(CiscoParser):
         for n in neighbours:
             yield n
 
+    def get_detailed_lldp_neighbours(self):
+        cmd = "show lldp neighbors detail"
+        cmd_output = self.device.cli([cmd])[cmd]
+        cmd_output = re.split('---+\n', cmd_output)
+        neighbours = []
+        for lldp_port_info in cmd_output:
+            if len(lldp_port_info):
+                info_port = re.split('\n\n', lldp_port_info)[0].split('\n')
+                hostname = local_port = port = ''
+                for line in info_port:
+                    value = line.split(':')[1].strip()
+                    if line.startswith('System Name'):
+                        hostname = value
+                    elif line.startswith('Local Intf'):
+                        local_port = value
+                    elif line.startswith('Port id'):
+                        port = value
+                    elif line.startswith('Chassis id'):
+                        chassis_id = value
+
+                neighbours.append(
+                    {
+                        "local_port": local_port,
+                        "hostname": hostname,
+                        "port": port,
+                        "chassis_id": chassis_id
+                    }
+                )
+        logger.debug("Switch {} LLDP Neighbours: {}".format(self.device.hostname, neighbours))
+        for n in neighbours:
+            yield n
+
     def get_interface_mode(self, interface):
         from pynxos.errors import CLIError
         try:
@@ -161,7 +193,7 @@ class IOSParser(CiscoParser):
                     r"^Name:\s+(?P<interface>\S+)",
                     r"^Administrative Mode:\s+(?P<oper_mode>static access|trunk|access)",
                     r"^Access Mode VLAN:\s+(?P<access_vlan>\d+)",
-                    r"^Trunking Native Mode VLAN:\s+(?P<native_valn>\d+)"
+                    r"^Trunking Native Mode VLAN:\s+(?P<native_vlan>\d+)"
                 ]
                 inf_mode = {}
                 for g in grp:
