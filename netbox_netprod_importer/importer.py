@@ -208,7 +208,7 @@ class DeviceImporter(ContextDecorator):
                     native = None
                 if native in data["tagged_vlans"]:
                     interfaces[ifname]["untagged_vlan"] = native
-                    interfaces[ifname]["tagged_vlans"].pop(native)
+                    interfaces[ifname]["tagged_vlans"].remove(str(native))
 
         for trunk in trunks:
             if trunk in interfaces:
