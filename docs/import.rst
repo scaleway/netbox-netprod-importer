@@ -47,6 +47,9 @@ An import can be started through the subcommand ``import``::
       -p, --password        ask for credentials for connections to the devices
       -P PASSWORD, --Password PASSWORD
                             credentials for connections to the devices
+      -s, --secret          ask for secret credentials to enter enable mode
+      -S SECRET, --Secret SECRET
+                            secret credentials to enter enable mode
       -t THREADS, --threads THREADS
                             number of threads to run
       -v LEVEL, --verbose LEVEL
@@ -58,6 +61,11 @@ mechanism of the napalm driver, which is normally the current user and no
 password/authentication by key. To change this behavior, the ``-u/--user`` and
 ``-p/--password|-P/--Password`` options can be used to specify the user to use, and tells the
 importer to ask|set for the password to use.
+
+The importer will collect the data of the devices with the permissions of the
+user logged in by the napalm driver. If enable mode is required to collect the
+data, the ``-s/--secret|-S/--Secret`` options tells the importer to ask|set for
+the secret to enter enable mode.
 
 The import is multithreaded, and split by device. The default number of threads
 is 10, but can be changed with the ``-t/--threads`` option.
@@ -101,6 +109,10 @@ this user to connect to these devices, do::
 To use a different user, for example `bar` do::
 
     $ netbox-netprod-importer import -u bar -p -f ~/importer/devices.yml
+
+If enable mode is required to collect the data of these devices, do::
+
+    $ netbox-netprod-importer import -u bar -p -s -f ~/importer/devices.yml
 
 And to use more threads and enable the overwrite mode to get a clean clone of a
 device state::

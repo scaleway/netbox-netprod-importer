@@ -18,10 +18,16 @@ def parse_devices_yaml_def(devices_yaml, creds=None):
     with open(devices_yaml) as devices_yaml_str:
         for hostname, props in tqdm(yaml.safe_load(devices_yaml_str).items()):
             try:
+                optional_args = props.get("optional_args")
+                if creds[2] is not None:
+                    if optional_args is None:
+                        optional_args = {"secret": creds[2]}
+                    else:
+                        optional_args["secret"] = creds[2]
                 devices[hostname] = DeviceImporter(
                     props.get("target") or hostname,
                     napalm_driver_name=props["driver"],
-                    napalm_optional_args=props.get("optional_args"),
+                    napalm_optional_args=optional_args,
                     creds=creds,
                     discovery_protocol=props.get("discovery_protocol")
                 )
