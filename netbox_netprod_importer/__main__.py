@@ -70,6 +70,16 @@ def parse_args():
             dest="password", type=str
         )
         sp.add_argument(
+            "-s", "--secret",
+            help="ask for secret credentials to enter enable mode",
+            dest="ask_secret", action="store_true"
+        )
+        sp.add_argument(
+            "-S", "--Secret", metavar="SECRET",
+            help="secret credentials to enter enable mode",
+            dest="secret", type=str
+        )
+        sp.add_argument(
             "-t", "--threads", metavar="THREADS",
             help="number of threads to run",
             dest="threads", default=10, type=int
@@ -143,6 +153,13 @@ def _get_creds(parsed_args):
         creds = (parsed_args.user or getpass.getuser(), getpass.getpass())
     elif parsed_args.password:
         creds = (parsed_args.user or getpass.getuser(), parsed_args.password)
+
+    if parsed_args.ask_secret:
+        creds = creds + tuple([getpass.getpass(prompt="Secret pasword: ")])
+    elif parsed_args.secret:
+        creds = creds + tuple([parsed_args.secret])
+    else:
+        creds = creds + tuple([None])
 
     return creds
 
