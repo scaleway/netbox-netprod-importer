@@ -7,7 +7,6 @@ from netbox_netprod_importer.vendors.constants import NetboxInterfaceTypes
 from .constants import InterfacesRegex
 from .base import CiscoParser
 
-
 logger = logging.getLogger("netbox_importer")
 
 
@@ -127,6 +126,7 @@ class IOSParser(CiscoParser):
             logger.debug("Switch %s, show interface switchport cmd error",
                          self.device.hostname)
         return None
+    
 
     def get_interface_native_vlan(self, interface):
         from pynxos.errors import CLIError
@@ -137,31 +137,65 @@ class IOSParser(CiscoParser):
             logger.debug("Switch %s, show interface switchport cmd error",
                          self.device.hostname)
         return None
-
+    
+    def get_interface_voice_vlan(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[
+                self.get_abrev_if(interface)].get("voice_vlan")
+        except (KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+    
+    def get_interface_tagged_vlans(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[
+                self.get_abrev_if(interface)].get("tagged_vlans")
+        except (KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+    
+    def get_interface_status(self, interface):
+        from pynxos.errors import CLIError
+        try:
+            return self._get_interfaces_mode()[
+                self.get_abrev_if(interface)].get("oper_status")
+        except (KeyError, CLIError):
+            logger.debug("Switch %s, show interface switchport cmd error",
+                         self.device.hostname)
+        return None
+    
     def _get_interfaces_mode(self):
         cmd = "show interface switchport"
 
         if not self.cache.get("mode"):
+
             mode_conf_dump = self.device.cli([cmd])[cmd]
-            mode_conf_lines = re.split(r"(^Name: \S+$)", mode_conf_dump, flags=re.M)
+            mode_conf_lines = re.split(r"(^Name: \S+$)", mode_conf_dump, flags=re.MULTILINE)
             mode_conf_lines.pop(0)
             if len(mode_conf_lines) % 2 != 0:
                 raise ValueError("Unexpected output data in '{}':\n\n{}".format(
                     cmd, mode_conf_lines
                 ))
-            mode_conf_iter = iter(mode_conf_lines)
+            mode_conf_iter = iter(mode_conf_lines)                    
             try:
                 new_mode = [line + next(mode_conf_iter, "") for line in mode_conf_iter]
             except TypeError:
                 raise ValueError()
-
+           
             interfaces_mode = {}
             for entry in new_mode:
                 grp = [
                     r"^Name:\s+(?P<interface>\S+)",
                     r"^Administrative Mode:\s+(?P<oper_mode>static access|trunk|access)",
+                    r"^Operational Mode:\s+(?P<oper_status>down)",
                     r"^Access Mode VLAN:\s+(?P<access_vlan>\d+)",
-                    r"^Trunking Native Mode VLAN:\s+(?P<native_valn>\d+)"
+                    r"^Trunking Native Mode VLAN:\s+(?P<native_vlan>\d+)",                    
+                    r"^Voice VLAN:\s+(?P<voice_vlan>\d+)",
+                    r"^Trunking VLANs Enabled:\s+(?P<tagged_vlans>ALL|.*(.*?),+.*)",
                 ]
                 inf_mode = {}
                 for g in grp:
@@ -169,10 +203,17 @@ class IOSParser(CiscoParser):
                     if find:
                         inf_mode[find.lastgroup] = find.group(find.lastgroup)
                 if inf_mode.get("interface"):
+                    if not inf_mode.get("voice_vlan"):
+                        inf_mode.update({'voice_vlan' : None})
+                    if inf_mode.get("oper_mode") == "trunk" and inf_mode.get("tagged_vlans") == "ALL":
+                        inf_mode.update({'oper_mode' : 'trunk all'})                                            
+                    if not inf_mode.get("tagged_vlans") == "ALL" and not inf_mode.get("tagged_vlans") == "None":
+                        tagged_vlans = inf_mode.get("tagged_vlans")                        
+                        inf_mode.update({'tagged_vlans' : tagged_vlans.split(",")})
+                    else:
+                        inf_mode.update({'tagged_vlans':''})
                     interfaces_mode[inf_mode["interface"]] = inf_mode
-
             self.cache["mode"] = interfaces_mode
-
         return self.cache["mode"]
 
     def get_vlans(self):

@@ -25,7 +25,9 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.7",        
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.12",
     ],
     description="Microservice import into netbox devices in production",
     install_requires=requirements,
@@ -40,8 +42,8 @@ setup(
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
-    url="https://gitlab.infra.online.net/network/netbox_netprod_importer",
-    version="0.3.3",
+    url="https://github.com/Malustta/netbox-netprod-importer",
+    version="0.3.4",
     zip_safe=False,
     entry_points={
         'console_scripts': [

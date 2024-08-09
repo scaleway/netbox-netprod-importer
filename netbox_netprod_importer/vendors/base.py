@@ -34,6 +34,18 @@ class _AbstractVendorParser(ABC):
     def get_interface_native_vlan(self, interface):
         pass
 
+    @abstractmethod
+    def get_interface_voice_vlan(self, interface):
+        pass
+
+    @abstractmethod
+    def get_interface_tagged_vlans(self, interface):
+        pass
+
+    @abstractmethod
+    def get_interface_status(self, interface):
+        pass
+
     def get_all_derivatives_for_netif(self, interface):
         """
         Get all possible derivatives for an interface name

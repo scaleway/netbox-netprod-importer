@@ -5,10 +5,11 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 from requests.exceptions import HTTPError
 import threading
-
 import cachetools
 from netboxapi import NetboxMapper
 from tqdm import tqdm
+import json
+from rich import print as rprint
 
 from netbox_netprod_importer.vendors.cisco import CiscoParser
 from netbox_netprod_importer.vendors.juniper import JuniperParser
@@ -30,9 +31,7 @@ class _NetboxPusher(ABC):
         self.netbox_api = netbox_api
 
         self._mappers = {
-            "dcim_choices": NetboxMapper(
-                self.netbox_api, app_name="dcim", model="_choices"
-            ), "devices": NetboxMapper(
+            "devices": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="devices"
             ), "interfaces": NetboxMapper(
                 self.netbox_api, app_name="dcim", model="interfaces"
@@ -44,25 +43,25 @@ class _NetboxPusher(ABC):
                 self.netbox_api, app_name="ipam", model="vlans"
             )
         }
-        self._choices_cache = {}
+        self._options_cache = {}
 
     @abstractmethod
     def push(self):
         pass
 
-    def search_value_in_choices(self, mapper_name, id, label):
-        if mapper_name not in self._choices_cache:
+    def search_value_in_options(self, mapper_name, id, label):
+        if mapper_name not in self._options_cache:
             try:
                 mapper = self._mappers[mapper_name]
-                self._choices_cache[mapper_name] = next(mapper.get())
+                options = mapper.options()
+                self._options_cache[mapper_name] = options["actions"]["POST"]
             except StopIteration:
                 pass
-
-        for choice in self._choices_cache[mapper_name][id]:
-            if choice["label"] == label:
+        for choice in self._options_cache[mapper_name][id]['choices']:
+            if choice["display_name"] == label:
                 return choice["value"]
 
-        raise KeyError("Label {} not in choices".format(label))
+        raise KeyError("Label {} not in options".format(label))
 
 
 class NetboxDevicePropsPusher(_NetboxPusher):
@@ -116,8 +115,8 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
         for if_name, if_prop in interfaces_props.items():
             if_prop = if_prop.copy()
-            if_prop["type"] = self.search_value_in_choices(
-                "dcim_choices", "interface:type", if_prop["type"]
+            if_prop["type"] = self.search_value_in_options(
+                "interfaces", "type", if_prop["type"]
             )
             interface_query = self._mappers["interfaces"].get(
                 device_id=self._device, name=if_name
@@ -136,20 +135,27 @@ class NetboxDevicePropsPusher(_NetboxPusher):
             if if_prop.get("lag"):
                 interfaces_lag[if_name] = if_prop.pop("lag")
 
-            if not self.overwrite and "mode" in if_prop:
-                if_prop.pop("mode")
+            if not self.overwrite and "mode" in if_prop["mode"]:
+                self._handle_interface_mode(interface, if_prop["mode"])
+                if_prop.pop("mode")                
             elif if_prop.get("mode"):
                 # cannot really guess (yet) the interface mode, so only set it
                 # if overwrite
                 self._handle_interface_mode(interface, if_prop["mode"])
                 if_prop.pop("mode")
 
-            if if_prop["untagged_vlan"]:
+            if if_prop["untagged_vlan"]:                
                 vlan_id = self._get_vlan_id(if_prop["untagged_vlan"])
                 if vlan_id != -1:
                     setattr(interface, "untagged_vlan", vlan_id)
 
             if_prop.pop("untagged_vlan")
+            
+            if if_prop["custom_fields"]["voice_vlan"]:                
+                vlan_id = self._get_vlan_id(if_prop["custom_fields"]["voice_vlan"])
+                if vlan_id != -1:                    
+                    if_prop["custom_fields"]["voice_vlan"]=vlan_id                    
+
             if len(if_prop["tagged_vlans"]):
                 setattr(interface, "tagged_vlans", [])
                 for vlan in if_prop["tagged_vlans"]:
@@ -158,7 +164,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                         interface.tagged_vlans.append(vlan_id)
             if_prop.pop("tagged_vlans")
 
-            for k, v in if_prop.items():
+            for k, v in if_prop.items():               
                 setattr(interface, k, v)
 
             try:
@@ -204,8 +210,8 @@ class NetboxDevicePropsPusher(_NetboxPusher):
 
 
     def _handle_interface_mode(self, netbox_if, mode):
-        netbox_mode = self.search_value_in_choices(
-            "dcim_choices", "interface:mode",
+        netbox_mode = self.search_value_in_options(
+            "interfaces", "mode",
             mode
         )
 
@@ -217,7 +223,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
         addresses = []
         for ip in ip_addresses:
             # check if ip attached isn't already correct
-            try:
+            try:                
                 ip_netbox_obj = next(mapper.get(q=ip, interface_id=netbox_if))
             except StopIteration:
                 try:
@@ -232,7 +238,7 @@ class NetboxDevicePropsPusher(_NetboxPusher):
                 ip_netbox_obj.interface = netbox_if
                 try:
                     ip_netbox_obj.put()
-                except HTTPError as e:
+                except HTTPError as e:                    
                     raise IPPushingError(ip_netbox_obj.address, e)
 
             addresses.append(ip_netbox_obj)

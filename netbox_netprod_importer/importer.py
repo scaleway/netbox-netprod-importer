@@ -10,6 +10,7 @@ from netbox_netprod_importer.exceptions import (
 from netbox_netprod_importer.vendors import DeviceParsers, StubParser
 from netbox_netprod_importer.tools import is_macaddr
 
+
 logger = logging.getLogger("netbox_importer")
 
 
@@ -156,6 +157,7 @@ class DeviceImporter(ContextDecorator):
                     "access": "Access",
                     "trunk": "Tagged",
                     "static access": "Access",
+                    "trunk all": "Tagged (All)",
                     None: None
                 }[self.specific_parser.get_interface_mode(ifname)]
             except NotImplementedError:
@@ -175,7 +177,8 @@ class DeviceImporter(ContextDecorator):
                 "type": _type,
                 "mode": mode,
                 "untagged_vlan": None,
-                "tagged_vlans": [],
+                "tagged_vlans": [""],
+                "custom_fields": {"voice_vlan" : None,},
             }
 
             try:
@@ -189,27 +192,40 @@ class DeviceImporter(ContextDecorator):
                 try:
                     interfaces[ifname]["untagged_vlan"] = \
                         self.specific_parser.get_interface_access_vlan(ifname)
+                    interfaces[ifname]["custom_fields"]["voice_vlan"] = \
+                        self.specific_parser.get_interface_voice_vlan(ifname)                    
                 except NotImplementedError:
                     interfaces[ifname]["untagged_vlan"] = None
-
-            try:
-                vlans = self.specific_parser.get_interface_vlans(ifname)
-            except NotImplementedError:
-                vlans = None
-
-            if vlans:
-                interfaces[ifname]["tagged_vlans"] = vlans
+                    interfaces[ifname]["custom_fields"]["voice_vlan"] = None
+            if mode == "Tagged":
+                try:
+                    if self.specific_parser.get_interface_status(ifname)=="down":
+                        vlans = self.specific_parser.get_interface_tagged_vlans(ifname)
+                    else:
+                        vlans = self.specific_parser.get_interface_vlans(ifname)
+                except NotImplementedError:
+                    vlans = None
+                if vlans:
+                    interfaces[ifname]["tagged_vlans"] = vlans
 
         for ifname, data in interfaces.items():
             if data["mode"] == "Tagged":
                 try:
-                    native = self.specific_parser.get_interface_native_vlan(ifname)
+                    native = self.specific_parser.get_interface_native_vlan(ifname)                
                 except NotImplementedError:
                     native = None
                 if native in data["tagged_vlans"]:
-                    interfaces[ifname]["untagged_vlan"] = native
-                    interfaces[ifname]["tagged_vlans"].pop(native)
-
+                    interfaces[ifname]["untagged_vlan"] = int(native)
+                    try:
+                        interfaces[ifname]["tagged_vlans"].pop(int(native))
+                    except IndexError:
+                        interfaces[ifname]["tagged_vlans"].pop(-1)
+            if data["mode"] == "Tagged (All)":
+                try:
+                    native = int(self.specific_parser.get_interface_native_vlan(ifname))
+                except NotImplementedError:
+                    native = None
+                interfaces[ifname]["untagged_vlan"] = native            
         for trunk in trunks:
             if trunk in interfaces:
                 interfaces[trunk]["mode"] = "Tagged"
